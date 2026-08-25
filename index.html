@@ -2284,6 +2284,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 let promoUsed200 = false;
 let promoUsedMet200 = false;
+let promoUsedDan200 = false;
 
 document.getElementById('promoButton').addEventListener('click', () => {
     const code = document.getElementById('promoInput').value.trim().toLowerCase();
@@ -2329,11 +2330,11 @@ document.getElementById('promoButton').addEventListener('click', () => {
             messageEl.style.color = '#ef4752';
             return;
         }
-        balance += 1000;
+        balance += 500;
         balance = Math.round(balance * 100) / 100;
-        promoUsedMet200 = true;
+        promoUsedDan200 = true;
         updateBalanceUI();
-        messageEl.textContent = '✅ Промокод Dan200 активирован! +1000 ⭐';
+        messageEl.textContent = '✅ Промокод Dan200 активирован! +500 ⭐';
         messageEl.style.color = '#54df87';
         document.getElementById('promoInput').value = '';
         document.getElementById('promoButton').disabled = true;
