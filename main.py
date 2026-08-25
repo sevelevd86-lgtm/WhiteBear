@@ -242,7 +242,7 @@ async def start_command(message: Message) -> None:
     
     try:
         await message.answer_photo(
-            photo="https://i.imgur.com/placeholder.jpg",
+            photo="https://imgur.com/a/tn1NUkC",
             caption=(
                 f"🎮 <b>Добро пожаловать в DROP, {first_name}!</b>\n\n"
                 f"💰 Ваш баланс: <b>{balance:.2f} звёзд</b>\n"
