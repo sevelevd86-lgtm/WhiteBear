@@ -47,10 +47,6 @@ def init_db():
             first_name TEXT,
             ref_code TEXT UNIQUE,
             invited_by INTEGER DEFAULT NULL,
-            games_played INTEGER DEFAULT 0,
-            wins INTEGER DEFAULT 0,
-            losses INTEGER DEFAULT 0,
-            daily_last_claim TEXT DEFAULT NULL,
             created_at TEXT DEFAULT CURRENT_TIMESTAMP
         )
     """)
@@ -157,66 +153,7 @@ def get_referrals_count(user_id: int) -> int:
     return result[0] if result else 0
 
 def get_referral_link(user_id: int) -> str:
-    """Генерирует реферальную ссылку на БОТА с ID пользователя"""
     return f"https://t.me/{BOT_USERNAME}?start=ref_{user_id}"
-
-def get_games_played(user_id: int) -> int:
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-    cursor.execute("SELECT games_played FROM users WHERE user_id = ?", (user_id,))
-    result = cursor.fetchone()
-    conn.close()
-    return result[0] if result else 0
-
-def get_wins(user_id: int) -> int:
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-    cursor.execute("SELECT wins FROM users WHERE user_id = ?", (user_id,))
-    result = cursor.fetchone()
-    conn.close()
-    return result[0] if result else 0
-
-def get_losses(user_id: int) -> int:
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-    cursor.execute("SELECT losses FROM users WHERE user_id = ?", (user_id,))
-    result = cursor.fetchone()
-    conn.close()
-    return result[0] if result else 0
-
-def update_stats(user_id: int, games_played: int = None, wins: int = None, losses: int = None):
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-    if games_played is not None:
-        cursor.execute("UPDATE users SET games_played = ? WHERE user_id = ?", (games_played, user_id))
-    if wins is not None:
-        cursor.execute("UPDATE users SET wins = ? WHERE user_id = ?", (wins, user_id))
-    if losses is not None:
-        cursor.execute("UPDATE users SET losses = ? WHERE user_id = ?", (losses, user_id))
-    conn.commit()
-    conn.close()
-
-def get_daily_last_claim(user_id: int) -> str:
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-    cursor.execute("SELECT daily_last_claim FROM users WHERE user_id = ?", (user_id,))
-    result = cursor.fetchone()
-    conn.close()
-    return result[0] if result else None
-
-def update_daily_claim(user_id: int):
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-    cursor.execute("UPDATE users SET daily_last_claim = ? WHERE user_id = ?", (datetime.now().isoformat(), user_id))
-    conn.commit()
-    conn.close()
-
-def can_claim_daily(user_id: int) -> bool:
-    last_claim = get_daily_last_claim(user_id)
-    if not last_claim:
-        return True
-    last_time = datetime.fromisoformat(last_claim)
-    return datetime.now() - last_time >= timedelta(hours=24)
 
 # =====================================================
 # ЛОГИРОВАНИЕ
@@ -240,7 +177,7 @@ bot = Bot(
 dp = Dispatcher()
 
 # =====================================================
-# КЛАВИАТУРЫ
+# КЛАВИАТУРА
 # =====================================================
 
 def get_main_keyboard():
@@ -249,8 +186,7 @@ def get_main_keyboard():
     builder.button(text="💰 Баланс", callback_data="balance")
     builder.button(text="👤 Профиль", callback_data="profile")
     builder.button(text="📎 Реферальная ссылка", callback_data="referral")
-    builder.button(text="🎁 Ежедневная награда", callback_data="daily")
-    builder.adjust(1, 2, 2)
+    builder.adjust(1, 2, 1)
     return builder.as_markup()
 
 # =====================================================
@@ -280,15 +216,12 @@ async def start_command(message: Message) -> None:
             success = add_referral(invited_by, user_id, 10.0)
             if success:
                 try:
-                    await bot.send_photo(
+                    await bot.send_message(
                         invited_by,
-                        photo="",
-                        caption=(
-                            f"🎉 <b>Новый реферал!</b>\n\n"
-                            f"Пользователь {first_name} перешёл по вашей ссылке.\n"
-                            f"💰 Вы получили +10 звёзд на баланс!\n"
-                            f"📊 Всего приглашено: {get_referrals_count(invited_by)}"
-                        )
+                        f"🎉 <b>Новый реферал!</b>\n\n"
+                        f"Пользователь {first_name} перешёл по вашей ссылке.\n"
+                        f"💰 Вы получили +10 звёзд на баланс!\n"
+                        f"📊 Всего приглашено: {get_referrals_count(invited_by)}"
                     )
                 except Exception as e:
                     logger.error(f"Не удалось уведомить реферера: {e}")
@@ -296,40 +229,18 @@ async def start_command(message: Message) -> None:
     balance = get_balance(user_id)
     ref_count = get_referrals_count(user_id)
     ref_link = get_referral_link(user_id)
-    games_played = get_games_played(user_id)
-    wins = get_wins(user_id)
-    losses = get_losses(user_id)
     
-    try:
-        await message.answer_photo(
-            photo="",
-            caption=(
-                f"🎮 <b>Добро пожаловать в DROP, {first_name}!</b>\n\n"
-                f"💰 Ваш баланс: <b>{balance:.2f} звёзд</b>\n"
-                f"👥 Приглашено друзей: <b>{ref_count}</b>\n"
-                f"🎮 Игр сыграно: <b>{games_played}</b>\n"
-                f"🏆 Побед: <b>{wins}</b> | 💔 Поражений: <b>{losses}</b>\n\n"
-                f"🔥 <b>Доступны игры:</b>\n"
-                f"• ⚪ Шарик\n"
-                f"• 🎟️ Билеты\n"
-                f"• 📦 Кейсы\n"
-                f"• 🎡 UPGRADE\n\n"
-                f"📎 <b>Ваша реферальная ссылка:</b>\n"
-                f"<code>{ref_link}</code>\n\n"
-                f"💡 Приглашайте друзей и получайте по 10 звёзд за каждого!"
-            ),
-            reply_markup=get_main_keyboard()
-        )
-    except Exception as e:
-        logger.error(f"Ошибка отправки картинки: {e}")
-        await message.answer(
-            f"🎮 <b>Добро пожаловать в DROP, {first_name}!</b>\n\n"
-            f"💰 Ваш баланс: <b>{balance:.2f} звёзд</b>\n"
-            f"👥 Приглашено друзей: <b>{ref_count}</b>\n\n"
-            f"📎 <b>Ваша реферальная ссылка:</b>\n"
-            f"<code>{ref_link}</code>",
-            reply_markup=get_main_keyboard()
-        )
+    await message.answer(
+        f"🐻‍❄️ <b>Добро пожаловать в DROP, {first_name}!</b>\n\n"
+        f"🆔 Ваш ID: <code>{user_id}</code>\n"
+        f"💰 Баланс: <b>{balance:.2f} звёзд</b>\n"
+        f"👥 Приглашено друзей: <b>{ref_count}</b>\n\n"
+        f"📎 <b>Реферальная ссылка:</b>\n"
+        f"<code>{ref_link}</code>\n\n"
+        f"💡 Приглашайте друзей и получайте по 10 звёзд за каждого!\n"
+        f"🎮 Нажмите на кнопку ниже, чтобы открыть игры.",
+        reply_markup=get_main_keyboard()
+    )
 
 @dp.message(Command("game"))
 async def game_command(message: Message) -> None:
@@ -367,18 +278,13 @@ async def profile_command(message: Message) -> None:
     balance = get_balance(user_id)
     ref_count = get_referrals_count(user_id)
     ref_link = get_referral_link(user_id)
-    games_played = get_games_played(user_id)
-    wins = get_wins(user_id)
-    losses = get_losses(user_id)
     
     await message.answer(
         f"👤 <b>Профиль</b>\n\n"
         f"Имя: {first_name}\n"
-        f"ID: {user_id}\n"
+        f"🆔 ID: <code>{user_id}</code>\n"
         f"💰 Баланс: {balance:.2f} звёзд\n"
-        f"👥 Приглашено: {ref_count}\n"
-        f"🎮 Игр сыграно: {games_played}\n"
-        f"🏆 Побед: {wins} | 💔 Поражений: {losses}\n\n"
+        f"👥 Приглашено: {ref_count}\n\n"
         f"📎 <b>Реферальная ссылка:</b>\n"
         f"<code>{ref_link}</code>"
     )
@@ -422,18 +328,13 @@ async def profile_callback(callback: types.CallbackQuery):
     balance = get_balance(user_id)
     ref_count = get_referrals_count(user_id)
     ref_link = get_referral_link(user_id)
-    games_played = get_games_played(user_id)
-    wins = get_wins(user_id)
-    losses = get_losses(user_id)
     
     await callback.message.edit_text(
         f"👤 <b>Профиль</b>\n\n"
         f"Имя: {first_name}\n"
-        f"ID: {user_id}\n"
+        f"🆔 ID: <code>{user_id}</code>\n"
         f"💰 Баланс: {balance:.2f} звёзд\n"
-        f"👥 Приглашено: {ref_count}\n"
-        f"🎮 Игр сыграно: {games_played}\n"
-        f"🏆 Побед: {wins} | 💔 Поражений: {losses}\n\n"
+        f"👥 Приглашено: {ref_count}\n\n"
         f"📎 <b>Реферальная ссылка:</b>\n"
         f"<code>{ref_link}</code>",
         reply_markup=InlineKeyboardMarkup(
@@ -469,47 +370,6 @@ async def copy_ref_callback(callback: types.CallbackQuery):
     ref_link = get_referral_link(user_id)
     await callback.answer(f"Ссылка скопирована: {ref_link}", show_alert=True)
 
-@dp.callback_query(lambda c: c.data == "daily")
-async def daily_callback(callback: types.CallbackQuery):
-    user_id = callback.from_user.id
-    
-    if not can_claim_daily(user_id):
-        last_claim = get_daily_last_claim(user_id)
-        last_time = datetime.fromisoformat(last_claim) if last_claim else datetime.now()
-        next_claim = last_time + timedelta(hours=24)
-        remaining = next_claim - datetime.now()
-        hours = int(remaining.total_seconds() // 3600)
-        minutes = int((remaining.total_seconds() % 3600) // 60)
-        await callback.message.edit_text(
-            f"⏳ <b>Ежедневная награда уже получена!</b>\n\n"
-            f"Следующая награда будет доступна через:\n"
-            f"<b>{hours} ч {minutes} мин</b>",
-            reply_markup=InlineKeyboardMarkup(
-                inline_keyboard=[[
-                    InlineKeyboardButton(text="🔙 Назад", callback_data="back_to_start")
-                ]]
-            )
-        )
-        await callback.answer()
-        return
-    
-    balance = get_balance(user_id)
-    update_balance(user_id, balance + 50)
-    update_daily_claim(user_id)
-    
-    await callback.message.edit_text(
-        f"🎁 <b>Ежедневная награда получена!</b>\n\n"
-        f"💰 Вам начислено <b>+50 звёзд</b>!\n"
-        f"📊 Новый баланс: <b>{get_balance(user_id):.2f} звёзд</b>\n\n"
-        f"⏳ Следующая награда будет доступна через 24 часа.",
-        reply_markup=InlineKeyboardMarkup(
-            inline_keyboard=[[
-                InlineKeyboardButton(text="🔙 Назад", callback_data="back_to_start")
-            ]]
-        )
-    )
-    await callback.answer()
-
 @dp.callback_query(lambda c: c.data == "back_to_start")
 async def back_to_start_callback(callback: types.CallbackQuery):
     user_id = callback.from_user.id
@@ -519,10 +379,11 @@ async def back_to_start_callback(callback: types.CallbackQuery):
     ref_link = get_referral_link(user_id)
     
     await callback.message.edit_text(
-        f"🎮 <b>Добро пожаловать в DROP, {first_name}!</b>\n\n"
-        f"💰 Ваш баланс: <b>{balance:.2f} звёзд</b>\n"
+        f"🐻‍❄️ <b>Добро пожаловать в DROP, {first_name}!</b>\n\n"
+        f"🆔 Ваш ID: <code>{user_id}</code>\n"
+        f"💰 Баланс: <b>{balance:.2f} звёзд</b>\n"
         f"👥 Приглашено друзей: <b>{ref_count}</b>\n\n"
-        f"📎 <b>Ваша реферальная ссылка:</b>\n"
+        f"📎 <b>Реферальная ссылка:</b>\n"
         f"<code>{ref_link}</code>",
         reply_markup=get_main_keyboard()
     )
@@ -549,18 +410,6 @@ async def web_app_data_handler(message: Message) -> None:
                 update_balance(user_id, float(new_balance))
                 await message.answer(f"✅ {new_balance:.2f}")
         
-        elif action == "updateStats":
-            games_played = data.get("games_played")
-            wins = data.get("wins")
-            losses = data.get("losses")
-            if games_played is not None:
-                update_stats(user_id, games_played=games_played)
-            if wins is not None:
-                update_stats(user_id, wins=wins)
-            if losses is not None:
-                update_stats(user_id, losses=losses)
-            await message.answer("✅ Статистика обновлена")
-        
         elif action == "getReferralLink":
             ref_link = get_referral_link(user_id)
             await message.answer(ref_link)
@@ -574,27 +423,6 @@ async def web_app_data_handler(message: Message) -> None:
                     await message.answer("🎉 Реферал засчитан! +10 звёзд!")
                 else:
                     await message.answer("❌ Этот реферал уже был засчитан.")
-        
-        elif action == "getDailyStatus":
-            if can_claim_daily(user_id):
-                await message.answer("available")
-            else:
-                last_claim = get_daily_last_claim(user_id)
-                last_time = datetime.fromisoformat(last_claim) if last_claim else datetime.now()
-                next_claim = last_time + timedelta(hours=24)
-                remaining = next_claim - datetime.now()
-                hours = int(remaining.total_seconds() // 3600)
-                minutes = int((remaining.total_seconds() % 3600) // 60)
-                await message.answer(f"{hours}:{minutes:02d}")
-        
-        elif action == "claimDaily":
-            if can_claim_daily(user_id):
-                balance = get_balance(user_id)
-                update_balance(user_id, balance + 50)
-                update_daily_claim(user_id)
-                await message.answer(f"✅ +50 звёзд! Новый баланс: {get_balance(user_id):.2f}")
-            else:
-                await message.answer("❌ Награда уже получена сегодня")
             
     except json.JSONDecodeError:
         await message.answer("❌ Ошибка обработки данных")
