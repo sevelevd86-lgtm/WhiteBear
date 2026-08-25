@@ -2611,49 +2611,90 @@ document.getElementById('openGameButton').addEventListener('click', function() {
     document.getElementById('gameScreen').classList.remove('hidden');
     updateBalanceUI();
     updateZones();
-});
-
-// Билеты
-document.getElementById('openTicketsButton').addEventListener('click', function() {
-    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
-    document.getElementById('ticketGameContainer').classList.remove('hidden');
-});
-
-// Кейсы
-document.getElementById('openCasesButton').addEventListener('click', function() {
-    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
-    document.getElementById('casesGameContainer').classList.remove('hidden');
-});
-
-// UPGRADE
-document.getElementById('openUpgradeButton').addEventListener('click', function() {
-    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
-    document.getElementById('upgradeGameContainer').classList.remove('hidden');
+    resizeCanvas();
 });
 
 // =====================================================
-// ЗАКРЫТИЕ ИГР
+// ОБРАБОТЧИКИ ДЛЯ ИГРЫ ШАРИК (ДОБАВЛЕНЫ)
 // =====================================================
 
+// Кнопка "ИГРАТЬ" - запуск раунда
+document.getElementById('startGame').addEventListener('click', function() {
+    startRound();
+});
+
+// Кнопка "НАЗАД" - выход из игры
 document.getElementById('exitGame').addEventListener('click', function() {
     if (gameRunning) return;
     document.getElementById('gameScreen').classList.add('hidden');
     document.getElementById('menuPage').classList.remove('hidden');
 });
 
+// Кнопка "ЗАКРЫТЬ" в окне результата
+document.getElementById('resultClose').addEventListener('click', function() {
+    gameResult.classList.add('hidden');
+});
+
+// Выбор сложности
+document.querySelectorAll('.difficulty button').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.difficulty button').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        difficulty = this.dataset.difficulty;
+        updateZones();
+    });
+});
+
+// =====================================================
+// ИГРА БИЛЕТЫ (открытие/закрытие)
+// =====================================================
+
+document.getElementById('openTicketsButton').addEventListener('click', function() {
+    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+    document.getElementById('ticketGameContainer').classList.remove('hidden');
+    updateBalanceTicket();
+});
+
 document.getElementById('closeTicketsBtn').addEventListener('click', function() {
     document.getElementById('ticketGameContainer').classList.add('hidden');
     document.getElementById('menuPage').classList.remove('hidden');
+    document.querySelectorAll('.nav-button').forEach(b => b.classList.remove('active'));
+    document.querySelector('[data-page="menuPage"]').classList.add('active');
+});
+
+// =====================================================
+// ИГРА КЕЙСЫ (открытие/закрытие)
+// =====================================================
+
+document.getElementById('openCasesButton').addEventListener('click', function() {
+    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+    document.getElementById('casesGameContainer').classList.remove('hidden');
+    updateBalanceCase();
 });
 
 document.getElementById('closeCasesBtn').addEventListener('click', function() {
     document.getElementById('casesGameContainer').classList.add('hidden');
     document.getElementById('menuPage').classList.remove('hidden');
+    document.querySelectorAll('.nav-button').forEach(b => b.classList.remove('active'));
+    document.querySelector('[data-page="menuPage"]').classList.add('active');
+});
+
+// =====================================================
+// ИГРА UPGRADE (открытие/закрытие)
+// =====================================================
+
+document.getElementById('openUpgradeButton').addEventListener('click', function() {
+    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+    document.getElementById('upgradeGameContainer').classList.remove('hidden');
+    updateBalanceUpgrade();
+    setTimeout(resizeCanvasUp, 100);
 });
 
 document.getElementById('closeUpgradeBtn').addEventListener('click', function() {
     document.getElementById('upgradeGameContainer').classList.add('hidden');
     document.getElementById('menuPage').classList.remove('hidden');
+    document.querySelectorAll('.nav-button').forEach(b => b.classList.remove('active'));
+    document.querySelector('[data-page="menuPage"]').classList.add('active');
 });
 
 // =====================================================
@@ -2931,19 +2972,6 @@ document.getElementById('backToTicketsTicket').addEventListener('click', ()=>{
     paidTicket.classList.remove('selected');
     freeTicket.classList.remove('selected');
     chancePanel.style.display = 'none';
-});
-
-document.getElementById('openTicketsButton').addEventListener('click', ()=>{
-    document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));
-    document.getElementById('ticketGameContainer').classList.remove('hidden');
-    updateBalanceTicket();
-});
-
-document.getElementById('closeTicketsBtn').addEventListener('click', ()=>{
-    document.getElementById('ticketGameContainer').classList.add('hidden');
-    document.getElementById('menuPage').classList.remove('hidden');
-    document.querySelectorAll('.nav-button').forEach(b=>b.classList.remove('active'));
-    document.querySelector('[data-page="menuPage"]').classList.add('active');
 });
 
 // =====================================================
@@ -3382,19 +3410,6 @@ function playWinSoundCase() {
 
 setInterval(updateFreeButton, 1000);
 
-document.getElementById('openCasesButton').addEventListener('click', ()=>{
-    document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));
-    document.getElementById('casesGameContainer').classList.remove('hidden');
-    updateBalanceCase();
-});
-
-document.getElementById('closeCasesBtn').addEventListener('click', ()=>{
-    document.getElementById('casesGameContainer').classList.add('hidden');
-    document.getElementById('menuPage').classList.remove('hidden');
-    document.querySelectorAll('.nav-button').forEach(b=>b.classList.remove('active'));
-    document.querySelector('[data-page="menuPage"]').classList.add('active');
-});
-
 renderItemsCase(itemsCase);
 resetRouletteCase(itemsCase);
 updateFreeButton();
@@ -3817,20 +3832,6 @@ function showToastUp(text, won) {
     toastUp._timer = setTimeout(() => toastUp.classList.remove('show'), 2500);
 }
 
-document.getElementById('openUpgradeButton').addEventListener('click', ()=>{
-    document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));
-    document.getElementById('upgradeGameContainer').classList.remove('hidden');
-    updateBalanceUpgrade();
-    setTimeout(resizeCanvasUp, 100);
-});
-
-document.getElementById('closeUpgradeBtn').addEventListener('click', ()=>{
-    document.getElementById('upgradeGameContainer').classList.add('hidden');
-    document.getElementById('menuPage').classList.remove('hidden');
-    document.querySelectorAll('.nav-button').forEach(b=>b.classList.remove('active'));
-    document.querySelector('[data-page="menuPage"]').classList.add('active');
-});
-
 updateBalanceUpgrade();
 setTimeout(resizeCanvasUp, 50);
 renderHistoryUpgrade();
@@ -3850,28 +3851,17 @@ const pages = {
 
 navButtons.forEach(btn => {
     btn.addEventListener('click', function(e) {
-        // Если кнопка уже активна — ничего не делаем
         if (this.classList.contains('active')) return;
-
-        // Скрываем все страницы
         Object.values(pages).forEach(page => page.classList.add('hidden'));
-
-        // Показываем нужную страницу
         const pageId = this.dataset.page;
         if (pages[pageId]) {
             pages[pageId].classList.remove('hidden');
         }
-
-        // Убираем активный класс со всех кнопок и ставим на текущую
         navButtons.forEach(b => b.classList.remove('active'));
         this.classList.add('active');
-
-        // Если открываем инвентарь — обновляем его содержимое
         if (pageId === 'inventoryPage') {
             renderInventory();
         }
-
-        // Если открываем профиль — обновляем статистику
         if (pageId === 'profilePage') {
             updateProfileStats();
         }
@@ -3910,16 +3900,12 @@ renderInventory();
 // СИНХРОНИЗАЦИЯ С БОТОМ
 // =====================================================
 
-// Сохраняем оригинальную функцию updateBalanceUI
 const originalUpdateBalanceUI = window.updateBalanceUI || function() {};
-
-// Переопределяем для синхронизации с ботом
 window.updateBalanceUI = function() {
     originalUpdateBalanceUI();
     saveBalance();
 };
 
-// При загрузке запрашиваем баланс у бота
 if (tgUserId) {
     sendToBot('getBalance');
     sendToBot('getDailyStatus');
