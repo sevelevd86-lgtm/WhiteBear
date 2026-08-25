@@ -340,6 +340,186 @@ button { cursor: pointer; }
 .nav-button.active .nav-icon { transform: translateY(-1px); }
 
 /* =====================================================
+   СТИРАЛКА НА ГЛАВНОМ ЭКРАНЕ (меню)
+===================================================== */
+#menuPage {
+    position: relative;
+    overflow: hidden;
+}
+#menuBgScene {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at center, #111 0%, #050505 45%, #000 100%);
+}
+#menuBgScene .star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: #fff;
+    border-radius: 50%;
+    opacity: 0.6;
+    animation: starMove 4s linear infinite, starBlink 2s ease-in-out infinite alternate;
+}
+@keyframes starMove {
+    0% { transform: translateY(-15px); }
+    50% { transform: translateY(15px); }
+    100% { transform: translateY(-15px); }
+}
+@keyframes starBlink {
+    0% { opacity: 0.25; }
+    100% { opacity: 0.9; }
+}
+#menuBgScene .letter {
+    position: absolute;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    font-size: clamp(38px, 7vw, 82px);
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.35);
+    filter: blur(8px);
+    text-shadow: 0 0 5px #fff, 0 0 12px #fff, 0 0 25px rgba(255,255,255,0.95), 0 0 50px rgba(255,255,255,0.7), 0 0 90px rgba(255,255,255,0.35);
+    animation: neonPulse 2.5s ease-in-out infinite alternate;
+}
+@keyframes neonPulse {
+    0% { text-shadow: 0 0 4px #fff,0 0 10px #fff,0 0 20px rgba(255,255,255,.8),0 0 40px rgba(255,255,255,.35); }
+    100% { text-shadow: 0 0 7px #fff,0 0 18px #fff,0 0 35px rgba(255,255,255,1),0 0 75px rgba(255,255,255,.65); }
+}
+#menuBgScene .machine {
+    position: absolute;
+    width: 75px;
+    height: 64px;
+    left: -100px;
+    top: 40vh;
+    background: linear-gradient(135deg,#fff,#f7f7f7 30%,#e5e5e5 65%,#aaa 100%);
+    border: 1px solid #888;
+    border-radius: 6px;
+    box-shadow: inset 4px 4px 8px rgba(255,255,255,.9), inset -5px -5px 10px rgba(0,0,0,.3), 0 12px 30px rgba(0,0,0,.8);
+    z-index: 10;
+    will-change: left,top,transform;
+}
+#menuBgScene .machine .panel {
+    position: absolute;
+    width: 19px;
+    height: 54px;
+    right: 4px;
+    top: 4px;
+    background: linear-gradient(to right,#fff,#eee 50%,#c8c8c8);
+    border: 1px solid #aaa;
+    border-radius: 3px;
+}
+#menuBgScene .machine .panel .disp {
+    position: absolute;
+    width: 8px;
+    height: 19px;
+    left: 5px;
+    top: 5px;
+    background: #111;
+    border: 1px solid #555;
+    border-radius: 2px;
+}
+#menuBgScene .machine .panel .btn-sm {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    left: 7px;
+    top: 30px;
+    border-radius: 50%;
+    background: #999;
+}
+#menuBgScene .machine .panel .btn-lg {
+    position: absolute;
+    width: 11px;
+    height: 11px;
+    left: 4px;
+    top: 39px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 25%,#fff,#ccc 45%,#777);
+    border: 1px solid #666;
+}
+#menuBgScene .machine .window {
+    position: absolute;
+    width: 45px;
+    height: 45px;
+    left: 6px;
+    top: 10px;
+    border-radius: 50%;
+    background: linear-gradient(145deg,#eee,#aaa,#777);
+    border: 2px solid #888;
+    box-shadow: 0 3px 7px rgba(0,0,0,.5), inset 1px 1px 2px rgba(255,255,255,.8), inset -2px -2px 4px rgba(0,0,0,.4);
+}
+#menuBgScene .machine .window .glass {
+    position: absolute;
+    width: 37px;
+    height: 37px;
+    left: 2px;
+    top: 2px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 25%,#666,#333 30%,#111 65%,#000);
+    border: 1px solid #555;
+    box-shadow: inset 0 0 12px #000;
+}
+#menuBgScene .machine .window .glass::before {
+    content: "";
+    position: absolute;
+    width: 24px;
+    height: 8px;
+    left: 4px;
+    top: 4px;
+    background: rgba(255,255,255,.16);
+    border-radius: 50%;
+    transform: rotate(-25deg);
+    filter: blur(1px);
+}
+#menuBgScene .machine .bottom-line {
+    position: absolute;
+    left: 5px;
+    right: 5px;
+    bottom: 3px;
+    height: 2px;
+    background: #aaa;
+    border-radius: 3px;
+}
+#menuBgScene .casino-title {
+    position: absolute;
+    top: 50%;
+    left: 55%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-size: clamp(56px, 12vw, 140px);
+    font-weight: 900;
+    text-shadow: 0 0 20px #fff, 0 0 60px #ffaa00, 0 0 120px #ff8800;
+    letter-spacing: 8px;
+    z-index: 15;
+    opacity: 0;
+    animation: fadeInTitle 2s ease forwards;
+    pointer-events: none;
+}
+@keyframes fadeInTitle {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+    100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+@media (max-width:600px) {
+    #menuBgScene .machine { width: 64px; height: 55px; }
+    #menuBgScene .machine .panel { width: 16px; height: 46px; }
+    #menuBgScene .machine .window { width: 39px; height: 39px; left: 5px; top: 8px; }
+    #menuBgScene .machine .window .glass { width: 32px; height: 32px; }
+    #menuBgScene .letter { font-size: 42px; }
+}
+
+/* КОНТЕНТ МЕНЮ ПОВЕРХ ФОНА */
+#menuPage .page-title,
+#menuPage .page-subtitle,
+#menuPage .card {
+    position: relative;
+    z-index: 2;
+}
+
+/* =====================================================
    ИГРА ШАРИК - ЗИМНИЙ ДИЗАЙН
 ===================================================== */
 #gameScreen {
@@ -1691,8 +1871,24 @@ button { cursor: pointer; }
     <!-- CONTENT -->
     <main class="content">
 
-        <!-- MENU -->
+        <!-- MENU (с фоном-стиралкой) -->
         <section id="menuPage" class="page">
+            <!-- Фон со стиралкой -->
+            <div id="menuBgScene">
+                <!-- Звёзды генерируются скриптом -->
+                <div class="machine" id="menuMachine">
+                    <div class="panel">
+                        <div class="disp"></div>
+                        <div class="btn-sm"></div>
+                        <div class="btn-lg"></div>
+                    </div>
+                    <div class="window"><div class="glass"></div></div>
+                    <div class="bottom-line"></div>
+                </div>
+                <div id="menuLetters"></div>
+                <!-- Название появится после анимации -->
+            </div>
+
             <div class="page-title">Меню</div>
             <div class="page-subtitle">Выберите игру и испытайте удачу.</div>
 
@@ -2491,7 +2687,6 @@ function bounceFromWall(nx, ny) {
     registerBounce(nx, ny);
 }
 
-// ========== ИСПРАВЛЕННАЯ ФУНКЦИЯ finishGame ==========
 function finishGame(win) {
     if (gameFinished) return;
     gameFinished = true; 
@@ -2617,30 +2812,26 @@ document.getElementById('openGameButton').addEventListener('click', function() {
     updateBalanceUI();
     updateZones();
     resizeCanvas();
-    gameMenu.classList.remove('hidden'); // Показываем меню при открытии
+    gameMenu.classList.remove('hidden');
 });
 
 // =====================================================
-// ОБРАБОТЧИКИ ДЛЯ ИГРЫ ШАРИК (ИСПРАВЛЕНЫ)
+// ОБРАБОТЧИКИ ДЛЯ ИГРЫ ШАРИК
 // =====================================================
 
-// Кнопка "ИГРАТЬ" - запуск раунда
 document.getElementById('startGame').addEventListener('click', function() {
     startRound();
 });
 
-// Кнопка "НАЗАД" - выход из игры
 document.getElementById('exitGame').addEventListener('click', function() {
     if (gameRunning) return;
     document.getElementById('gameScreen').classList.add('hidden');
     document.getElementById('menuPage').classList.remove('hidden');
 });
 
-// ========== ИСПРАВЛЕННАЯ КНОПКА "ЗАКРЫТЬ" ==========
 document.getElementById('resultClose').addEventListener('click', function() {
     gameResult.classList.add('hidden');
-    gameMenu.classList.remove('hidden'); // ПОКАЗЫВАЕМ МЕНЮ СТАВКИ
-    // Сбрасываем состояние для новой игры
+    gameMenu.classList.remove('hidden');
     gameRunning = false;
     gameFinished = false;
     escaped = false;
@@ -2653,7 +2844,6 @@ document.getElementById('resultClose').addEventListener('click', function() {
     updateGameUI();
 });
 
-// Выбор сложности
 document.querySelectorAll('.difficulty button').forEach(btn => {
     btn.addEventListener('click', function() {
         document.querySelectorAll('.difficulty button').forEach(b => b.classList.remove('active'));
@@ -3886,7 +4076,6 @@ navButtons.forEach(btn => {
     });
 });
 
-// Функция обновления статистики
 function updateProfileStats() {
     const gamesPlayedEl = document.getElementById('gamesPlayed');
     const winsEl = document.getElementById('wins');
@@ -3896,7 +4085,6 @@ function updateProfileStats() {
     if (lossesEl) lossesEl.textContent = losses || 0;
 }
 
-// Обновляем статистику при первом открытии
 updateProfileStats();
 
 // =====================================================
@@ -3913,6 +4101,165 @@ ball.x = circle.x;
 ball.y = circle.y - circle.radius * .35;
 gameLoop();
 renderInventory();
+
+// =====================================================
+// АНИМАЦИЯ СТИРАЛКИ В МЕНЮ
+// =====================================================
+(function() {
+    const machine = document.getElementById('menuMachine');
+    const lettersContainer = document.getElementById('menuLetters');
+    const bgScene = document.getElementById('menuBgScene');
+
+    // Звёзды
+    for (let i = 0; i < 40; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.animationDelay = Math.random() * 4 + 's';
+        bgScene.appendChild(star);
+    }
+
+    const words = ['White', 'Bear'];
+    const letters = [];
+    words.forEach((word, wordIndex) => {
+        [...word].forEach((char) => {
+            letters.push({ char, word: wordIndex });
+        });
+    });
+
+    const START_DELAY = 3000;
+    const LETTER_DELAY = 430;
+    const WORD_DELAY = 900;
+    const DURATION = 9500;
+    const LETTER_FLY_TIME = 850;
+
+    function getMachinePosition(progress) {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        const startX = -100;
+        const endX = width + 100;
+        const centerY = height * 0.53;
+        const arcHeight = Math.min(height * 0.30, 260);
+        const x = startX + (endX - startX) * progress;
+        const y = centerY - Math.sin(progress * Math.PI) * arcHeight;
+        const angle = -Math.cos(progress * Math.PI) * 12;
+        return { x, y, angle };
+    }
+
+    function createLetter(character, index, wordIndex, machinePosition) {
+        const letter = document.createElement('div');
+        letter.className = 'letter';
+        letter.textContent = character;
+        const startX = machinePosition.x + 35;
+        const startY = machinePosition.y + 32;
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        const centerX = width * 0.55;
+        const centerY = height * 0.43;
+        const letterSpacing = Math.min(width * 0.088, 88);
+        const word = words[wordIndex];
+        let sameWordIndex = 0;
+        for (let i = 0; i < index; i++) {
+            if (letters[i].word === wordIndex) sameWordIndex++;
+        }
+        const wordWidth = (word.length - 1) * letterSpacing;
+        const wordGap = letterSpacing * 1.8;
+        let wordCenterX;
+        if (wordIndex === 0) {
+            wordCenterX = centerX - wordGap/2 - wordWidth/2;
+        } else {
+            wordCenterX = centerX + wordGap/2 + wordWidth/2;
+        }
+        const finalX = wordCenterX - wordWidth/2 + sameWordIndex * letterSpacing;
+        const finalY = centerY + (Math.random() - 0.5) * 12;
+        letter.style.left = startX + 'px';
+        letter.style.top = startY + 'px';
+        letter.style.opacity = '0';
+        letter.style.filter = 'blur(8px)';
+        letter.style.transform = 'translate(-50%, -50%) scale(0.3)';
+        lettersContainer.appendChild(letter);
+        const animationStart = performance.now();
+        function animateLetter(now) {
+            let elapsed = now - animationStart;
+            let progress = Math.min(elapsed / LETTER_FLY_TIME, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            const currentX = startX + (finalX - startX) * eased;
+            const currentY = startY + (finalY - startY) * eased;
+            letter.style.left = currentX + 'px';
+            letter.style.top = currentY + 'px';
+            letter.style.opacity = Math.min(1, progress * 4);
+            const scale = 0.3 + 0.7 * Math.min(1, progress * 1.5);
+            letter.style.transform = 'translate(-50%, -50%) scale(' + scale + ')';
+            const blur = Math.max(0, 8 - progress * 10);
+            letter.style.filter = 'blur(' + blur + 'px)';
+            if (progress < 1) {
+                requestAnimationFrame(animateLetter);
+            } else {
+                letter.style.left = finalX + 'px';
+                letter.style.top = finalY + 'px';
+                letter.style.opacity = '1';
+                letter.style.filter = 'blur(0)';
+                letter.style.transform = 'translate(-50%, -50%) scale(1)';
+            }
+        }
+        requestAnimationFrame(animateLetter);
+    }
+
+    let startTime = null;
+    let nextLetterTime = START_DELAY;
+    let letterIndex = 0;
+    let finished = false;
+
+    function animateBg(time) {
+        if (finished) return;
+        if (startTime === null) startTime = time;
+        const elapsed = time - startTime;
+        let progress = Math.min(elapsed / DURATION, 1);
+        const position = getMachinePosition(progress);
+        machine.style.left = position.x + 'px';
+        machine.style.top = position.y + 'px';
+        machine.style.transform = 'rotate(' + position.angle + 'deg)';
+
+        if (elapsed >= nextLetterTime && letterIndex < letters.length) {
+            const item = letters[letterIndex];
+            if (letterIndex === 4) {
+                nextLetterTime += WORD_DELAY;
+            } else {
+                nextLetterTime += LETTER_DELAY;
+            }
+            createLetter(item.char, letterIndex, item.word, position);
+            letterIndex++;
+        }
+
+        if (progress >= 1) {
+            const finalPosition = getMachinePosition(1);
+            machine.style.left = finalPosition.x + 'px';
+            machine.style.top = finalPosition.y + 'px';
+            machine.style.transform = 'rotate(' + finalPosition.angle + 'deg)';
+            finished = true;
+            const title = document.createElement('div');
+            title.className = 'casino-title';
+            title.textContent = 'WHITE BEAR';
+            bgScene.appendChild(title);
+            return;
+        }
+        requestAnimationFrame(animateBg);
+    }
+
+    // Запускаем только если страница меню активна
+    if (!document.getElementById('menuPage').classList.contains('hidden')) {
+        requestAnimationFrame(animateBg);
+    }
+
+    // Перезапускаем при возврате в меню
+    const observer = new MutationObserver(() => {
+        if (!document.getElementById('menuPage').classList.contains('hidden') && !finished) {
+            requestAnimationFrame(animateBg);
+        }
+    });
+    observer.observe(document.getElementById('menuPage'), { attributes: true, attributeFilter: ['class'] });
+})();
 
 // =====================================================
 // СИНХРОНИЗАЦИЯ С БОТОМ
