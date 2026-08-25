@@ -25,8 +25,8 @@ from aiogram.client.default import DefaultBotProperties
 # КОНФИГУРАЦИЯ
 # =====================================================
 
-BOT_TOKEN = "8918284594:AAG-h12sJhc7a0qaV5LgS-ea29FNeZVtJvY"
-WEBAPP_URL = "https://sevelevd86-lgtm.github.io/WhiteBear/"
+BOT_TOKEN = "ТВОЙ_ТОКЕН_БОТА"
+WEBAPP_URL = "https://sevelevd86-lgtm.github.io/WhiteBear/"  # ← твой сайт
 
 # =====================================================
 # БАЗА ДАННЫХ
@@ -41,7 +41,7 @@ def init_db():
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
             user_id INTEGER PRIMARY KEY,
-            balance REAL DEFAULT 1000.0,
+            balance REAL DEFAULT 0.0,
             username TEXT,
             first_name TEXT,
             ref_code TEXT UNIQUE,
@@ -108,7 +108,7 @@ def get_balance(user_id: int) -> float:
     cursor.execute("SELECT balance FROM users WHERE user_id = ?", (user_id,))
     result = cursor.fetchone()
     conn.close()
-    return result[0] if result else 1000.0
+    return result[0] if result else 0.0
 
 def update_balance(user_id: int, amount: float):
     conn = sqlite3.connect(DB_NAME)
@@ -151,15 +151,9 @@ def get_referrals_count(user_id: int) -> int:
     conn.close()
     return result[0] if result else 0
 
-def get_referral_link(user_id: int, bot_username: str) -> str:
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-    cursor.execute("SELECT ref_code FROM users WHERE user_id = ?", (user_id,))
-    result = cursor.fetchone()
-    conn.close()
-    if result:
-        return f"https://t.me/{bot_username}?start=ref_{result[0]}"
-    return None
+def get_referral_link(user_id: int) -> str:
+    """Генерирует реферальную ссылку на сайт с ID пользователя"""
+    return f"{WEBAPP_URL}?ref={user_id}"
 
 # =====================================================
 # ЛОГИРОВАНИЕ
@@ -173,7 +167,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # =====================================================
-# ИНИЦИАЛИЗАЦИЯ БОТА (ИСПРАВЛЕНО)
+# ИНИЦИАЛИЗАЦИЯ БОТА
 # =====================================================
 
 bot = Bot(
@@ -210,6 +204,7 @@ async def start_command(message: Message) -> None:
     
     user = get_user(user_id)
     if not user:
+        # Проверяем, есть ли реферальный код в аргументах
         if len(args) > 1 and args[1].startswith("ref_"):
             ref_code = args[1][4:]
             referrer_id = get_user_by_ref_code(ref_code)
@@ -237,12 +232,11 @@ async def start_command(message: Message) -> None:
     
     balance = get_balance(user_id)
     ref_count = get_referrals_count(user_id)
-    bot_username = (await bot.me()).username
-    ref_link = get_referral_link(user_id, bot_username)
+    ref_link = get_referral_link(user_id)  # ← ссылка на САЙТ с ID
     
     try:
         await message.answer_photo(
-            photo="https://imgur.com/a/tn1NUkC",
+            photo="https://i.imgur.com/placeholder.jpg",
             caption=(
                 f"🎮 <b>Добро пожаловать в DROP, {first_name}!</b>\n\n"
                 f"💰 Ваш баланс: <b>{balance:.2f} звёзд</b>\n"
@@ -304,8 +298,7 @@ async def profile_command(message: Message) -> None:
     first_name = message.from_user.first_name
     balance = get_balance(user_id)
     ref_count = get_referrals_count(user_id)
-    bot_username = (await bot.me()).username
-    ref_link = get_referral_link(user_id, bot_username)
+    ref_link = get_referral_link(user_id)
     
     await message.answer(
         f"👤 <b>Профиль</b>\n\n"
@@ -355,8 +348,7 @@ async def profile_callback(callback: types.CallbackQuery):
     first_name = callback.from_user.first_name
     balance = get_balance(user_id)
     ref_count = get_referrals_count(user_id)
-    bot_username = (await bot.me()).username
-    ref_link = get_referral_link(user_id, bot_username)
+    ref_link = get_referral_link(user_id)
     
     await callback.message.edit_text(
         f"👤 <b>Профиль</b>\n\n"
@@ -377,13 +369,13 @@ async def profile_callback(callback: types.CallbackQuery):
 @dp.callback_query(lambda c: c.data == "referral")
 async def referral_callback(callback: types.CallbackQuery):
     user_id = callback.from_user.id
-    bot_username = (await bot.me()).username
-    ref_link = get_referral_link(user_id, bot_username)
+    ref_link = get_referral_link(user_id)
     
     await callback.message.edit_text(
         f"📎 <b>Ваша реферальная ссылка:</b>\n\n"
         f"<code>{ref_link}</code>\n\n"
-        f"💡 Приглашайте друзей и получайте по 10 звёзд за каждого!",
+        f"💡 Приглашайте друзей и получайте по 10 звёзд за каждого!\n\n"
+        f"🔗 Ссылка ведёт на сайт с вашим ID.",
         reply_markup=InlineKeyboardMarkup(
             inline_keyboard=[[
                 InlineKeyboardButton(text="🔙 Назад", callback_data="back_to_start")
@@ -398,8 +390,7 @@ async def back_to_start_callback(callback: types.CallbackQuery):
     first_name = callback.from_user.first_name
     balance = get_balance(user_id)
     ref_count = get_referrals_count(user_id)
-    bot_username = (await bot.me()).username
-    ref_link = get_referral_link(user_id, bot_username)
+    ref_link = get_referral_link(user_id)
     
     await callback.message.edit_text(
         f"🎮 <b>Добро пожаловать в DROP, {first_name}!</b>\n\n"
@@ -433,9 +424,18 @@ async def web_app_data_handler(message: Message) -> None:
                 await message.answer(f"✅ Баланс обновлён: {new_balance:.2f}")
         
         elif action == "getReferralLink":
-            bot_username = (await bot.me()).username
-            ref_link = get_referral_link(user_id, bot_username)
+            ref_link = get_referral_link(user_id)
             await message.answer(ref_link)
+        
+        elif action == "addReferral":
+            referrer_id = data.get("referrer_id")
+            referred_id = data.get("referred_id")
+            if referrer_id and referred_id:
+                success = add_referral(int(referrer_id), int(referred_id), 10.0)
+                if success:
+                    await message.answer(f"🎉 Реферал засчитан! +10 звёзд!")
+                else:
+                    await message.answer("❌ Этот реферал уже был засчитан.")
             
     except json.JSONDecodeError:
         await message.answer("❌ Ошибка обработки данных")
