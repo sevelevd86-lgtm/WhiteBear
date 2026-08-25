@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🐻‍❄️ DROP CASINO</title>
+<title>♠ DROP CASINO</title>
 
 <!-- Подключаем Telegram WebApp SDK -->
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -53,7 +53,6 @@ button, input {
 button { cursor: pointer; }
 .hidden { display: none !important; }
 
-/* СКРОЛЛ */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--bg-primary); }
 ::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 4px; }
@@ -68,7 +67,7 @@ button { cursor: pointer; }
     background: radial-gradient(ellipse at 50% 0%, #1a1410 0%, var(--bg-primary) 70%);
 }
 
-/* HEADER - ЗОЛОТОЙ */
+/* HEADER */
 .header {
     position: fixed;
     top: 0;
@@ -91,7 +90,6 @@ button { cursor: pointer; }
     background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--gold-dark));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 40px rgba(212, 175, 55, 0.15);
 }
 .logo-icon { font-size: 24px; -webkit-text-fill-color: initial; }
 .header-balance {
@@ -139,7 +137,7 @@ button { cursor: pointer; }
     margin-bottom: 22px;
 }
 
-/* CARDS - КАЗИНО СТИЛЬ */
+/* CARDS */
 .card {
     background: var(--bg-card);
     border: 1px solid rgba(212, 175, 55, 0.08);
@@ -166,7 +164,7 @@ button { cursor: pointer; }
     line-height: 1.5;
 }
 
-/* GAME CARD - ИГРОВЫЕ КАРТОЧКИ */
+/* GAME CARD */
 .game-card {
     padding: 22px;
     background: linear-gradient(145deg, rgba(22, 22, 31, 0.9), rgba(10, 10, 15, 0.95));
@@ -225,7 +223,7 @@ button { cursor: pointer; }
 }
 .game-button:active { transform: scale(0.97); }
 
-/* INVENTORY - ИНВЕНТАРЬ */
+/* INVENTORY */
 .sell-all {
     width: 100%;
     padding: 14px;
@@ -289,7 +287,7 @@ button { cursor: pointer; }
     border-color: rgba(212, 175, 55, 0.15);
 }
 
-/* PROFILE - ПРОФИЛЬ */
+/* PROFILE */
 .profile-row {
     display: flex;
     align-items: center;
@@ -302,7 +300,7 @@ button { cursor: pointer; }
 .profile-value { font-size: 15px; font-weight: 700; color: var(--text-primary); }
 .ref-value { color: var(--gold-light); word-break: break-all; font-size: 13px; }
 
-/* DAILY - ЕЖЕДНЕВКА */
+/* DAILY */
 .daily-button {
     width: 100%;
     padding: 15px;
@@ -333,7 +331,7 @@ button { cursor: pointer; }
     font-weight: 900;
 }
 
-/* PROMOCODE - ПРОМОКОДЫ */
+/* PROMOCODE */
 .promo-input {
     width: 100%;
     padding: 14px;
@@ -375,7 +373,7 @@ button { cursor: pointer; }
     color: #6fcf97;
 }
 
-/* BOTTOM NAV - НИЖНЯЯ НАВИГАЦИЯ */
+/* BOTTOM NAV */
 .bottom-nav {
     position: fixed;
     bottom: 0;
@@ -940,35 +938,6 @@ button { cursor: pointer; }
     transition: var(--transition);
 }
 #ticketGameContainer .modal-button-ticket:hover { transform: translateY(-2px); }
-
-/* =====================================================
-   КНОПКА ЗАКРЫТИЯ ДЛЯ ВСЕХ ИГР (УГЛОВАЯ)
-===================================================== */
-.close-game-btn {
-    position: fixed;
-    top: 16px;
-    right: 16px;
-    z-index: 95;
-    background: rgba(22, 22, 31, 0.8);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(212, 175, 55, 0.08);
-    border-radius: 50%;
-    width: 44px;
-    height: 44px;
-    font-size: 20px;
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.close-game-btn:hover {
-    background: rgba(212, 175, 55, 0.1);
-    border-color: rgba(212, 175, 55, 0.15);
-    color: var(--text-primary);
-    transform: scale(1.05);
-}
 
 /* =====================================================
    ИГРА КЕЙСЫ - КАЗИНО СТИЛЬ
@@ -1701,34 +1670,6 @@ button { cursor: pointer; }
 #upgradeGameContainer .toast-upgrade.win { border-color: rgba(212, 175, 55, 0.08); color: var(--gold-light); }
 #upgradeGameContainer .toast-upgrade.lose { border-color: rgba(231, 76, 94, 0.08); color: #e74c5e; }
 
-@media (max-width: 650px) {
-    #upgradeGameContainer .app-inner-upgrade { padding: 0; }
-    #upgradeGameContainer .header-upgrade { margin-bottom: 10px; flex-wrap: wrap; gap: 6px; }
-    #upgradeGameContainer .logo-upgrade { font-size: 18px; }
-    #upgradeGameContainer .balance-box-upgrade { min-width: 100px; padding: 6px 12px; }
-    #upgradeGameContainer .balance-upgrade { font-size: 15px; }
-    #upgradeGameContainer .game-panel { padding: 12px 8px 14px; border-radius: var(--radius); }
-    #upgradeGameContainer .wheel-wrapper { width: min(360px, 90vw); }
-    #upgradeGameContainer .bet-row { flex-direction: column; }
-    #upgradeGameContainer .multiplier-buttons { width: 100%; justify-content: stretch; }
-    #upgradeGameContainer .multiplier-upgrade { flex: 1; }
-    #upgradeGameContainer .item-select-area { flex-direction: column; }
-    #upgradeGameContainer .select-item-btn { width: 100%; }
-    #upgradeGameContainer .selected-item-display { width: 100%; }
-}
-
-@media (max-width: 380px) {
-    #ticketGameContainer .title { font-size: 24px; }
-    #ticketGameContainer .chance-prize { width: 60px; }
-    #ticketGameContainer .chance-percent { width: 45px; }
-    #casesGameContainer .roulette-item { min-width: 100px; height: 105px; }
-    #casesGameContainer .roulette-window { height: 135px; }
-    #casesGameContainer .item-emoji { font-size: 30px; }
-    #casesGameContainer .item-card { min-height: 100px; }
-    #casesGameContainer .result-buttons { gap: 6px; }
-    #casesGameContainer .result-button { font-size: 12px; }
-}
-
 /* =====================================================
    КНОПКА ЗАКРЫТИЯ - ОБЩАЯ ДЛЯ ВСЕХ ИГР
 ===================================================== */
@@ -1760,6 +1701,34 @@ button { cursor: pointer; }
     border-color: rgba(212, 175, 55, 0.1);
     color: var(--text-primary);
     transform: scale(1.05);
+}
+
+@media (max-width: 650px) {
+    #upgradeGameContainer .app-inner-upgrade { padding: 0; }
+    #upgradeGameContainer .header-upgrade { margin-bottom: 10px; flex-wrap: wrap; gap: 6px; }
+    #upgradeGameContainer .logo-upgrade { font-size: 18px; }
+    #upgradeGameContainer .balance-box-upgrade { min-width: 100px; padding: 6px 12px; }
+    #upgradeGameContainer .balance-upgrade { font-size: 15px; }
+    #upgradeGameContainer .game-panel { padding: 12px 8px 14px; border-radius: var(--radius); }
+    #upgradeGameContainer .wheel-wrapper { width: min(360px, 90vw); }
+    #upgradeGameContainer .bet-row { flex-direction: column; }
+    #upgradeGameContainer .multiplier-buttons { width: 100%; justify-content: stretch; }
+    #upgradeGameContainer .multiplier-upgrade { flex: 1; }
+    #upgradeGameContainer .item-select-area { flex-direction: column; }
+    #upgradeGameContainer .select-item-btn { width: 100%; }
+    #upgradeGameContainer .selected-item-display { width: 100%; }
+}
+
+@media (max-width: 380px) {
+    #ticketGameContainer .title { font-size: 24px; }
+    #ticketGameContainer .chance-prize { width: 60px; }
+    #ticketGameContainer .chance-percent { width: 45px; }
+    #casesGameContainer .roulette-item { min-width: 100px; height: 105px; }
+    #casesGameContainer .roulette-window { height: 135px; }
+    #casesGameContainer .item-emoji { font-size: 30px; }
+    #casesGameContainer .item-card { min-height: 100px; }
+    #casesGameContainer .result-buttons { gap: 6px; }
+    #casesGameContainer .result-button { font-size: 12px; }
 }
 </style>
 </head>
@@ -2692,10 +2661,10 @@ function draw() {
 function gameLoop() { updatePhysics(); draw(); requestAnimationFrame(gameLoop); }
 
 // =====================================================
-// ОТКРЫТИЕ ИГР
+// ОБРАБОТЧИКИ ДЛЯ ВСЕХ ИГР
 // =====================================================
 
-// Шарик
+// ----- ШАРИК -----
 document.getElementById('openGameButton').addEventListener('click', function() {
     document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
     document.getElementById('gameScreen').classList.remove('hidden');
@@ -2704,10 +2673,6 @@ document.getElementById('openGameButton').addEventListener('click', function() {
     resizeCanvas();
     gameMenu.classList.remove('hidden');
 });
-
-// =====================================================
-// ОБРАБОТЧИКИ ДЛЯ ИГРЫ ШАРИК
-// =====================================================
 
 document.getElementById('startGame').addEventListener('click', function() {
     startRound();
@@ -2743,10 +2708,7 @@ document.querySelectorAll('.difficulty button').forEach(btn => {
     });
 });
 
-// =====================================================
-// ИГРА БИЛЕТЫ (открытие/закрытие)
-// =====================================================
-
+// ----- БИЛЕТЫ -----
 document.getElementById('openTicketsButton').addEventListener('click', function() {
     document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
     document.getElementById('ticketGameContainer').classList.remove('hidden');
@@ -2760,10 +2722,7 @@ document.getElementById('closeTicketsBtn').addEventListener('click', function() 
     document.querySelector('[data-page="menuPage"]').classList.add('active');
 });
 
-// =====================================================
-// ИГРА КЕЙСЫ (открытие/закрытие)
-// =====================================================
-
+// ----- КЕЙСЫ -----
 document.getElementById('openCasesButton').addEventListener('click', function() {
     document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
     document.getElementById('casesGameContainer').classList.remove('hidden');
@@ -2777,10 +2736,7 @@ document.getElementById('closeCasesBtn').addEventListener('click', function() {
     document.querySelector('[data-page="menuPage"]').classList.add('active');
 });
 
-// =====================================================
-// ИГРА UPGRADE (открытие/закрытие)
-// =====================================================
-
+// ----- UPGRADE -----
 document.getElementById('openUpgradeButton').addEventListener('click', function() {
     document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
     document.getElementById('upgradeGameContainer').classList.remove('hidden');
@@ -3976,7 +3932,6 @@ function updateProfileStats() {
     if (lossesEl) lossesEl.textContent = losses || 0;
 }
 
-// Обновляем статистику при первом открытии
 updateProfileStats();
 
 // =====================================================
