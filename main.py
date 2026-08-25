@@ -25,7 +25,7 @@ from aiogram.client.default import DefaultBotProperties
 # КОНФИГУРАЦИЯ
 # =====================================================
 
-BOT_TOKEN = "ТВОЙ_ТОКЕН_БОТА"
+BOT_TOKEN = "8918284594:AAG-h12sJhc7a0qaV5LgS-ea29FNeZVtJvY"
 WEBAPP_URL = "https://sevelevd86-lgtm.github.io/WhiteBear/"  # ← твой сайт
 
 # =====================================================
