@@ -1780,7 +1780,7 @@ button { cursor: pointer; }
     </nav>
 
     <!-- =====================================================
-         ИГРА ШАРИК (ПОЛНЫЙ КОД)
+         ИГРА ШАРИК
     ====================================================== -->
     <div id="gameScreen" class="hidden">
         <canvas id="gameCanvas"></canvas>
@@ -1815,7 +1815,7 @@ button { cursor: pointer; }
     </div>
 
     <!-- =====================================================
-         ИГРА БИЛЕТЫ (SCRATCH) - ПОЛНЫЙ КОД
+         ИГРА БИЛЕТЫ (SCRATCH)
     ====================================================== -->
     <div id="ticketGameContainer" class="hidden">
         <button id="closeTicketsBtn">✕</button>
@@ -1875,7 +1875,7 @@ button { cursor: pointer; }
     </div>
 
     <!-- =====================================================
-         ИГРА КЕЙСЫ (CASES) - ПОЛНЫЙ КОД
+         ИГРА КЕЙСЫ (CASES)
     ====================================================== -->
     <div id="casesGameContainer" class="hidden">
         <button id="closeCasesBtn">✕</button>
@@ -1928,7 +1928,7 @@ button { cursor: pointer; }
     </div>
 
     <!-- =====================================================
-         ИГРА UPGRADE - ПОЛНЫЙ КОД
+         ИГРА UPGRADE
     ====================================================== -->
     <div id="upgradeGameContainer" class="hidden">
         <button id="closeUpgradeBtn">✕</button>
@@ -2601,6 +2601,65 @@ function draw() {
 }
 function gameLoop() { updatePhysics(); draw(); requestAnimationFrame(gameLoop); }
 
+// =====================================================
+// ОТКРЫТИЕ ИГР
+// =====================================================
+
+// Шарик
+document.getElementById('openGameButton').addEventListener('click', function() {
+    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+    document.getElementById('gameScreen').classList.remove('hidden');
+    updateBalanceUI();
+    updateZones();
+});
+
+// Билеты
+document.getElementById('openTicketsButton').addEventListener('click', function() {
+    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+    document.getElementById('ticketGameContainer').classList.remove('hidden');
+});
+
+// Кейсы
+document.getElementById('openCasesButton').addEventListener('click', function() {
+    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+    document.getElementById('casesGameContainer').classList.remove('hidden');
+});
+
+// UPGRADE
+document.getElementById('openUpgradeButton').addEventListener('click', function() {
+    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+    document.getElementById('upgradeGameContainer').classList.remove('hidden');
+});
+
+// =====================================================
+// ЗАКРЫТИЕ ИГР
+// =====================================================
+
+document.getElementById('exitGame').addEventListener('click', function() {
+    if (gameRunning) return;
+    document.getElementById('gameScreen').classList.add('hidden');
+    document.getElementById('menuPage').classList.remove('hidden');
+});
+
+document.getElementById('closeTicketsBtn').addEventListener('click', function() {
+    document.getElementById('ticketGameContainer').classList.add('hidden');
+    document.getElementById('menuPage').classList.remove('hidden');
+});
+
+document.getElementById('closeCasesBtn').addEventListener('click', function() {
+    document.getElementById('casesGameContainer').classList.add('hidden');
+    document.getElementById('menuPage').classList.remove('hidden');
+});
+
+document.getElementById('closeUpgradeBtn').addEventListener('click', function() {
+    document.getElementById('upgradeGameContainer').classList.add('hidden');
+    document.getElementById('menuPage').classList.remove('hidden');
+});
+
+// =====================================================
+// ОСТАЛЬНЫЕ ОБРАБОТЧИКИ (ДАЛИ, КОПИРОВАНИЕ И Т.Д.)
+// =====================================================
+
 openGameButton.addEventListener('click', ()=>{
     gameScreen.classList.remove('hidden');
     gameMenu.classList.remove('hidden');
@@ -2647,27 +2706,7 @@ function updateProfileStats() {
     document.getElementById('losses').textContent = losses;
 }
 
-// =====================================================
-// ИГРА БИЛЕТЫ (SCRATCH) - ПОЛНЫЙ КОД (вставлен выше)
-// =====================================================
-
-// Код билетов уже вставлен в HTML выше, здесь только JS-логика
-
-// =====================================================
-// ИГРА КЕЙСЫ (CASES) - ПОЛНЫЙ КОД (вставлен выше)
-// =====================================================
-
-// Код кейсов уже вставлен в HTML выше, здесь только JS-логика
-
-// =====================================================
-// ИГРА UPGRADE - ПОЛНЫЙ КОД (вставлен выше)
-// =====================================================
-
-// Код UPGRADE уже вставлен в HTML выше, здесь только JS-логика
-
-// =====================================================
-// ИНИЦИАЛИЗАЦИЯ
-// =====================================================
+// Инициализация
 updateBalanceUI();
 updateZones();
 updateProfileStats();
@@ -2677,20 +2716,13 @@ ball.y = circle.y - circle.radius * .35;
 gameLoop();
 renderInventory();
 
-// =====================================================
-// СИНХРОНИЗАЦИЯ С БОТОМ
-// =====================================================
-
-// Сохраняем оригинальную функцию updateBalanceUI
+// Синхронизация с ботом
 const originalUpdateBalanceUI = window.updateBalanceUI || function() {};
-
-// Переопределяем для синхронизации с ботом
 window.updateBalanceUI = function() {
     originalUpdateBalanceUI();
     saveBalance();
 };
 
-// При загрузке запрашиваем баланс у бота
 if (tgUserId) {
     sendToBot('getBalance');
     sendToBot('getDailyStatus');
