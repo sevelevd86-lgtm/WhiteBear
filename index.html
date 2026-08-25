@@ -1966,9 +1966,14 @@ if (tg) {
         document.getElementById('profileName').textContent = tgUserName;
         document.getElementById('profileId').textContent = tgUserId;
         
-        // Обновляем реферальную ссылку с реальным ID
-        const botUsername = 'White_Bear_ROBOT'; // ← ЗАМЕНИ НА СВОЙ ЮЗЕРНЕЙМ БОТА
-        document.getElementById('refLink').textContent = `https://t.me/${botUsername}?start=ref_${tgUserId}`;
+        // =============================================
+        // АВТОМАТИЧЕСКАЯ РЕФЕРАЛЬНАЯ ССЫЛКА
+        // =============================================
+        // Бот автоматически подставляет свой username
+        // Если не получается — используем запасной вариант
+        let botUsername = tg.initDataUnsafe?.user?.username || 'ваш_бот';
+        const refLink = `https://t.me/${botUsername}?start=ref_${tgUserId}`;
+        document.getElementById('refLink').textContent = refLink;
         
         // Запрашиваем баланс у бота
         sendToBot('getBalance');
