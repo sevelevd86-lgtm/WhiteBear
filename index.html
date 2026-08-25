@@ -2322,7 +2322,24 @@ document.getElementById('promoButton').addEventListener('click', () => {
         document.getElementById('promoButton').disabled = true;
         return;
     }
-    
+   
+    if (code === 'Dan200') {
+        if (promoUsedDan200) {
+            messageEl.textContent = '❌ Промокод Dan200 уже использован!';
+            messageEl.style.color = '#ef4752';
+            return;
+        }
+        balance += 1000;
+        balance = Math.round(balance * 100) / 100;
+        promoUsedMet200 = true;
+        updateBalanceUI();
+        messageEl.textContent = '✅ Промокод Dan200 активирован! +1000 ⭐';
+        messageEl.style.color = '#54df87';
+        document.getElementById('promoInput').value = '';
+        document.getElementById('promoButton').disabled = true;
+        return;
+    }
+   
     messageEl.textContent = '❌ Неверный промокод!';
     messageEl.style.color = '#ef4752';
 });
