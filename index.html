@@ -3682,6 +3682,20 @@ window.updateBalanceUI = function() {
         sendToBot('updateBalance', { balance: balance });
     }
 };
+// =====================================================
+// ОБРАБОТКА РЕФЕРАЛЬНОЙ ССЫЛКИ
+// =====================================================
+
+// Получаем параметр ref из URL
+const urlParams = new URLSearchParams(window.location.search);
+const refId = urlParams.get('ref');
+
+if (refId && tgUserId && refId != tgUserId) {
+    // Отправляем боту, что это реферал
+    sendToBot('addReferral', { referrer_id: refId, referred_id: tgUserId });
+    // Убираем ref из URL, чтобы не было видно
+    window.history.replaceState({}, document.title, window.location.pathname);
+}
 
 // При загрузке запрашиваем баланс у бота
 if (tgUserId) {
