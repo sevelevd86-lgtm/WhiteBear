@@ -98,9 +98,10 @@ button { cursor: pointer; }
     font-weight: 900;
     box-shadow: 0 4px 20px rgba(42, 122, 216, 0.3);
     transition: 0.2s;
+    opacity: 0.7;
+    cursor: default;
 }
-.game-button:hover { transform: translateY(-2px); box-shadow: 0 6px 30px rgba(42, 122, 216, 0.5); }
-.game-button:active { transform: scale(.98); }
+.game-button:hover { transform: none; box-shadow: 0 4px 20px rgba(42, 122, 216, 0.3); }
 
 /* INVENTORY */
 .sell-all {
@@ -186,7 +187,7 @@ button { cursor: pointer; }
 .nav-button.active .nav-icon { transform: translateY(-1px); }
 
 /* =====================================================
-   СТИРАЛКА НА ГЛАВНОМ ЭКРАНЕ (меню)
+   СТИРАЛКА НА ГЛАВНОМ ЭКРАНЕ (ПОВЕРХ МЕНЮ)
 ===================================================== */
 #menuPage {
     position: relative;
@@ -195,27 +196,9 @@ button { cursor: pointer; }
 #menuBgScene {
     position: absolute;
     inset: 0;
-    z-index: 0;
+    z-index: 1;
     pointer-events: none;
     background: transparent;
-}
-#menuBgScene .star {
-    position: absolute;
-    width: 2px;
-    height: 2px;
-    background: #fff;
-    border-radius: 50%;
-    opacity: 0.6;
-    animation: starMove 4s linear infinite, starBlink 2s ease-in-out infinite alternate;
-}
-@keyframes starMove {
-    0% { transform: translateY(-15px); }
-    50% { transform: translateY(15px); }
-    100% { transform: translateY(-15px); }
-}
-@keyframes starBlink {
-    0% { opacity: 0.25; }
-    100% { opacity: 0.9; }
 }
 #menuBgScene .letter {
     position: absolute;
@@ -378,7 +361,7 @@ button { cursor: pointer; }
     <!-- CONTENT -->
     <main class="content">
 
-        <!-- MENU (с фоном-стиралкой) -->
+        <!-- MENU (с анимацией стиралки поверх) -->
         <section id="menuPage" class="page">
             <div id="menuBgScene">
                 <div class="machine" id="menuMachine">
@@ -396,28 +379,28 @@ button { cursor: pointer; }
                 <div class="game-icon">⚪</div>
                 <div class="card-title">Шарик</div>
                 <div class="card-text">Управляйте ставкой и наблюдайте, как шарик проходит через отверстие.</div>
-                <button class="game-button" onclick="alert('Игра Шарик (демо)')">ИГРАТЬ</button>
+                <button class="game-button" style="cursor:default; opacity:0.6;">ИГРАТЬ</button>
             </div>
 
             <div class="card game-card">
                 <div class="game-icon">🎟️</div>
                 <div class="card-title">Билеты</div>
                 <div class="card-text">Scratch & Win — выбирайте билет, открывайте ячейки.</div>
-                <button class="game-button" onclick="alert('Игра Билеты (демо)')">ИГРАТЬ</button>
+                <button class="game-button" style="cursor:default; opacity:0.6;">ИГРАТЬ</button>
             </div>
 
             <div class="card game-card">
                 <div class="game-icon">📦</div>
                 <div class="card-title">Кейсы</div>
                 <div class="card-text">Открывайте кейсы с предметами.</div>
-                <button class="game-button" onclick="alert('Игра Кейсы (демо)')">ИГРАТЬ</button>
+                <button class="game-button" style="cursor:default; opacity:0.6;">ИГРАТЬ</button>
             </div>
 
             <div class="card game-card">
                 <div class="game-icon">🎡</div>
                 <div class="card-title">UPGRADE</div>
                 <div class="card-text">Колесо удачи с множителями x2, x5, x10.</div>
-                <button class="game-button" onclick="alert('Игра UPGRADE (демо)')">ИГРАТЬ</button>
+                <button class="game-button" style="cursor:default; opacity:0.6;">ИГРАТЬ</button>
             </div>
         </section>
 
@@ -443,7 +426,7 @@ button { cursor: pointer; }
                 <div class="card-text">Приглашайте друзей и получайте по <b>10</b> звёзд за каждого.</div>
                 <div class="profile-row" style="margin-top:10px;"><div class="profile-label">Приглашено</div><div class="profile-value" id="refCount">0</div></div>
                 <div class="profile-row"><div class="profile-label">Реферальная ссылка</div><div class="profile-value ref-value" id="refLink">https://t.me/White_Bear_ROBOT?start=ref_</div></div>
-                <button onclick="copyRefLink()" class="game-button" style="margin-top:8px; padding:10px; font-size:14px;">📋 Скопировать ссылку</button>
+                <button onclick="copyRefLink()" class="game-button" style="margin-top:8px; padding:10px; font-size:14px; cursor:pointer; opacity:1;">📋 Скопировать ссылку</button>
             </div>
             <div class="card">
                 <div class="card-title">Ежедневная награда</div>
@@ -718,21 +701,12 @@ navButtons.forEach(btn => {
 });
 
 // =====================================================
-// АНИМАЦИЯ СТИРАЛКИ В МЕНЮ
+// АНИМАЦИЯ СТИРАЛКИ (без фона, поверх меню)
 // =====================================================
 (function() {
     const machine = document.getElementById('menuMachine');
     const lettersContainer = document.getElementById('menuLetters');
     const bgScene = document.getElementById('menuBgScene');
-
-    for (let i = 0; i < 40; i++) {
-        const star = document.createElement('div');
-        star.className = 'star';
-        star.style.left = Math.random() * 100 + '%';
-        star.style.top = Math.random() * 100 + '%';
-        star.style.animationDelay = Math.random() * 4 + 's';
-        bgScene.appendChild(star);
-    }
 
     const words = ['White', 'Bear'];
     const letters = [];
