@@ -3838,6 +3838,60 @@ pointerRotatorUp.style.transform = `rotate(${pointerRotationUpgrade}deg)`;
 renderItemDropdown();
 
 // =====================================================
+// НАВИГАЦИЯ ПО ВКЛАДКАМ (ИНВЕНТАРЬ, МЕНЮ, ПРОФИЛЬ)
+// =====================================================
+
+const navButtons = document.querySelectorAll('.nav-button');
+const pages = {
+    menuPage: document.getElementById('menuPage'),
+    inventoryPage: document.getElementById('inventoryPage'),
+    profilePage: document.getElementById('profilePage')
+};
+
+navButtons.forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        // Если кнопка уже активна — ничего не делаем
+        if (this.classList.contains('active')) return;
+
+        // Скрываем все страницы
+        Object.values(pages).forEach(page => page.classList.add('hidden'));
+
+        // Показываем нужную страницу
+        const pageId = this.dataset.page;
+        if (pages[pageId]) {
+            pages[pageId].classList.remove('hidden');
+        }
+
+        // Убираем активный класс со всех кнопок и ставим на текущую
+        navButtons.forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+
+        // Если открываем инвентарь — обновляем его содержимое
+        if (pageId === 'inventoryPage') {
+            renderInventory();
+        }
+
+        // Если открываем профиль — обновляем статистику
+        if (pageId === 'profilePage') {
+            updateProfileStats();
+        }
+    });
+});
+
+// Функция обновления статистики
+function updateProfileStats() {
+    const gamesPlayedEl = document.getElementById('gamesPlayed');
+    const winsEl = document.getElementById('wins');
+    const lossesEl = document.getElementById('losses');
+    if (gamesPlayedEl) gamesPlayedEl.textContent = gamesPlayed || 0;
+    if (winsEl) winsEl.textContent = wins || 0;
+    if (lossesEl) lossesEl.textContent = losses || 0;
+}
+
+// Обновляем статистику при первом открытии
+updateProfileStats();
+
+// =====================================================
 // ИНИЦИАЛИЗАЦИЯ
 // =====================================================
 updateBalanceUI();
