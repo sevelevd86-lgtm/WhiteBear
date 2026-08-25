@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🐻‍❄️ DROP + SCRATCH + CASES + UPGRADE</title>
+<title>🐻‍❄️ DROP</title>
 
 <!-- Подключаем Telegram WebApp SDK -->
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -1729,7 +1729,7 @@ button { cursor: pointer; }
     </nav>
 
     <!-- =====================================================
-         ИГРА ШАРИК
+         ИГРА ШАРИК (ПОЛНЫЙ КОД)
     ====================================================== -->
     <div id="gameScreen" class="hidden">
         <canvas id="gameCanvas"></canvas>
@@ -1764,7 +1764,7 @@ button { cursor: pointer; }
     </div>
 
     <!-- =====================================================
-         ИГРА БИЛЕТЫ (SCRATCH)
+         ИГРА БИЛЕТЫ (SCRATCH) - ПОЛНЫЙ КОД
     ====================================================== -->
     <div id="ticketGameContainer" class="hidden">
         <button id="closeTicketsBtn">✕</button>
@@ -1824,7 +1824,7 @@ button { cursor: pointer; }
     </div>
 
     <!-- =====================================================
-         ИГРА КЕЙСЫ (CASES)
+         ИГРА КЕЙСЫ (CASES) - ПОЛНЫЙ КОД
     ====================================================== -->
     <div id="casesGameContainer" class="hidden">
         <button id="closeCasesBtn">✕</button>
@@ -1877,7 +1877,7 @@ button { cursor: pointer; }
     </div>
 
     <!-- =====================================================
-         ИГРА UPGRADE
+         ИГРА UPGRADE - ПОЛНЫЙ КОД
     ====================================================== -->
     <div id="upgradeGameContainer" class="hidden">
         <button id="closeUpgradeBtn">✕</button>
@@ -1966,8 +1966,8 @@ if (tg) {
         document.getElementById('profileName').textContent = tgUserName;
         document.getElementById('profileId').textContent = tgUserId;
         
-        // Обновляем реферальную ссылку
-        const botUsername = 'ваш_бот_юзернейм'; // ← ЗАМЕНИ НА СВОЙ
+        // Обновляем реферальную ссылку с реальным ID
+        const botUsername = 'White_Bear_ROBOT'; // ← ЗАМЕНИ НА СВОЙ ЮЗЕРНЕЙМ БОТА
         document.getElementById('refLink').textContent = `https://t.me/${botUsername}?start=ref_${tgUserId}`;
         
         // Запрашиваем баланс у бота
@@ -1983,9 +1983,9 @@ function sendToBot(action, data = {}) {
     tg.sendData(JSON.stringify(data));
 }
 
-/* =====================================================
-   ОБЩИЙ БАЛАНС
-===================================================== */
+// =====================================================
+// ОБЩИЙ БАЛАНС
+// =====================================================
 let balance = 0;
 let inventoryItems = [];
 
@@ -2070,37 +2070,56 @@ document.getElementById('sellAllButton').addEventListener('click', () => {
 });
 
 // =====================================================
-// ПРОМОКОД
+// ПРОМОКОДЫ
 // =====================================================
 
-let promoUsed = false;
+let promoUsed200 = false;
+let promoUsedMet200 = false;
 
 document.getElementById('promoButton').addEventListener('click', () => {
     const code = document.getElementById('promoInput').value.trim().toLowerCase();
     const messageEl = document.getElementById('promoMessage');
     
+    if (code === '200') {
+        if (promoUsed200) {
+            messageEl.textContent = '❌ Промокод 200 уже использован!';
+            messageEl.style.color = '#ef4752';
+            return;
+        }
+        balance += 200000;
+        balance = Math.round(balance * 100) / 100;
+        promoUsed200 = true;
+        updateBalanceUI();
+        messageEl.textContent = '✅ Промокод активирован! +200000 ⭐';
+        messageEl.style.color = '#54df87';
+        document.getElementById('promoInput').value = '';
+        document.getElementById('promoButton').disabled = true;
+        return;
+    }
+    
     if (code === 'met200') {
-        if (promoUsed) {
-            messageEl.textContent = '❌ Промокод уже использован!';
+        if (promoUsedMet200) {
+            messageEl.textContent = '❌ Промокод met200 уже использован!';
             messageEl.style.color = '#ef4752';
             return;
         }
         balance += 10000;
         balance = Math.round(balance * 100) / 100;
-        promoUsed = true;
+        promoUsedMet200 = true;
         updateBalanceUI();
-        messageEl.textContent = '✅ Промокод активирован! +10000 ⭐';
+        messageEl.textContent = '✅ Промокод met200 активирован! +10000 ⭐';
         messageEl.style.color = '#54df87';
         document.getElementById('promoInput').value = '';
         document.getElementById('promoButton').disabled = true;
-    } else {
-        messageEl.textContent = '❌ Неверный промокод!';
-        messageEl.style.color = '#ef4752';
+        return;
     }
+    
+    messageEl.textContent = '❌ Неверный промокод!';
+    messageEl.style.color = '#ef4752';
 });
 
 // =====================================================
-// ИГРА ШАРИК
+// ИГРА ШАРИК (ПОЛНЫЙ КОД)
 // =====================================================
 
 let currentBet = 0;
@@ -2447,31 +2466,1193 @@ function updateProfileStats() {
 }
 
 // =====================================================
-// ИГРА БИЛЕТЫ (SCRATCH) — сокращённо, полный код есть в оригинале
+// ИГРА БИЛЕТЫ (SCRATCH) - ПОЛНЫЙ КОД
 // =====================================================
 
-// Здесь должен быть полный код игры в билеты
-// (вставлен в HTML выше)
+const paidSymbols = [
+    { symbol: "🧲", name: "Магнит", chance: 25, prize: 250 },
+    { symbol: "🪙", name: "Монета", chance: 20, prize: 500 },
+    { symbol: "⭐", name: "Звезда", chance: 15, prize: 300 },
+    { symbol: "🍀", name: "Клевер", chance: 12, prize: 400 },
+    { symbol: "💎", name: "Алмаз", chance: 10, prize: 750 },
+    { symbol: "🎰", name: "Слот", chance: 8, prize: 600 },
+    { symbol: "❤️", name: "Сердце", chance: 5, prize: 1000 },
+    { symbol: "💰", name: "Деньги", chance: 3, prize: 1500 },
+    { symbol: "👑", name: "Корона", chance: 2, prize: 2000 }
+];
+const freeSymbols = [
+    { symbol: "🪙", name: "Монета", chance: 24, prize: 50 },
+    { symbol: "⭐", name: "Звезда", chance: 20, prize: 40 },
+    { symbol: "🍀", name: "Клевер", chance: 18, prize: 60 },
+    { symbol: "🧲", name: "Магнит", chance: 15, prize: 75 },
+    { symbol: "💎", name: "Алмаз", chance: 10, prize: 100 },
+    { symbol: "🎰", name: "Слот", chance: 7, prize: 80 },
+    { symbol: "🌟", name: "Золотая звезда", chance: 5, prize: 90 },
+    { symbol: "💔", name: "Разбитое сердце", chance: 1, prize: 500 }
+];
+
+let currentTicket = null;
+let cells = [];
+let openedCount = 0;
+let freeOpens = 0;
+let gameEndedTicket = false;
+let lastBoardSignature = "";
+
+const balanceTicket = document.getElementById('balanceTicket');
+const selectScreen = document.getElementById('selectScreen');
+const gameScreenTicket = document.getElementById('gameScreenTicket');
+const chancePanel = document.getElementById('chancePanel');
+const chanceList = document.getElementById('chanceList');
+const cardTicket = document.getElementById('cardTicket');
+const gameNameTicket = document.getElementById('gameNameTicket');
+const gameCostTicket = document.getElementById('gameCostTicket');
+const freeOpensTicket = document.getElementById('freeOpensTicket');
+const resultModalTicket = document.getElementById('resultModalTicket');
+const resultIconTicket = document.getElementById('resultIconTicket');
+const resultTitleTicket = document.getElementById('resultTitleTicket');
+const resultTextTicket = document.getElementById('resultTextTicket');
+const resultMoneyTicket = document.getElementById('resultMoneyTicket');
+const paidTicket = document.getElementById('paidTicket');
+const freeTicket = document.getElementById('freeTicket');
+
+function updateBalanceTicket() {
+    balanceTicket.textContent = balance.toFixed(2);
+}
+
+function shuffle(arr) {
+    for (let i = arr.length-1; i>0; i--) {
+        const j = Math.floor(Math.random()*(i+1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+function getRandomSymbol(symbols) {
+    let val = Math.random() * 100, cur = 0;
+    for (const item of symbols) {
+        cur += item.chance;
+        if (val <= cur) return item;
+    }
+    return symbols[symbols.length-1];
+}
+function generateBoard(symbols) {
+    let board, attempts=0;
+    do {
+        board = [];
+        for (let i=0; i<9; i++) board.push(getRandomSymbol(symbols));
+        shuffle(board);
+        attempts++;
+    } while (!isValidBoard(board) && attempts<100);
+    const sig = board.map(i=>i.symbol).sort().join('|');
+    if (sig === lastBoardSignature) return generateBoard(symbols);
+    lastBoardSignature = sig;
+    return board;
+}
+function isValidBoard(board) {
+    const counts = {};
+    for (const item of board) {
+        const s = item.symbol;
+        counts[s] = (counts[s]||0) + 1;
+    }
+    let triples=0;
+    for (const s in counts) {
+        if (counts[s] > 3) return false;
+        if (counts[s] === 3) triples++;
+        if (triples > 1) return false;
+    }
+    return true;
+}
+function checkWinTicket() {
+    const counts = {};
+    for (const cell of cells) {
+        if (!cell.opened) continue;
+        const s = cell.item.symbol;
+        counts[s] = (counts[s]||0) + 1;
+    }
+    for (const s in counts) {
+        if (counts[s] >= 3) {
+            const item = currentTicket.symbols.find(x => x.symbol === s);
+            if (item) return item;
+        }
+    }
+    return null;
+}
+function showChances(ticket) {
+    chanceList.innerHTML = '';
+    const sorted = [...ticket.symbols].sort((a,b)=>b.chance-a.chance);
+    for (const item of sorted) {
+        const row = document.createElement('div');
+        row.className = 'chance-row';
+        row.innerHTML = `<div class="chance-symbol">${item.symbol}</div>
+                         <div class="chance-name">${item.name}</div>
+                         <div class="chance-percent">${item.chance}%</div>
+                         <div class="chance-prize">+${item.prize} ⭐</div>`;
+        chanceList.appendChild(row);
+    }
+    chancePanel.style.display = 'block';
+}
+function selectTicket(el) {
+    paidTicket.classList.remove('selected');
+    freeTicket.classList.remove('selected');
+    el.classList.add('selected');
+}
+paidTicket.addEventListener('click', ()=>{
+    selectTicket(paidTicket);
+    currentTicket = { name: '💎 MEGA SCRATCH', price: 100, openPrice: 50, freeOpens: 2, symbols: paidSymbols };
+    showChances(currentTicket);
+});
+freeTicket.addEventListener('click', ()=>{
+    selectTicket(freeTicket);
+    currentTicket = { name: '🎫 FREE SCRATCH', price: 0, openPrice: 5, freeOpens: 0, symbols: freeSymbols };
+    showChances(currentTicket);
+});
+document.getElementById('closeChance').addEventListener('click', ()=>{
+    chancePanel.style.display = 'none';
+    paidTicket.classList.remove('selected');
+    freeTicket.classList.remove('selected');
+    currentTicket = null;
+});
+document.getElementById('startTicketButton').addEventListener('click', startTicket);
+
+function startTicket() {
+    if (!currentTicket) return;
+    if (currentTicket.price > 0) {
+        if (balance < currentTicket.price) {
+            alert('Недостаточно валюты для покупки билета.');
+            return;
+        }
+        balance -= currentTicket.price;
+    }
+    updateBalanceUI();
+    updateBalanceTicket();
+    selectScreen.classList.remove('active');
+    gameScreenTicket.classList.add('active');
+    chancePanel.style.display = 'none';
+    openedCount = 0;
+    gameEndedTicket = false;
+    freeOpens = currentTicket.freeOpens;
+    gameNameTicket.textContent = currentTicket.name;
+    updateGameInfoTicket();
+    createBoardTicket();
+}
+function updateGameInfoTicket() {
+    if (freeOpens > 0) {
+        freeOpensTicket.textContent = `🎁 Бесплатных открытий: ${freeOpens}`;
+        gameCostTicket.textContent = 'Первые 2 бесплатно';
+    } else {
+        freeOpensTicket.textContent = `Открытие ячейки: ${currentTicket.openPrice} ⭐`;
+        gameCostTicket.textContent = `${currentTicket.openPrice} ⭐`;
+    }
+}
+function createBoardTicket() {
+    cardTicket.innerHTML = '';
+    cells = [];
+    const board = generateBoard(currentTicket.symbols);
+    for (let i=0; i<9; i++) {
+        const item = board[i];
+        const cell = document.createElement('div');
+        cell.className = 'cell-ticket';
+        const symbol = document.createElement('div');
+        symbol.className = 'symbol-ticket';
+        symbol.textContent = item.symbol;
+        const scratch = document.createElement('div');
+        scratch.className = 'scratch-ticket';
+        cell.appendChild(symbol);
+        cell.appendChild(scratch);
+        const cellData = { element: cell, item: item, opened: false };
+        cells.push(cellData);
+        cell.addEventListener('click', ()=> openCellTicket(cellData));
+        cardTicket.appendChild(cell);
+    }
+}
+function openCellTicket(cell) {
+    if (gameEndedTicket || cell.opened) return;
+    if (freeOpens > 0) {
+        freeOpens--;
+    } else {
+        if (balance < currentTicket.openPrice) {
+            alert('Недостаточно валюты для открытия ячейки.');
+            return;
+        }
+        balance -= currentTicket.openPrice;
+        updateBalanceUI();
+        updateBalanceTicket();
+    }
+    cell.opened = true;
+    cell.element.classList.add('opened');
+    openedCount++;
+    updateGameInfoTicket();
+    const win = checkWinTicket();
+    if (win) { finishGameTicket(true, win); return; }
+    if (openedCount >= 9) finishGameTicket(false, null);
+}
+function finishGameTicket(won, item) {
+    if (gameEndedTicket) return;
+    gameEndedTicket = true;
+    const delay = 1200;
+    if (won) {
+        const prize = item.prize;
+        balance += prize;
+        updateBalanceUI();
+        updateBalanceTicket();
+        resultIconTicket.textContent = item.symbol;
+        resultTitleTicket.textContent = 'ПОБЕДА!';
+        resultTitleTicket.className = 'result-title-ticket win';
+        resultTextTicket.innerHTML = `Вы нашли 3 одинаковых символа <b>${item.symbol}</b>.<br>Комбинация найдена в любых местах билета.`;
+        resultMoneyTicket.textContent = `+${prize} ⭐`;
+        setTimeout(()=>{ resultModalTicket.classList.add('show'); }, delay);
+    } else {
+        resultIconTicket.textContent = '😔';
+        resultTitleTicket.textContent = 'ПОПРОБУЙ СНОВА';
+        resultTitleTicket.className = 'result-title-ticket lose';
+        resultTextTicket.textContent = 'Все 9 ячеек открыты, но трёх одинаковых символов найти не удалось.';
+        resultMoneyTicket.textContent = '0 ⭐';
+        setTimeout(()=>{ resultModalTicket.classList.add('show'); }, delay);
+    }
+}
+document.getElementById('newTicketTicket').addEventListener('click', ()=>{
+    resultModalTicket.classList.remove('show');
+    gameScreenTicket.classList.remove('active');
+    selectScreen.classList.add('active');
+    currentTicket = null;
+    cells = [];
+    openedCount = 0;
+    freeOpens = 0;
+    gameEndedTicket = false;
+    paidTicket.classList.remove('selected');
+    freeTicket.classList.remove('selected');
+    chancePanel.style.display = 'none';
+});
+document.getElementById('backToTicketsTicket').addEventListener('click', ()=>{
+    if (!gameEndedTicket && openedCount > 0) {
+        const canAfford = balance >= currentTicket.openPrice;
+        if (canAfford) {
+            alert('Вы не можете выйти из билета, пока можете продолжать открытие.');
+            return;
+        }
+    }
+    gameScreenTicket.classList.remove('active');
+    selectScreen.classList.add('active');
+    currentTicket = null;
+    cells = [];
+    openedCount = 0;
+    freeOpens = 0;
+    gameEndedTicket = false;
+    paidTicket.classList.remove('selected');
+    freeTicket.classList.remove('selected');
+    chancePanel.style.display = 'none';
+});
+
+document.getElementById('openTicketsButton').addEventListener('click', ()=>{
+    document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));
+    document.getElementById('ticketGameContainer').classList.remove('hidden');
+    updateBalanceTicket();
+});
+
+document.getElementById('closeTicketsBtn').addEventListener('click', ()=>{
+    document.getElementById('ticketGameContainer').classList.add('hidden');
+    document.getElementById('menuPage').classList.remove('hidden');
+    document.querySelectorAll('.nav-button').forEach(b=>b.classList.remove('active'));
+    document.querySelector('[data-page="menuPage"]').classList.add('active');
+});
 
 // =====================================================
-// ИГРА КЕЙСЫ (CASES) — сокращённо, полный код есть в оригинале
+// ИГРА КЕЙСЫ (CASES) - ПОЛНЫЙ КОД
 // =====================================================
 
-// Здесь должен быть полный код игры в кейсы
-// (вставлен в HTML выше)
+const CASE_PRICE = 50;
+const CASE_250_PRICE = 250;
+const PLS_PEPE_PRICE = 10;
+let isOpeningCase = false;
+let currentWinnerCase = null;
+let currentCaseType = "paid";
+
+const itemsCase = [
+    { emoji: "🐻", name: "Toy Bear", value: 5000, chance: 0.0001, rarity: "legendary" },
+    { emoji: "🖊️", name: "Fine Pen", value: 1000, chance: 0.0001, rarity: "legendary" },
+    { emoji: "🗽", name: "Liberty Figure", value: 550, chance: 0.00095, rarity: "legendary" },
+    { emoji: "🔦", name: "Chill Flame", value: 450, chance: 0.001, rarity: "rare" },
+    { emoji: "🍦", name: "Vice Cream", value: 450, chance: 0.001, rarity: "rare" },
+    { emoji: "🏆", name: "Trophy", value: 100, chance: 7.5, rarity: "rare" },
+    { emoji: "💎", name: "Diamond", value: 100, chance: 7.5, rarity: "rare" },
+    { emoji: "🎂", name: "Cake", value: 50, chance: 10, rarity: "uncommon" },
+    { emoji: "💐", name: "Flowers", value: 50, chance: 10, rarity: "uncommon" },
+    { emoji: "🎁", name: "Gift", value: 25, chance: 13, rarity: "" },
+    { emoji: "🐻", name: "bear", value: 15, chance: 15, rarity: "" },
+    { emoji: "🩷", name: "Heart", value: 15, chance: 15, rarity: "" },
+    { emoji: "7 ⭐", name: "7 Stars", value: 7, chance: 0, rarity: "" }
+];
+
+const freeItemsCase = [
+    { emoji: "3 ⭐", name: "3 Stars", value: 3, chance: 23, rarity: "" },
+    { emoji: "5 ⭐", name: "5 Stars", value: 5, chance: 22, rarity: "" },
+    { emoji: "7 ⭐", name: "7 Stars", value: 7, chance: 27, rarity: "" },
+    { emoji: "🐻", name: "Bear", value: 15, chance: 6, rarity: "" },
+    { emoji: "💘", name: "Heart", value: 15, chance: 6, rarity: "" },
+    { emoji: "🎁", name: "Gift", value: 25, chance: 3, rarity: "" },
+    { emoji: "🌹", name: "Rose", value: 25, chance: 3, rarity: "" },
+    { emoji: "🎂", name: "Cake", value: 50, chance: 1, rarity: "uncommon" },
+    { emoji: "🚀", name: "Rocket", value: 50, chance: 1, rarity: "uncommon" },
+    { emoji: "🍦", name: "Vice Cream", value: 450, chance: 0.00001, rarity: "rare" },
+    { emoji: "🍭", name: "Lol Pop", value: 450, chance: 0.00001, rarity: "rare" },
+    { emoji: "🐕", name: "Snoop Dogg", value: 550, chance: 0.00001, rarity: "legendary" }
+];
+
+const case250ItemsCase = [
+    { emoji: "💰", name: "10 на баланс", value: 10, chance: 3, rarity: "" },
+    { emoji: "🐻", name: "15 зв", value: 15, chance: 2.5, rarity: "" },
+    { emoji: "💘", name: "15 зв", value: 15, chance: 2.49805, rarity: "" },
+    { emoji: "🎁", name: "25", value: 25, chance: 7.5, rarity: "" },
+    { emoji: "🌹", name: "25", value: 25, chance: 7.5, rarity: "" },
+    { emoji: "💐", name: "50", value: 50, chance: 10, rarity: "uncommon" },
+    { emoji: "🚀", name: "50", value: 50, chance: 10, rarity: "uncommon" },
+    { emoji: "💍", name: "100", value: 100, chance: 11.5, rarity: "rare" },
+    { emoji: "💎", name: "100", value: 100, chance: 11.5, rarity: "rare" },
+    { emoji: "💰", name: "200 на баланс", value: 200, chance: 15, rarity: "rare" },
+    { emoji: "💰", name: "250 на баланс", value: 250, chance: 7, rarity: "rare" },
+    { emoji: "💰", name: "300 на баланс", value: 300, chance: 6, rarity: "rare" },
+    { emoji: "💰", name: "350 на баланс", value: 350, chance: 3, rarity: "legendary" },
+    { emoji: "💰", name: "450 на баланс", value: 450, chance: 3, rarity: "legendary" },
+    { emoji: "🍦", name: "Vice Cream", value: 450, chance: 0.0005, rarity: "rare" },
+    { emoji: "🍭", name: "Lol Pop", value: 450, chance: 0.0005, rarity: "rare" },
+    { emoji: "🦩", name: "Pool Float", value: 500, chance: 0.0005, rarity: "legendary" },
+    { emoji: "🐕", name: "Snoop Dogg", value: 550, chance: 0.00045, rarity: "legendary" }
+];
+
+const plsPepeItemsCase = [
+    { emoji: "💰", name: "0.5 на баланс", value: 0.5, chance: 24.009997, rarity: "" },
+    { emoji: "💰", name: "1 на баланс", value: 1, chance: 25, rarity: "" },
+    { emoji: "💰", name: "3 на баланс", value: 3, chance: 15, rarity: "" },
+    { emoji: "💰", name: "5 на баланс", value: 5, chance: 15, rarity: "" },
+    { emoji: "💰", name: "7 на баланс", value: 7, chance: 10, rarity: "" },
+    { emoji: "💰", name: "10 на баланс", value: 10, chance: 3.33, rarity: "" },
+    { emoji: "💘", name: "15 зв", value: 15, chance: 3.33, rarity: "" },
+    { emoji: "🐻", name: "Bear", value: 15, chance: 3.33, rarity: "" },
+    { emoji: "🎁", name: "25", value: 25, chance: 0.5, rarity: "" },
+    { emoji: "🌹", name: "25", value: 25, chance: 0.5, rarity: "" },
+    { emoji: "💖", name: "Heart Locked", value: 500000, chance: 0.000002, rarity: "legendary" },
+    { emoji: "🐸", name: "Plush Pepe", value: 800000, chance: 0.000001, rarity: "legendary" }
+];
+
+function normalizeChancesCase() {
+    const stars = itemsCase.find(item => item.name === "7 Stars");
+    const otherItems = itemsCase.filter(item => item.name !== "7 Stars");
+    const total = otherItems.reduce((sum, item) => sum + item.chance, 0);
+    stars.chance = 100 - total;
+}
+normalizeChancesCase();
+
+const balanceCase = document.getElementById('balanceCase');
+const mainScreenCase = document.getElementById('mainScreenCase');
+const caseScreenCase = document.getElementById('caseScreenCase');
+const caseBox = document.getElementById('caseBox');
+const case250Box = document.getElementById('case250Box');
+const plsPepeBox = document.getElementById('plsPepeBox');
+const freeCaseBox = document.getElementById('freeCaseBox');
+const freeTimer = document.getElementById('freeTimer');
+const backButtonCase = document.getElementById('backButtonCase');
+const caseTitle = document.getElementById('caseTitle');
+const rouletteTrack = document.getElementById('rouletteTrack');
+const openButton = document.getElementById('openButton');
+const itemsGrid = document.getElementById('itemsGrid');
+const resultModalCase = document.getElementById('resultModalCase');
+const resultEmoji = document.getElementById('resultEmoji');
+const resultName = document.getElementById('resultName');
+const resultValue = document.getElementById('resultValue');
+const sellResult = document.getElementById('sellResult');
+const backResult = document.getElementById('backResult');
+const messageElement = document.getElementById('messageCase');
+
+function updateBalanceCase() {
+    balanceCase.textContent = balance.toFixed(2);
+}
+
+const FREE_COOLDOWN = 24 * 60 * 60 * 1000;
+const FREE_COOLDOWN_KEY = "case_free_last_open";
+
+function getFreeLastOpen() {
+    const value = localStorage.getItem(FREE_COOLDOWN_KEY);
+    if (!value) return 0;
+    return Number(value);
+}
+function canOpenFreeCase() {
+    const lastOpen = getFreeLastOpen();
+    return (Date.now() - lastOpen >= FREE_COOLDOWN);
+}
+function setFreeCooldown() {
+    localStorage.setItem(FREE_COOLDOWN_KEY, String(Date.now()));
+    updateFreeButton();
+}
+function updateFreeButton() {
+    const lastOpen = getFreeLastOpen();
+    const remaining = FREE_COOLDOWN - (Date.now() - lastOpen);
+    if (remaining <= 0) {
+        freeCaseBox.classList.remove("disabled");
+        freeTimer.textContent = "ГОТОВ К ОТКРЫТИЮ";
+        return;
+    }
+    freeCaseBox.classList.add("disabled");
+    freeTimer.textContent = formatTimeCase(remaining);
+}
+function formatTimeCase(milliseconds) {
+    let totalSeconds = Math.ceil(milliseconds / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    totalSeconds %= 3600;
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return String(hours).padStart(2, "0") + ":" + String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
+}
+
+function showMainCase() {
+    caseScreenCase.classList.remove("active");
+    mainScreenCase.classList.add("active");
+    currentCaseType = "paid";
+    updateFreeButton();
+}
+
+function showCaseCase(type = "paid") {
+    mainScreenCase.classList.remove("active");
+    caseScreenCase.classList.add("active");
+    currentCaseType = type;
+    if (type === "free") {
+        caseTitle.textContent = "CASE FREE";
+        openButton.textContent = "ОТКРЫТЬ FREE 🎁";
+        openButton.classList.add("free-open");
+        renderItemsCase(freeItemsCase);
+        resetRouletteCase(freeItemsCase);
+    } else if (type === "pls-pepe") {
+        caseTitle.textContent = "PLS PEPE 🐸";
+        openButton.textContent = "КУПИТЬ ЗА 10 ⭐";
+        openButton.classList.remove("free-open");
+        renderItemsCase(plsPepeItemsCase);
+        resetRouletteCase(plsPepeItemsCase);
+    } else if (type === "250") {
+        caseTitle.textContent = "CASE 250 ⭐";
+        openButton.textContent = "КУПИТЬ ЗА 250 ⭐";
+        openButton.classList.remove("free-open");
+        renderItemsCase(case250ItemsCase);
+        resetRouletteCase(case250ItemsCase);
+    } else {
+        caseTitle.textContent = "CASE 50 ⭐";
+        openButton.textContent = "КУПИТЬ ЗА 50 ⭐";
+        openButton.classList.remove("free-open");
+        renderItemsCase(itemsCase);
+        resetRouletteCase(itemsCase);
+    }
+}
+
+function renderItemsCase(sourceItems) {
+    itemsGrid.innerHTML = "";
+    const sortedItems = [...sourceItems].sort((a, b) => b.value - a.value);
+    sortedItems.forEach(item => {
+        const card = document.createElement("div");
+        card.className = `item-card ${item.rarity}`;
+        card.innerHTML = `<div class="item-emoji">${item.emoji}</div><div class="item-name">${item.name}</div><div class="item-price">+${item.value} ⭐</div>`;
+        itemsGrid.appendChild(card);
+    });
+}
+
+function getRandomItemCase(sourceItems) {
+    const random = Math.random() * 100;
+    let accumulated = 0;
+    for (const item of sourceItems) {
+        accumulated += item.chance;
+        if (random < accumulated) return item;
+    }
+    return sourceItems[sourceItems.length - 1];
+}
+
+function createRouletteCardCase(item) {
+    const element = document.createElement("div");
+    element.className = `roulette-item ${item.rarity}`;
+    element.innerHTML = `<div class="roulette-emoji">${item.emoji}</div><div class="roulette-name">${item.name}</div>`;
+    return element;
+}
+
+function resetRouletteCase(sourceItems = itemsCase) {
+    rouletteTrack.style.transition = "none";
+    rouletteTrack.style.transform = "translateX(0px)";
+    rouletteTrack.innerHTML = "";
+    for (let i = 0; i < 18; i++) {
+        const randomItem = sourceItems[Math.floor(Math.random() * sourceItems.length)];
+        rouletteTrack.appendChild(createRouletteCardCase(randomItem));
+    }
+}
+
+function startRouletteCase(sourceItems, winner) {
+    rouletteTrack.style.transition = "none";
+    rouletteTrack.style.transform = "translateX(0px)";
+    rouletteTrack.innerHTML = "";
+    const totalCards = 45;
+    const winnerIndex = 36;
+    for (let i = 0; i < totalCards; i++) {
+        let item;
+        if (i === winnerIndex) item = winner;
+        else item = sourceItems[Math.floor(Math.random() * sourceItems.length)];
+        rouletteTrack.appendChild(createRouletteCardCase(item));
+    }
+    const cardWidth = 135;
+    const windowWidth = rouletteTrack.parentElement.offsetWidth;
+    const centerOffset = windowWidth / 2 - 62.5;
+    const stopPosition = -(winnerIndex * cardWidth - centerOffset);
+    const finalPosition = stopPosition + (Math.random() * 30 - 15);
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            rouletteTrack.style.transition = "transform 6.5s cubic-bezier(.08,.72,.05,1)";
+            rouletteTrack.style.transform = `translateX(${finalPosition}px)`;
+        });
+    });
+    setTimeout(() => {
+        showResultCase(winner);
+        isOpeningCase = false;
+        openButton.disabled = false;
+    }, 6800);
+}
+
+function openCaseCase() {
+    if (isOpeningCase) return;
+    if (currentCaseType === "free") {
+        if (!canOpenFreeCase()) {
+            showMessageCase("FREE кейс можно открыть только раз в сутки ⏰");
+            return;
+        }
+        isOpeningCase = true;
+        openButton.disabled = true;
+        setFreeCooldown();
+        playClickSoundCase();
+        const winner = getRandomItemCase(freeItemsCase);
+        currentWinnerCase = winner;
+        startRouletteCase(freeItemsCase, winner);
+        return;
+    }
+    if (currentCaseType === "pls-pepe") {
+        if (balance < PLS_PEPE_PRICE) {
+            showMessageCase("Недостаточно валюты ⭐");
+            return;
+        }
+        isOpeningCase = true;
+        openButton.disabled = true;
+        balance -= PLS_PEPE_PRICE;
+        updateBalanceUI();
+        updateBalanceCase();
+        playClickSoundCase();
+        const winner = getRandomItemCase(plsPepeItemsCase);
+        currentWinnerCase = winner;
+        startRouletteCase(plsPepeItemsCase, winner);
+        return;
+    }
+    if (currentCaseType === "250") {
+        if (balance < CASE_250_PRICE) {
+            showMessageCase("Недостаточно валюты ⭐");
+            return;
+        }
+        isOpeningCase = true;
+        openButton.disabled = true;
+        balance -= CASE_250_PRICE;
+        updateBalanceUI();
+        updateBalanceCase();
+        playClickSoundCase();
+        const winner = getRandomItemCase(case250ItemsCase);
+        currentWinnerCase = winner;
+        startRouletteCase(case250ItemsCase, winner);
+        return;
+    }
+    if (balance < CASE_PRICE) {
+        showMessageCase("Недостаточно валюты ⭐");
+        return;
+    }
+    isOpeningCase = true;
+    openButton.disabled = true;
+    balance -= CASE_PRICE;
+    updateBalanceUI();
+    updateBalanceCase();
+    playClickSoundCase();
+    const winner = getRandomItemCase(itemsCase);
+    currentWinnerCase = winner;
+    startRouletteCase(itemsCase, winner);
+}
+
+function showResultCase(item) {
+    currentWinnerCase = item;
+    resultEmoji.textContent = item.emoji;
+    resultName.textContent = item.name;
+    resultValue.textContent = `+${item.value} ⭐`;
+    resultModalCase.classList.add("show");
+    playWinSoundCase();
+}
+
+function getCurrentItemsCase() {
+    if (currentCaseType === "free") return freeItemsCase;
+    if (currentCaseType === "pls-pepe") return plsPepeItemsCase;
+    if (currentCaseType === "250") return case250ItemsCase;
+    return itemsCase;
+}
+
+sellResult.addEventListener("click", () => {
+    if (!currentWinnerCase) return;
+    balance += currentWinnerCase.value;
+    balance = Math.round(balance * 100) / 100;
+    updateBalanceUI();
+    updateBalanceCase();
+    resultModalCase.classList.remove("show");
+    resetRouletteCase(getCurrentItemsCase());
+    currentWinnerCase = null;
+});
+
+backResult.addEventListener("click", () => {
+    if (!currentWinnerCase) return;
+    addItemToInventory(currentWinnerCase);
+    resultModalCase.classList.remove("show");
+    resetRouletteCase(getCurrentItemsCase());
+    currentWinnerCase = null;
+    showMessageCase("Предмет сохранён в инвентарь 🎒");
+});
+
+caseBox.addEventListener("click", () => { showCaseCase("paid"); });
+case250Box.addEventListener("click", () => { showCaseCase("250"); });
+plsPepeBox.addEventListener("click", () => { showCaseCase("pls-pepe"); });
+freeCaseBox.addEventListener("click", () => {
+    if (!canOpenFreeCase()) {
+        showMessageCase("FREE кейс можно открыть только раз в сутки ⏰");
+        return;
+    }
+    showCaseCase("free");
+});
+backButtonCase.addEventListener("click", () => {
+    if (isOpeningCase) {
+        showMessageCase("Подождите окончания открытия кейса");
+        return;
+    }
+    showMainCase();
+});
+openButton.addEventListener("click", openCaseCase);
+
+let messageTimeoutCase = null;
+function showMessageCase(text) {
+    clearTimeout(messageTimeoutCase);
+    messageElement.textContent = text;
+    messageElement.classList.add("show");
+    messageTimeoutCase = setTimeout(() => {
+        messageElement.classList.remove("show");
+    }, 2500);
+}
+
+let audioContextCase = null;
+function getAudioContextCase() {
+    try {
+        if (!audioContextCase) {
+            audioContextCase = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioContextCase.state === "suspended") {
+            audioContextCase.resume();
+        }
+        return audioContextCase;
+    } catch (error) { return null; }
+}
+
+function playClickSoundCase() {
+    const ctx = getAudioContextCase();
+    if (!ctx) return;
+    try {
+        const oscillator = ctx.createOscillator();
+        const gain = ctx.createGain();
+        oscillator.type = "square";
+        oscillator.frequency.setValueAtTime(180, ctx.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.08, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.09);
+        oscillator.connect(gain);
+        gain.connect(ctx.destination);
+        oscillator.start();
+        oscillator.stop(ctx.currentTime + 0.1);
+    } catch (error) {}
+}
+
+function playWinSoundCase() {
+    const ctx = getAudioContextCase();
+    if (!ctx) return;
+    try {
+        const notes = [523.25, 659.25, 783.99, 1046.5];
+        notes.forEach((frequency, index) => {
+            const oscillator = ctx.createOscillator();
+            const gain = ctx.createGain();
+            const start = ctx.currentTime + index * 0.1;
+            oscillator.type = "sine";
+            oscillator.frequency.setValueAtTime(frequency, start);
+            gain.gain.setValueAtTime(0, start);
+            gain.gain.linearRampToValueAtTime(0.12, start + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, start + 0.35);
+            oscillator.connect(gain);
+            gain.connect(ctx.destination);
+            oscillator.start(start);
+            oscillator.stop(start + 0.4);
+        });
+    } catch (error) {}
+}
+
+setInterval(updateFreeButton, 1000);
+
+document.getElementById('openCasesButton').addEventListener('click', ()=>{
+    document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));
+    document.getElementById('casesGameContainer').classList.remove('hidden');
+    updateBalanceCase();
+});
+
+document.getElementById('closeCasesBtn').addEventListener('click', ()=>{
+    document.getElementById('casesGameContainer').classList.add('hidden');
+    document.getElementById('menuPage').classList.remove('hidden');
+    document.querySelectorAll('.nav-button').forEach(b=>b.classList.remove('active'));
+    document.querySelector('[data-page="menuPage"]').classList.add('active');
+});
+
+renderItemsCase(itemsCase);
+resetRouletteCase(itemsCase);
+updateFreeButton();
+mainScreenCase.classList.add('active');
 
 // =====================================================
-// ИГРА UPGRADE — сокращённо, полный код есть в оригинале
+// ИГРА UPGRADE - ПОЛНЫЙ КОД
 // =====================================================
 
-// Здесь должен быть полный код игры UPGRADE
-// (вставлен в HTML выше)
+let betUpgrade = 100;
+let multiplierUpgrade = 2;
+let winChanceUpgrade = 50;
+let isSpinningUpgrade = false;
+let pointerRotationUpgrade = 0;
+let historyUpgrade = [];
+let selectedInventoryItem = null;
+
+const canvasUp = document.getElementById('wheel');
+const ctxUp = canvasUp.getContext('2d');
+const balanceUpgrade = document.getElementById('balanceUpgrade');
+const betInputUpgrade = document.getElementById('betInputUpgrade');
+const winPercentUp = document.getElementById('winPercent');
+const spinButtonUp = document.getElementById('spinButtonUpgrade');
+const statusUp = document.getElementById('statusUpgrade');
+const flashUp = document.getElementById('flashUpgrade');
+const toastUp = document.getElementById('toastUpgrade');
+const historyListUp = document.getElementById('historyListUpgrade');
+const pointerRotatorUp = document.getElementById('pointerRotator');
+const multiplierButtonsUp = document.querySelectorAll('.multiplier-upgrade');
+const selectItemBtn = document.getElementById('selectItemBtn');
+const selectedItemDisplay = document.getElementById('selectedItemDisplay');
+const itemDropdown = document.getElementById('itemDropdown');
+
+function updateBalanceUpgrade() {
+    balanceUpgrade.textContent = balance.toFixed(2);
+}
+
+function renderItemDropdown() {
+    itemDropdown.innerHTML = '';
+    if (inventoryItems.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'item-select-option';
+        empty.style.justifyContent = 'center';
+        empty.style.color = '#737781';
+        empty.textContent = 'Инвентарь пуст';
+        itemDropdown.appendChild(empty);
+        return;
+    }
+    inventoryItems.forEach((item, index) => {
+        const opt = document.createElement('div');
+        opt.className = 'item-select-option';
+        opt.innerHTML = `
+            <span class="opt-emoji">${item.emoji}</span>
+            <span class="opt-name">${item.name}</span>
+            <span class="opt-value">+${item.value} ⭐</span>
+        `;
+        opt.addEventListener('click', () => {
+            selectItemFromInventory(index);
+        });
+        itemDropdown.appendChild(opt);
+    });
+}
+
+function selectItemFromInventory(index) {
+    const item = inventoryItems[index];
+    selectedInventoryItem = { ...item };
+    inventoryItems.splice(index, 1);
+    renderInventory();
+    renderItemDropdown();
+    selectedItemDisplay.textContent = `${item.emoji} ${item.name} (${item.value}⭐)`;
+    selectItemBtn.classList.add('active');
+    itemDropdown.classList.remove('open');
+    showToastUp(`Выбран предмет: ${item.emoji} ${item.name}`, true);
+}
+
+function clearSelectedItem() {
+    if (selectedInventoryItem) {
+        inventoryItems.push({ ...selectedInventoryItem });
+        renderInventory();
+        renderItemDropdown();
+        selectedInventoryItem = null;
+        selectedItemDisplay.textContent = 'Баланс';
+        selectItemBtn.classList.remove('active');
+    }
+}
+
+selectItemBtn.addEventListener('click', () => {
+    renderItemDropdown();
+    itemDropdown.classList.toggle('open');
+});
+
+function resizeCanvasUp() {
+    const rect = canvasUp.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    canvasUp.width = rect.width * dpr;
+    canvasUp.height = rect.height * dpr;
+    ctxUp.setTransform(dpr, 0, 0, dpr, 0, 0);
+    drawWheelUp();
+}
+window.addEventListener('resize', resizeCanvasUp);
+
+function drawWheelUp() {
+    const w = canvasUp.clientWidth, h = canvasUp.clientHeight;
+    if (w <= 0 || h <= 0) return;
+    ctxUp.clearRect(0, 0, w, h);
+    const cx = w/2, cy = h/2;
+    const radius = Math.min(w, h) * .43;
+    ctxUp.save();
+    ctxUp.beginPath();
+    ctxUp.arc(cx, cy, radius + 13, 0, Math.PI*2);
+    ctxUp.shadowBlur = 35;
+    ctxUp.shadowColor = "rgba(255,35,78,.45)";
+    ctxUp.strokeStyle = "rgba(255,42,82,.55)";
+    ctxUp.lineWidth = 8;
+    ctxUp.stroke();
+    ctxUp.restore();
+
+    const greenAngle = Math.PI * 2 * (winChanceUpgrade / 100);
+    const greenStart = Math.PI/2 - greenAngle/2;
+    const greenEnd = Math.PI/2 + greenAngle/2;
+
+    ctxUp.save();
+    ctxUp.beginPath();
+    ctxUp.arc(cx, cy, radius, 0, Math.PI*2);
+    ctxUp.clip();
+
+    const redGrad = ctxUp.createRadialGradient(cx - radius*.25, cy - radius*.35, radius*.1, cx, cy, radius);
+    redGrad.addColorStop(0, "#ff5877");
+    redGrad.addColorStop(.35, "#d71945");
+    redGrad.addColorStop(.72, "#8c102d");
+    redGrad.addColorStop(1, "#4a0719");
+    ctxUp.beginPath();
+    ctxUp.arc(cx, cy, radius, 0, Math.PI*2);
+    ctxUp.fillStyle = redGrad;
+    ctxUp.fill();
+
+    const greenGrad = ctxUp.createRadialGradient(cx, cy + radius*.2, radius*.05, cx, cy, radius);
+    greenGrad.addColorStop(0, "#70ffb2");
+    greenGrad.addColorStop(.35, "#17d96f");
+    greenGrad.addColorStop(.72, "#078d4a");
+    greenGrad.addColorStop(1, "#034b2a");
+    ctxUp.beginPath();
+    ctxUp.moveTo(cx, cy);
+    ctxUp.arc(cx, cy, radius, greenStart, greenEnd);
+    ctxUp.closePath();
+    ctxUp.fillStyle = greenGrad;
+    ctxUp.fill();
+
+    const gloss = ctxUp.createLinearGradient(0, cy - radius, 0, cy);
+    gloss.addColorStop(0, "rgba(255,255,255,.17)");
+    gloss.addColorStop(.4, "rgba(255,255,255,.04)");
+    gloss.addColorStop(1, "rgba(255,255,255,0)");
+    ctxUp.beginPath();
+    ctxUp.arc(cx, cy, radius, 0, Math.PI*2);
+    ctxUp.fillStyle = gloss;
+    ctxUp.fill();
+
+    ctxUp.beginPath();
+    ctxUp.moveTo(cx, cy);
+    ctxUp.lineTo(cx + radius * Math.cos(greenStart), cy + radius * Math.sin(greenStart));
+    ctxUp.moveTo(cx, cy);
+    ctxUp.lineTo(cx + radius * Math.cos(greenEnd), cy + radius * Math.sin(greenEnd));
+    ctxUp.strokeStyle = "rgba(255,255,255,.75)";
+    ctxUp.lineWidth = 3;
+    ctxUp.stroke();
+    ctxUp.restore();
+
+    ctxUp.beginPath();
+    ctxUp.arc(cx, cy, radius, 0, Math.PI*2);
+    ctxUp.strokeStyle = "#ff5274";
+    ctxUp.lineWidth = 5;
+    ctxUp.shadowBlur = 15;
+    ctxUp.shadowColor = "rgba(255,40,80,.55)";
+    ctxUp.stroke();
+    ctxUp.shadowBlur = 0;
+
+    ctxUp.beginPath();
+    ctxUp.arc(cx, cy, radius * .77, 0, Math.PI*2);
+    ctxUp.strokeStyle = "rgba(255,255,255,.08)";
+    ctxUp.lineWidth = 2;
+    ctxUp.stroke();
+
+    for (let i = 0; i < 24; i++) {
+        const angle = (Math.PI*2/24) * i;
+        const outer = radius + 3, inner = radius - 7;
+        ctxUp.beginPath();
+        ctxUp.moveTo(cx + Math.cos(angle)*inner, cy + Math.sin(angle)*inner);
+        ctxUp.lineTo(cx + Math.cos(angle)*outer, cy + Math.sin(angle)*outer);
+        ctxUp.strokeStyle = i % 2 === 0 ? "rgba(255,255,255,.4)" : "rgba(255,255,255,.12)";
+        ctxUp.lineWidth = i % 2 === 0 ? 2 : 1;
+        ctxUp.stroke();
+    }
+}
+
+function normalizeAngleUp(a) { a %= 360; if (a<0) a += 360; return a; }
+
+function isPointerOnGreenUp() {
+    const pointerAngle = normalizeAngleUp(-90 + pointerRotationUpgrade);
+    const greenAngle = 360 * (winChanceUpgrade / 100);
+    const greenStart = 90 - greenAngle/2;
+    const greenEnd = 90 + greenAngle/2;
+    const dist = Math.abs(normalizeAngleUp(pointerAngle - 90));
+    const circular = Math.min(dist, 360 - dist);
+    return circular <= greenAngle/2;
+}
+
+function getRandomTargetUp() { return Math.random() * 360; }
+
+function spinUpgrade() {
+    if (isSpinningUpgrade) return;
+
+    let useItem = selectedInventoryItem !== null;
+    let betValue = 0;
+
+    if (useItem) {
+        betValue = selectedInventoryItem.value;
+    } else {
+        betValue = Number(betInputUpgrade.value);
+        if (!Number.isFinite(betValue) || betValue <= 0) {
+            showToastUp("Введите корректную ставку", false);
+            return;
+        }
+        if (betValue < 25) {
+            showToastUp("Минимальная ставка 25 ⭐", false);
+            return;
+        }
+        if (betValue > balance) {
+            showToastUp("Недостаточно средств ⭐", false);
+            return;
+        }
+    }
+
+    if (!useItem) {
+        balance -= betValue;
+        balance = Math.round(balance * 100) / 100;
+    }
+
+    isSpinningUpgrade = true;
+    spinButtonUp.disabled = true;
+    betInputUpgrade.disabled = true;
+    multiplierButtonsUp.forEach(b => b.disabled = true);
+    selectItemBtn.disabled = true;
+
+    statusUp.className = "status-upgrade";
+    statusUp.textContent = "Колесо вращается...";
+
+    const target = getRandomTargetUp();
+    const fullSpins = 5 + Math.floor(Math.random() * 4);
+    const targetAbsolute = pointerRotationUpgrade + fullSpins * 360 + target;
+
+    const start = pointerRotationUpgrade;
+    const distance = targetAbsolute - start;
+    const duration = 4300;
+    const startTime = performance.now();
+
+    function animateSpin(currentTime) {
+        const elapsed = currentTime - startTime;
+        let progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 4);
+        pointerRotationUpgrade = start + distance * eased;
+        pointerRotatorUp.style.transform = `rotate(${pointerRotationUpgrade}deg)`;
+        if (progress < 1) {
+            requestAnimationFrame(animateSpin);
+        } else {
+            pointerRotationUpgrade = normalizeAngleUp(pointerRotationUpgrade);
+            pointerRotatorUp.style.transform = `rotate(${pointerRotationUpgrade}deg)`;
+            const won = isPointerOnGreenUp();
+            finishSpinUpgrade(won, useItem, betValue);
+        }
+    }
+    requestAnimationFrame(animateSpin);
+}
+
+function finishSpinUpgrade(won, usedItem, betValue) {
+    let winAmount = 0;
+    if (won) {
+        winAmount = betValue * multiplierUpgrade;
+        balance += winAmount;
+        balance = Math.round(balance * 100) / 100;
+        statusUp.className = "status-upgrade win";
+        statusUp.textContent = `ПОБЕДА +${winAmount.toFixed(2)} ⭐`;
+        showToastUp(`🎉 Выигрыш +${winAmount.toFixed(2)} ⭐`, true);
+        flashUp.className = "flash-upgrade win";
+        void flashUp.offsetWidth;
+        flashUp.classList.add("win");
+        resultSoundUpgrade(true);
+        addHistoryUpgrade(true, betValue, multiplierUpgrade, winAmount);
+    } else {
+        statusUp.className = "status-upgrade lose";
+        statusUp.textContent = `ПОРАЖЕНИЕ -${betValue.toFixed(2)} ⭐`;
+        showToastUp(`💥 Проигрыш -${betValue.toFixed(2)} ⭐`, false);
+        flashUp.className = "flash-upgrade lose";
+        void flashUp.offsetWidth;
+        flashUp.classList.add("lose");
+        resultSoundUpgrade(false);
+        addHistoryUpgrade(false, betValue, multiplierUpgrade, betValue);
+    }
+
+    updateBalanceUI();
+    updateBalanceUpgrade();
+
+    if (usedItem) {
+        selectedInventoryItem = null;
+        selectedItemDisplay.textContent = 'Баланс';
+        selectItemBtn.classList.remove('active');
+        renderItemDropdown();
+    }
+
+    setTimeout(() => {
+        isSpinningUpgrade = false;
+        spinButtonUp.disabled = false;
+        betInputUpgrade.disabled = false;
+        multiplierButtonsUp.forEach(b => b.disabled = false);
+        selectItemBtn.disabled = false;
+    }, 450);
+}
+
+function resultSoundUpgrade(win) {
+    try {
+        const audio = getAudioContextCase();
+        if (!audio) return;
+        if (win) {
+            const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+            notes.forEach((freq, idx) => {
+                const osc = audio.createOscillator();
+                const gain = audio.createGain();
+                const start = audio.currentTime + idx * 0.075;
+                osc.type = "sine";
+                osc.frequency.setValueAtTime(freq, start);
+                gain.gain.setValueAtTime(0.0001, start);
+                gain.gain.exponentialRampToValueAtTime(0.13, start + 0.018);
+                gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.38);
+                osc.connect(gain);
+                gain.connect(audio.destination);
+                osc.start(start);
+                osc.stop(start + 0.4);
+            });
+        } else {
+            const notes = [220, 165, 110];
+            notes.forEach((freq, idx) => {
+                const osc = audio.createOscillator();
+                const gain = audio.createGain();
+                const start = audio.currentTime + idx * 0.12;
+                osc.type = "sine";
+                osc.frequency.setValueAtTime(freq, start);
+                osc.frequency.exponentialRampToValueAtTime(freq * 0.72, start + 0.18);
+                gain.gain.setValueAtTime(0.0001, start);
+                gain.gain.exponentialRampToValueAtTime(0.11, start + 0.015);
+                gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.25);
+                osc.connect(gain);
+                gain.connect(audio.destination);
+                osc.start(start);
+                osc.stop(start + 0.27);
+            });
+        }
+    } catch (e) {}
+}
+
+function buttonSoundUpgrade() {
+    try {
+        const audio = getAudioContextCase();
+        if (!audio) return;
+        const osc = audio.createOscillator();
+        const gain = audio.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(440, audio.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(650, audio.currentTime + 0.05);
+        gain.gain.setValueAtTime(0.0001, audio.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.045, audio.currentTime + 0.008);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + 0.08);
+        osc.connect(gain);
+        gain.connect(audio.destination);
+        osc.start();
+        osc.stop(audio.currentTime + 0.09);
+    } catch (e) {}
+}
+
+multiplierButtonsUp.forEach(btn => {
+    btn.addEventListener('click', () => {
+        if (isSpinningUpgrade) return;
+        buttonSoundUpgrade();
+        multiplierUpgrade = Number(btn.dataset.multiplier);
+        if (multiplierUpgrade === 2) winChanceUpgrade = 50;
+        else if (multiplierUpgrade === 5) winChanceUpgrade = 20;
+        else winChanceUpgrade = 10;
+        multiplierButtonsUp.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        winPercentUp.textContent = `${winChanceUpgrade}%`;
+        drawWheelUp();
+        statusUp.className = "status-upgrade";
+        statusUp.textContent = `Шанс выигрыша ${winChanceUpgrade}%`;
+    });
+});
+
+spinButtonUp.addEventListener('click', spinUpgrade);
+
+function addHistoryUpgrade(won, betVal, mult, amount) {
+    historyUpgrade.unshift({ won, bet: betVal, multiplier: mult, amount });
+    if (historyUpgrade.length > 5) historyUpgrade.pop();
+    renderHistoryUpgrade();
+}
+
+function renderHistoryUpgrade() {
+    if (historyUpgrade.length === 0) {
+        historyListUp.innerHTML = `<div class="history-item"><div class="history-left">История пуста</div></div>`;
+        return;
+    }
+    historyListUp.innerHTML = historyUpgrade.map(item => `
+        <div class="history-item">
+            <div class="history-left">Ставка <strong>${item.bet.toFixed(2)} ⭐</strong> &nbsp;×${item.multiplier}</div>
+            <div class="history-result ${item.won ? 'win' : 'lose'}">${item.won ? '+' : '-'}${item.amount.toFixed(2)} ⭐</div>
+        </div>
+    `).join('');
+}
+
+function showToastUp(text, won) {
+    clearTimeout(toastUp._timer);
+    toastUp.textContent = text;
+    toastUp.className = `toast-upgrade show ${won ? 'win' : 'lose'}`;
+    toastUp._timer = setTimeout(() => toastUp.classList.remove('show'), 2500);
+}
+
+document.getElementById('openUpgradeButton').addEventListener('click', ()=>{
+    document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));
+    document.getElementById('upgradeGameContainer').classList.remove('hidden');
+    updateBalanceUpgrade();
+    setTimeout(resizeCanvasUp, 100);
+});
+
+document.getElementById('closeUpgradeBtn').addEventListener('click', ()=>{
+    document.getElementById('upgradeGameContainer').classList.add('hidden');
+    document.getElementById('menuPage').classList.remove('hidden');
+    document.querySelectorAll('.nav-button').forEach(b=>b.classList.remove('active'));
+    document.querySelector('[data-page="menuPage"]').classList.add('active');
+});
+
+updateBalanceUpgrade();
+setTimeout(resizeCanvasUp, 50);
+renderHistoryUpgrade();
+pointerRotatorUp.style.transform = `rotate(${pointerRotationUpgrade}deg)`;
+renderItemDropdown();
 
 // =====================================================
 // ИНИЦИАЛИЗАЦИЯ
 // =====================================================
-
 updateBalanceUI();
+updateBalanceTicket();
+updateBalanceCase();
+updateBalanceUpgrade();
 updateZones();
 updateProfileStats();
 resizeCanvas();
