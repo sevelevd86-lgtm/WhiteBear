@@ -17,9 +17,9 @@ from aiogram.types import (
     Message,
     InlineKeyboardMarkup,
     InlineKeyboardButton,
-    FSInputFile
 )
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.client.default import DefaultBotProperties
 
 # =====================================================
 # КОНФИГУРАЦИЯ
@@ -173,10 +173,13 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # =====================================================
-# ИНИЦИАЛИЗАЦИЯ
+# ИНИЦИАЛИЗАЦИЯ БОТА (ИСПРАВЛЕНО)
 # =====================================================
 
-bot = Bot(token=BOT_TOKEN, parse_mode=ParseMode.HTML)
+bot = Bot(
+    token=BOT_TOKEN,
+    default=DefaultBotProperties(parse_mode=ParseMode.HTML)
+)
 dp = Dispatcher()
 
 # =====================================================
@@ -184,7 +187,6 @@ dp = Dispatcher()
 # =====================================================
 
 def get_main_keyboard():
-    """Главная клавиатура с кнопками"""
     builder = InlineKeyboardBuilder()
     builder.button(text="🎮 Открыть игры", web_app=WebAppInfo(url=WEBAPP_URL))
     builder.button(text="💰 Баланс", callback_data="balance")
@@ -222,7 +224,7 @@ async def start_command(message: Message) -> None:
                 try:
                     await bot.send_photo(
                         invited_by,
-                        photo="https://i.imgur.com/placeholder.jpg",  # ← замени на свою картинку
+                        photo="https://i.imgur.com/placeholder.jpg",
                         caption=(
                             f"🎉 <b>Новый реферал!</b>\n\n"
                             f"Пользователь {first_name} перешёл по вашей ссылке.\n"
@@ -238,10 +240,9 @@ async def start_command(message: Message) -> None:
     bot_username = (await bot.me()).username
     ref_link = get_referral_link(user_id, bot_username)
     
-    # Отправляем картинку с приветствием
     try:
         await message.answer_photo(
-            photo="https://i.imgur.com/placeholder.jpg",  # ← замени на свою картинку
+            photo="https://i.imgur.com/placeholder.jpg",
             caption=(
                 f"🎮 <b>Добро пожаловать в DROP, {first_name}!</b>\n\n"
                 f"💰 Ваш баланс: <b>{balance:.2f} звёзд</b>\n"
@@ -258,7 +259,6 @@ async def start_command(message: Message) -> None:
             reply_markup=get_main_keyboard()
         )
     except Exception as e:
-        # Если картинка не загрузилась — отправляем просто текст
         logger.error(f"Ошибка отправки картинки: {e}")
         await message.answer(
             f"🎮 <b>Добро пожаловать в DROP, {first_name}!</b>\n\n"
