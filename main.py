@@ -282,7 +282,7 @@ async def start_command(message: Message) -> None:
                 try:
                     await bot.send_photo(
                         invited_by,
-                        photo="https://i.imgur.com/placeholder.jpg",
+                        photo="",
                         caption=(
                             f"🎉 <b>Новый реферал!</b>\n\n"
                             f"Пользователь {first_name} перешёл по вашей ссылке.\n"
@@ -302,7 +302,7 @@ async def start_command(message: Message) -> None:
     
     try:
         await message.answer_photo(
-            photo="https://i.imgur.com/placeholder.jpg",
+            photo="",
             caption=(
                 f"🎮 <b>Добро пожаловать в DROP, {first_name}!</b>\n\n"
                 f"💰 Ваш баланс: <b>{balance:.2f} звёзд</b>\n"
