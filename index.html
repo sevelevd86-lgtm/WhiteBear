@@ -1696,12 +1696,13 @@ button { cursor: pointer; }
                 <div class="card-title">Реферальная система</div>
                 <div class="card-text">Приглашайте друзей и получайте по <b>10</b> звёзд за каждого приглашённого.</div>
                 <div class="profile-row" style="margin-top:10px;"><div class="profile-label">Приглашено</div><div class="profile-value" id="refCount">0</div></div>
-                <div class="profile-row"><div class="profile-label">Реферальная ссылка</div><div class="profile-value ref-value" id="refLink">https://t.me/ваш_бот?start=ref_</div></div>
+                <div class="profile-row"><div class="profile-label">Реферальная ссылка</div><div class="profile-value ref-value" id="refLink">https://t.me/White_Bear_ROBOT?start=ref_</div></div>
+                <button onclick="copyRefLink()" class="game-button" style="margin-top:8px; padding:10px; font-size:14px;">📋 Скопировать ссылку</button>
             </div>
             <div class="card">
                 <div class="card-title">Ежедневная награда</div>
                 <div class="card-text">Забирайте <b>50</b> звёзд каждые 24 часа.</div>
-                <button class="daily-button" id="dailyButton">ЗАБРАТЬ 50</button>
+                <button class="daily-button" id="dailyButton">ЗАБРАТЬ 50 ⭐</button>
                 <div class="timer hidden" id="dailyTimer">24:00:00</div>
             </div>
             <div class="card">
@@ -1951,36 +1952,15 @@ const tg = window.Telegram?.WebApp;
 let tgUser = null;
 let tgUserId = null;
 let tgUserName = 'Игрок';
+let balance = 0;
+let inventoryItems = [];
+let dailyLastClaim = 0;
+let dailyTimerInterval = null;
 
-if (tg) {
-    tg.expand();
-    tg.ready();
-    
-    const user = tg.initDataUnsafe?.user;
-    if (user) {
-        tgUser = user;
-        tgUserId = user.id;
-        tgUserName = user.first_name || 'Игрок';
-        
-        // Обновляем профиль
-        document.getElementById('profileName').textContent = tgUserName;
-        document.getElementById('profileId').textContent = tgUserId;
-        
-        // =============================================
-        // АВТОМАТИЧЕСКАЯ РЕФЕРАЛЬНАЯ ССЫЛКА
-        // =============================================
-        // Бот автоматически подставляет свой username
-        // Если не получается — используем запасной вариант
-        let botUsername = tg.initDataUnsafe?.user?.username || 'ваш_бот';
-        const refLink = `https://t.me/${botUsername}?start=ref_${tgUserId}`;
-        document.getElementById('refLink').textContent = refLink;
-        
-        // Запрашиваем баланс у бота
-        sendToBot('getBalance');
-    }
-}
+// =====================================================
+// ФУНКЦИЯ ОТПРАВКИ ДАННЫХ В БОТА
+// =====================================================
 
-// Функция отправки данных в бота
 function sendToBot(action, data = {}) {
     if (!tg) return;
     data.action = action;
@@ -1989,10 +1969,39 @@ function sendToBot(action, data = {}) {
 }
 
 // =====================================================
-// ОБЩИЙ БАЛАНС
+// ЗАГРУЗКА СОХРАНЁННЫХ ДАННЫХ
 // =====================================================
-let balance = 0;
-let inventoryItems = [];
+
+function loadSavedData() {
+    if (tgUserId) {
+        const savedBalance = localStorage.getItem(`balance_${tgUserId}`);
+        if (savedBalance !== null) {
+            balance = parseFloat(savedBalance);
+        }
+        
+        const savedDaily = localStorage.getItem(`daily_${tgUserId}`);
+        if (savedDaily) {
+            dailyLastClaim = parseInt(savedDaily);
+        }
+    }
+}
+
+function saveBalance() {
+    if (tgUserId) {
+        localStorage.setItem(`balance_${tgUserId}`, balance.toString());
+        sendToBot('updateBalance', { balance: balance });
+    }
+}
+
+function saveDailyTime() {
+    if (tgUserId) {
+        localStorage.setItem(`daily_${tgUserId}`, Date.now().toString());
+    }
+}
+
+// =====================================================
+// ОБНОВЛЕНИЕ БАЛАНСА НА ВСЕХ ЭКРАНАХ
+// =====================================================
 
 function updateBalanceUI() {
     const val = balance.toFixed(2);
@@ -2006,72 +2015,145 @@ function updateBalanceUI() {
     if (elCase) elCase.textContent = balance.toFixed(2);
     const elUp = document.getElementById('balanceUpgrade');
     if (elUp) elUp.textContent = balance.toFixed(2);
+    
+    saveBalance();
 }
 
 // =====================================================
-// ИНВЕНТАРЬ
+// ЕЖЕДНЕВНАЯ НАГРАДА
 // =====================================================
-function renderInventory() {
-    const container = document.getElementById('inventoryContainer');
-    container.innerHTML = '';
-    if (inventoryItems.length === 0) {
-        container.innerHTML = `
-            <div class="empty-inventory">
-                <div class="empty-icon">📦</div>
-                <div class="empty-title">Инвентарь пуст</div>
-                <div class="empty-text">Предметы из кейсов появятся здесь, если вы нажмёте «В инвентарь».</div>
-            </div>
-        `;
-        document.getElementById('sellAllButton').disabled = true;
+
+function canClaimDaily() {
+    const now = Date.now();
+    const cooldown = 24 * 60 * 60 * 1000;
+    return (now - dailyLastClaim) >= cooldown;
+}
+
+function getDailyRemaining() {
+    const now = Date.now();
+    const cooldown = 24 * 60 * 60 * 1000;
+    const elapsed = now - dailyLastClaim;
+    const remaining = cooldown - elapsed;
+    return Math.max(0, remaining);
+}
+
+function updateDailyTimer() {
+    const remaining = getDailyRemaining();
+    const hours = Math.floor(remaining / (60 * 60 * 1000));
+    const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
+    const seconds = Math.floor((remaining % (60 * 1000)) / 1000);
+    
+    const timerEl = document.getElementById('dailyTimer');
+    const buttonEl = document.getElementById('dailyButton');
+    
+    if (remaining <= 0) {
+        timerEl.classList.add('hidden');
+        buttonEl.disabled = false;
+        buttonEl.textContent = 'ЗАБРАТЬ 50 ⭐';
+        if (dailyTimerInterval) {
+            clearInterval(dailyTimerInterval);
+            dailyTimerInterval = null;
+        }
         return;
     }
-    document.getElementById('sellAllButton').disabled = false;
-    inventoryItems.forEach((item, index) => {
-        const div = document.createElement('div');
-        div.className = 'inventory-item';
-        div.innerHTML = `
-            <div class="inventory-item-left">
-                <div class="inventory-item-emoji">${item.emoji}</div>
-                <div>
-                    <div class="inventory-item-name">${item.name}</div>
-                    <div class="inventory-item-value">+${item.value} ⭐</div>
-                </div>
-            </div>
-            <button class="inventory-sell-btn" data-index="${index}">ПРОДАТЬ</button>
-        `;
-        container.appendChild(div);
-    });
-    document.querySelectorAll('.inventory-sell-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const index = parseInt(e.target.dataset.index);
-            sellInventoryItem(index);
-        });
-    });
+    
+    timerEl.classList.remove('hidden');
+    timerEl.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    buttonEl.disabled = true;
+    buttonEl.textContent = '⏳ ДОСТУПНО ЧЕРЕЗ';
 }
 
-function addItemToInventory(item) {
-    inventoryItems.push({ ...item });
-    renderInventory();
-}
-
-function sellInventoryItem(index) {
-    const item = inventoryItems[index];
-    balance += item.value;
+function claimDaily() {
+    if (!canClaimDaily()) {
+        alert('⏳ Ежедневная награда уже получена!');
+        return;
+    }
+    
+    balance += 50;
     balance = Math.round(balance * 100) / 100;
-    inventoryItems.splice(index, 1);
+    dailyLastClaim = Date.now();
+    saveDailyTime();
+    saveBalance();
     updateBalanceUI();
-    renderInventory();
+    
+    if (dailyTimerInterval) {
+        clearInterval(dailyTimerInterval);
+    }
+    updateDailyTimer();
+    dailyTimerInterval = setInterval(updateDailyTimer, 1000);
+    
+    alert('🎁 Ежедневная награда получена! +50 ⭐');
 }
 
-document.getElementById('sellAllButton').addEventListener('click', () => {
-    if (inventoryItems.length === 0) return;
-    let total = 0;
-    for (const item of inventoryItems) total += item.value;
-    balance += total;
-    balance = Math.round(balance * 100) / 100;
-    inventoryItems = [];
-    updateBalanceUI();
-    renderInventory();
+function copyRefLink() {
+    const link = document.getElementById('refLink').textContent;
+    navigator.clipboard.writeText(link).then(() => {
+        alert('📋 Реферальная ссылка скопирована!');
+    }).catch(() => {
+        const input = document.createElement('input');
+        input.value = link;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+        alert('📋 Реферальная ссылка скопирована!');
+    });
+}
+
+// =====================================================
+// ПОЛУЧЕНИЕ ДАННЫХ ОТ TELEGRAM
+// =====================================================
+
+if (tg) {
+    tg.expand();
+    tg.ready();
+    
+    const user = tg.initDataUnsafe?.user;
+    if (user) {
+        tgUser = user;
+        tgUserId = user.id;
+        tgUserName = user.first_name || 'Игрок';
+        
+        document.getElementById('profileName').textContent = tgUserName;
+        document.getElementById('profileId').textContent = tgUserId;
+        
+        const refLink = `https://t.me/White_Bear_ROBOT?start=ref_${tgUserId}`;
+        document.getElementById('refLink').textContent = refLink;
+        
+        loadSavedData();
+        updateBalanceUI();
+        
+        sendToBot('getBalance');
+        sendToBot('getDailyStatus');
+    }
+}
+
+// =====================================================
+// ОБРАБОТЧИК ОТВЕТОВ ОТ БОТА
+// =====================================================
+
+// Сохраняем оригинальную функцию для переопределения
+// В response от бота приходит текст, который мы парсим
+// Бот отправляет ответы в виде текста, которые мы обрабатываем здесь
+
+// Функция, которая будет вызвана, когда бот отвечает
+// (через WebApp мы не можем напрямую получать ответы, 
+// поэтому бот отправляет сообщения в чат, и мы их не видим в игре)
+// Вместо этого мы используем localStorage для синхронизации
+
+// =====================================================
+// НАЗНАЧЕНИЕ ОБРАБОТЧИКОВ
+// =====================================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    const dailyBtn = document.getElementById('dailyButton');
+    if (dailyBtn) {
+        dailyBtn.addEventListener('click', claimDaily);
+    }
+    
+    // Запускаем таймер
+    updateDailyTimer();
+    dailyTimerInterval = setInterval(updateDailyTimer, 1000);
 });
 
 // =====================================================
@@ -2124,7 +2206,7 @@ document.getElementById('promoButton').addEventListener('click', () => {
 });
 
 // =====================================================
-// ИГРА ШАРИК (ПОЛНЫЙ КОД)
+// ИГРА ШАРИК
 // =====================================================
 
 let currentBet = 0;
@@ -2437,38 +2519,77 @@ document.querySelectorAll('.nav-button').forEach(btn=>{
     });
 });
 
-dailyButton.addEventListener('click', ()=>{
-    if (!dailyAvailable) return;
-    balance += 50;
-    balance = Math.round(balance * 100) / 100;
-    dailyAvailable = false;
-    dailyNextTime = Date.now() + 24*60*60*1000;
-    dailyButton.disabled = true;
-    dailyButton.textContent = 'НАГРАДА ПОЛУЧЕНА';
-    dailyTimer.classList.remove('hidden');
-    updateBalanceUI();
-});
-function updateDailyTimer() {
-    if (dailyAvailable) return;
-    const rem = dailyNextTime - Date.now();
-    if (rem <= 0) {
-        dailyAvailable = true;
-        dailyButton.disabled = false;
-        dailyButton.textContent = 'ЗАБРАТЬ 50';
-        dailyTimer.classList.add('hidden');
-        return;
-    }
-    const sec = Math.floor(rem/1000);
-    const h = Math.floor(sec/3600), m = Math.floor((sec%3600)/60), s = sec%60;
-    dailyTimer.textContent = String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
-}
-setInterval(updateDailyTimer, 1000);
-
 function updateProfileStats() {
     document.getElementById('gamesPlayed').textContent = gamesPlayed;
     document.getElementById('wins').textContent = wins;
     document.getElementById('losses').textContent = losses;
 }
+
+// =====================================================
+// ИНВЕНТАРЬ
+// =====================================================
+function renderInventory() {
+    const container = document.getElementById('inventoryContainer');
+    container.innerHTML = '';
+    if (inventoryItems.length === 0) {
+        container.innerHTML = `
+            <div class="empty-inventory">
+                <div class="empty-icon">📦</div>
+                <div class="empty-title">Инвентарь пуст</div>
+                <div class="empty-text">Предметы из кейсов появятся здесь, если вы нажмёте «В инвентарь».</div>
+            </div>
+        `;
+        document.getElementById('sellAllButton').disabled = true;
+        return;
+    }
+    document.getElementById('sellAllButton').disabled = false;
+    inventoryItems.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'inventory-item';
+        div.innerHTML = `
+            <div class="inventory-item-left">
+                <div class="inventory-item-emoji">${item.emoji}</div>
+                <div>
+                    <div class="inventory-item-name">${item.name}</div>
+                    <div class="inventory-item-value">+${item.value} ⭐</div>
+                </div>
+            </div>
+            <button class="inventory-sell-btn" data-index="${index}">ПРОДАТЬ</button>
+        `;
+        container.appendChild(div);
+    });
+    document.querySelectorAll('.inventory-sell-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const index = parseInt(e.target.dataset.index);
+            sellInventoryItem(index);
+        });
+    });
+}
+
+function addItemToInventory(item) {
+    inventoryItems.push({ ...item });
+    renderInventory();
+}
+
+function sellInventoryItem(index) {
+    const item = inventoryItems[index];
+    balance += item.value;
+    balance = Math.round(balance * 100) / 100;
+    inventoryItems.splice(index, 1);
+    updateBalanceUI();
+    renderInventory();
+}
+
+document.getElementById('sellAllButton').addEventListener('click', () => {
+    if (inventoryItems.length === 0) return;
+    let total = 0;
+    for (const item of inventoryItems) total += item.value;
+    balance += total;
+    balance = Math.round(balance * 100) / 100;
+    inventoryItems = [];
+    updateBalanceUI();
+    renderInventory();
+});
 
 // =====================================================
 // ИГРА БИЛЕТЫ (SCRATCH) - ПОЛНЫЙ КОД
@@ -3676,30 +3797,13 @@ const originalUpdateBalanceUI = window.updateBalanceUI || function() {};
 // Переопределяем для синхронизации с ботом
 window.updateBalanceUI = function() {
     originalUpdateBalanceUI();
-    
-    // Отправляем новый баланс боту
-    if (tgUserId) {
-        sendToBot('updateBalance', { balance: balance });
-    }
+    saveBalance();
 };
-// =====================================================
-// ОБРАБОТКА РЕФЕРАЛЬНОЙ ССЫЛКИ
-// =====================================================
-
-// Получаем параметр ref из URL
-const urlParams = new URLSearchParams(window.location.search);
-const refId = urlParams.get('ref');
-
-if (refId && tgUserId && refId != tgUserId) {
-    // Отправляем боту, что это реферал
-    sendToBot('addReferral', { referrer_id: refId, referred_id: tgUserId });
-    // Убираем ref из URL, чтобы не было видно
-    window.history.replaceState({}, document.title, window.location.pathname);
-}
 
 // При загрузке запрашиваем баланс у бота
 if (tgUserId) {
     sendToBot('getBalance');
+    sendToBot('getDailyStatus');
 }
 </script>
 
