@@ -2024,19 +2024,16 @@ function sendToBot(action, data = {}) {
 
 function loadSavedData() {
     if (tgUserId) {
-        // Загружаем баланс
         const savedBalance = localStorage.getItem(`balance_${tgUserId}`);
         if (savedBalance !== null) {
             balance = parseFloat(savedBalance);
         }
         
-        // Загружаем ежедневную награду
         const savedDaily = localStorage.getItem(`daily_${tgUserId}`);
         if (savedDaily) {
             dailyLastClaim = parseInt(savedDaily);
         }
         
-        // Загружаем инвентарь
         const savedInventory = localStorage.getItem(`inventory_${tgUserId}`);
         if (savedInventory) {
             try {
