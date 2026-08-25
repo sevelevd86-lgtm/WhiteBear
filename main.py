@@ -16,15 +16,17 @@ from aiogram.types import (
     WebAppInfo,
     Message,
     InlineKeyboardMarkup,
-    InlineKeyboardButton
+    InlineKeyboardButton,
+    FSInputFile
 )
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 # =====================================================
 # КОНФИГУРАЦИЯ
 # =====================================================
 
 BOT_TOKEN = "8918284594:AAG-h12sJhc7a0qaV5LgS-ea29FNeZVtJvY"
-WEBAPP_URL = "https://sevelevd86-lgtm.github.io/Casino_site/"
+WEBAPP_URL = "https://sevelevd86-lgtm.github.io/WhiteBear/"
 
 # =====================================================
 # БАЗА ДАННЫХ
@@ -178,6 +180,20 @@ bot = Bot(token=BOT_TOKEN, parse_mode=ParseMode.HTML)
 dp = Dispatcher()
 
 # =====================================================
+# КЛАВИАТУРЫ
+# =====================================================
+
+def get_main_keyboard():
+    """Главная клавиатура с кнопками"""
+    builder = InlineKeyboardBuilder()
+    builder.button(text="🎮 Открыть игры", web_app=WebAppInfo(url=WEBAPP_URL))
+    builder.button(text="💰 Баланс", callback_data="balance")
+    builder.button(text="👤 Профиль", callback_data="profile")
+    builder.button(text="📎 Реферальная ссылка", callback_data="referral")
+    builder.adjust(1, 2, 1)
+    return builder.as_markup()
+
+# =====================================================
 # ОБРАБОТЧИКИ КОМАНД
 # =====================================================
 
@@ -204,58 +220,54 @@ async def start_command(message: Message) -> None:
             success = add_referral(invited_by, user_id, 10.0)
             if success:
                 try:
-                    await bot.send_message(
+                    await bot.send_photo(
                         invited_by,
-                        f"🎉 <b>Новый реферал!</b>\n\n"
-                        f"Пользователь {first_name} (ID: {user_id}) перешёл по вашей ссылке.\n"
-                        f"💰 Вы получили +10 звёзд на баланс!\n"
-                        f"📊 Всего приглашено: {get_referrals_count(invited_by)}"
+                        photo="https://i.imgur.com/placeholder.jpg",  # ← замени на свою картинку
+                        caption=(
+                            f"🎉 <b>Новый реферал!</b>\n\n"
+                            f"Пользователь {first_name} перешёл по вашей ссылке.\n"
+                            f"💰 Вы получили +10 звёзд на баланс!\n"
+                            f"📊 Всего приглашено: {get_referrals_count(invited_by)}"
+                        )
                     )
                 except Exception as e:
                     logger.error(f"Не удалось уведомить реферера: {e}")
-                
-                await message.answer(
-                    f"🎉 <b>Добро пожаловать!</b>\n\n"
-                    f"Вы перешли по реферальной ссылке!\n"
-                    f"💰 Вам начислено +10 звёзд на баланс!\n\n"
-                    f"Нажмите на кнопку ниже, чтобы открыть игры.",
-                    reply_markup=InlineKeyboardMarkup(
-                        inline_keyboard=[
-                            [InlineKeyboardButton(
-                                text="🎮 Открыть игры",
-                                web_app=WebAppInfo(url=WEBAPP_URL)
-                            )]
-                        ]
-                    )
-                )
-                return
     
     balance = get_balance(user_id)
     ref_count = get_referrals_count(user_id)
     bot_username = (await bot.me()).username
     ref_link = get_referral_link(user_id, bot_username)
     
-    await message.answer(
-        f"🎮 <b>Добро пожаловать в DROP, {first_name}!</b>\n\n"
-        f"💰 Ваш баланс: <b>{balance:.2f} звёзд</b>\n"
-        f"👥 Приглашено друзей: <b>{ref_count}</b>\n\n"
-        f"🔥 <b>Доступны игры:</b>\n"
-        f"• ⚪ Шарик\n"
-        f"• 🎟️ Билеты\n"
-        f"• 📦 Кейсы\n"
-        f"• 🎡 UPGRADE\n\n"
-        f"📎 <b>Ваша реферальная ссылка:</b>\n"
-        f"<code>{ref_link}</code>\n\n"
-        f"💡 Приглашайте друзей и получайте по 10 звёзд за каждого!",
-        reply_markup=InlineKeyboardMarkup(
-            inline_keyboard=[
-                [InlineKeyboardButton(
-                    text="🎮 Открыть игры",
-                    web_app=WebAppInfo(url=WEBAPP_URL)
-                )]
-            ]
+    # Отправляем картинку с приветствием
+    try:
+        await message.answer_photo(
+            photo="https://i.imgur.com/placeholder.jpg",  # ← замени на свою картинку
+            caption=(
+                f"🎮 <b>Добро пожаловать в DROP, {first_name}!</b>\n\n"
+                f"💰 Ваш баланс: <b>{balance:.2f} звёзд</b>\n"
+                f"👥 Приглашено друзей: <b>{ref_count}</b>\n\n"
+                f"🔥 <b>Доступны игры:</b>\n"
+                f"• ⚪ Шарик\n"
+                f"• 🎟️ Билеты\n"
+                f"• 📦 Кейсы\n"
+                f"• 🎡 UPGRADE\n\n"
+                f"📎 <b>Ваша реферальная ссылка:</b>\n"
+                f"<code>{ref_link}</code>\n\n"
+                f"💡 Приглашайте друзей и получайте по 10 звёзд за каждого!"
+            ),
+            reply_markup=get_main_keyboard()
         )
-    )
+    except Exception as e:
+        # Если картинка не загрузилась — отправляем просто текст
+        logger.error(f"Ошибка отправки картинки: {e}")
+        await message.answer(
+            f"🎮 <b>Добро пожаловать в DROP, {first_name}!</b>\n\n"
+            f"💰 Ваш баланс: <b>{balance:.2f} звёзд</b>\n"
+            f"👥 Приглашено друзей: <b>{ref_count}</b>\n\n"
+            f"📎 <b>Ваша реферальная ссылка:</b>\n"
+            f"<code>{ref_link}</code>",
+            reply_markup=get_main_keyboard()
+        )
 
 @dp.message(Command("game"))
 async def game_command(message: Message) -> None:
@@ -318,6 +330,88 @@ async def help_command(message: Message) -> None:
     )
 
 # =====================================================
+# CALLBACK HANDLERS
+# =====================================================
+
+@dp.callback_query(lambda c: c.data == "balance")
+async def balance_callback(callback: types.CallbackQuery):
+    user_id = callback.from_user.id
+    balance = get_balance(user_id)
+    ref_count = get_referrals_count(user_id)
+    await callback.message.edit_text(
+        f"💰 <b>Ваш баланс:</b> {balance:.2f} звёзд\n"
+        f"👥 <b>Приглашено друзей:</b> {ref_count}",
+        reply_markup=InlineKeyboardMarkup(
+            inline_keyboard=[[
+                InlineKeyboardButton(text="🔙 Назад", callback_data="back_to_start")
+            ]]
+        )
+    )
+    await callback.answer()
+
+@dp.callback_query(lambda c: c.data == "profile")
+async def profile_callback(callback: types.CallbackQuery):
+    user_id = callback.from_user.id
+    first_name = callback.from_user.first_name
+    balance = get_balance(user_id)
+    ref_count = get_referrals_count(user_id)
+    bot_username = (await bot.me()).username
+    ref_link = get_referral_link(user_id, bot_username)
+    
+    await callback.message.edit_text(
+        f"👤 <b>Профиль</b>\n\n"
+        f"Имя: {first_name}\n"
+        f"ID: {user_id}\n"
+        f"💰 Баланс: {balance:.2f} звёзд\n"
+        f"👥 Приглашено: {ref_count}\n\n"
+        f"📎 <b>Реферальная ссылка:</b>\n"
+        f"<code>{ref_link}</code>",
+        reply_markup=InlineKeyboardMarkup(
+            inline_keyboard=[[
+                InlineKeyboardButton(text="🔙 Назад", callback_data="back_to_start")
+            ]]
+        )
+    )
+    await callback.answer()
+
+@dp.callback_query(lambda c: c.data == "referral")
+async def referral_callback(callback: types.CallbackQuery):
+    user_id = callback.from_user.id
+    bot_username = (await bot.me()).username
+    ref_link = get_referral_link(user_id, bot_username)
+    
+    await callback.message.edit_text(
+        f"📎 <b>Ваша реферальная ссылка:</b>\n\n"
+        f"<code>{ref_link}</code>\n\n"
+        f"💡 Приглашайте друзей и получайте по 10 звёзд за каждого!",
+        reply_markup=InlineKeyboardMarkup(
+            inline_keyboard=[[
+                InlineKeyboardButton(text="🔙 Назад", callback_data="back_to_start")
+            ]]
+        )
+    )
+    await callback.answer()
+
+@dp.callback_query(lambda c: c.data == "back_to_start")
+async def back_to_start_callback(callback: types.CallbackQuery):
+    user_id = callback.from_user.id
+    first_name = callback.from_user.first_name
+    balance = get_balance(user_id)
+    ref_count = get_referrals_count(user_id)
+    bot_username = (await bot.me()).username
+    ref_link = get_referral_link(user_id, bot_username)
+    
+    await callback.message.edit_text(
+        f"🎮 <b>Добро пожаловать в DROP, {first_name}!</b>\n\n"
+        f"💰 Ваш баланс: <b>{balance:.2f} звёзд</b>\n"
+        f"👥 Приглашено друзей: <b>{ref_count}</b>\n\n"
+        f"📎 <b>Ваша реферальная ссылка:</b>\n"
+        f"<code>{ref_link}</code>",
+        reply_markup=get_main_keyboard()
+    )
+    await callback.answer()
+
+# =====================================================
 # ОБРАБОТЧИК ДАННЫХ ИЗ WEBAPP (ИГРЫ)
 # =====================================================
 
@@ -330,17 +424,7 @@ async def web_app_data_handler(message: Message) -> None:
         
         if action == "getBalance":
             balance = get_balance(user_id)
-            await message.answer(
-                f"💰 {balance:.2f}",
-                reply_markup=InlineKeyboardMarkup(
-                    inline_keyboard=[[
-                        InlineKeyboardButton(
-                            text="🎮 Играть",
-                            web_app=WebAppInfo(url=WEBAPP_URL)
-                        )
-                    ]]
-                )
-            )
+            await message.answer(f"💰 {balance:.2f}")
         
         elif action == "updateBalance":
             new_balance = data.get("balance")
