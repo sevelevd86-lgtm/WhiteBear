@@ -2328,7 +2328,7 @@ document.getElementById('promoButton').addEventListener('click', () => {
 });
 
 // =====================================================
-// ИГРА ШАРИК (ПОЛНЫЙ КОД)
+// ИГРА ШАРИК (ПОЛНЫЙ КОД - ИСПРАВЛЕН)
 // =====================================================
 
 let currentBet = 0;
@@ -2490,9 +2490,13 @@ function bounceFromWall(nx, ny) {
     if (dot > 0) { ball.vx -= 2 * dot * nx; ball.vy -= 2 * dot * ny; }
     registerBounce(nx, ny);
 }
+
+// ========== ИСПРАВЛЕННАЯ ФУНКЦИЯ finishGame ==========
 function finishGame(win) {
     if (gameFinished) return;
-    gameFinished = true; gameRunning = false; gamesPlayed++;
+    gameFinished = true; 
+    gameRunning = false; 
+    gamesPlayed++;
     if (win) {
         wins++;
         const payout = currentBet * multiplier;
@@ -2516,6 +2520,7 @@ function finishGame(win) {
     updateProfileStats();
     gameResult.classList.remove('hidden');
 }
+
 function updatePhysics() {
     holeAngle += HOLE_SPEED;
     holeAngle = normalizeAngle(holeAngle);
@@ -2612,10 +2617,11 @@ document.getElementById('openGameButton').addEventListener('click', function() {
     updateBalanceUI();
     updateZones();
     resizeCanvas();
+    gameMenu.classList.remove('hidden'); // Показываем меню при открытии
 });
 
 // =====================================================
-// ОБРАБОТЧИКИ ДЛЯ ИГРЫ ШАРИК (ДОБАВЛЕНЫ)
+// ОБРАБОТЧИКИ ДЛЯ ИГРЫ ШАРИК (ИСПРАВЛЕНЫ)
 // =====================================================
 
 // Кнопка "ИГРАТЬ" - запуск раунда
@@ -2630,9 +2636,21 @@ document.getElementById('exitGame').addEventListener('click', function() {
     document.getElementById('menuPage').classList.remove('hidden');
 });
 
-// Кнопка "ЗАКРЫТЬ" в окне результата
+// ========== ИСПРАВЛЕННАЯ КНОПКА "ЗАКРЫТЬ" ==========
 document.getElementById('resultClose').addEventListener('click', function() {
     gameResult.classList.add('hidden');
+    gameMenu.classList.remove('hidden'); // ПОКАЗЫВАЕМ МЕНЮ СТАВКИ
+    // Сбрасываем состояние для новой игры
+    gameRunning = false;
+    gameFinished = false;
+    escaped = false;
+    bounceCount = 0;
+    multiplier = 1;
+    ball.x = circle.x;
+    ball.y = circle.y - circle.radius * .35;
+    ball.vx = 0;
+    ball.vy = 0;
+    updateGameUI();
 });
 
 // Выбор сложности
