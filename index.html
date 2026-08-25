@@ -10,7 +10,7 @@
 
 <style>
 /* =====================================================
-   ОБЩИЕ СБРОСЫ
+   ОБЩИЕ СБРОСЫ - ЗИМНИЙ ДИЗАЙН
 ===================================================== */
 * {
     box-sizing: border-box;
@@ -24,8 +24,8 @@ body {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background: #111315;
-    color: #fff;
+    background: #0a1628;
+    color: #e8f0fe;
     font-family: Arial, sans-serif;
     user-select: none;
 }
@@ -44,7 +44,7 @@ button { cursor: pointer; }
     width: 100%;
     height: 100%;
     position: relative;
-    background: #111315;
+    background: linear-gradient(145deg, #0a1628, #142a4a, #0d1f38);
 }
 
 /* HEADER */
@@ -58,20 +58,24 @@ button { cursor: pointer; }
     align-items: center;
     justify-content: space-between;
     padding: 0 22px;
-    border-bottom: 1px solid #282d31;
-    background: rgba(17,19,21,.96);
+    border-bottom: 1px solid rgba(100, 180, 255, 0.2);
+    background: rgba(10, 22, 40, 0.95);
+    backdrop-filter: blur(10px);
     z-index: 20;
 }
 .logo {
     font-size: 22px;
     font-weight: 900;
     letter-spacing: -.5px;
+    color: #fff;
+    text-shadow: 0 0 20px rgba(100, 180, 255, 0.3);
 }
+.logo span { color: #6ab0ff; }
 .header-balance {
     display: flex;
     align-items: center;
     gap: 8px;
-    color: #ffd84d;
+    color: #a8d4ff;
     font-size: 19px;
     font-weight: 900;
 }
@@ -87,6 +91,17 @@ button { cursor: pointer; }
     overflow-y: auto;
     padding: 25px 18px 30px;
 }
+.content::-webkit-scrollbar {
+    width: 4px;
+}
+.content::-webkit-scrollbar-track {
+    background: #0a1628;
+}
+.content::-webkit-scrollbar-thumb {
+    background: #4a8ecf;
+    border-radius: 4px;
+}
+
 .page {
     width: 100%;
     max-width: 620px;
@@ -96,9 +111,12 @@ button { cursor: pointer; }
     font-size: 30px;
     font-weight: 900;
     margin-bottom: 8px;
+    background: linear-gradient(135deg, #fff, #6ab0ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 .page-subtitle {
-    color: #858b91;
+    color: #8ab4d8;
     font-size: 16px;
     line-height: 1.5;
     margin-bottom: 24px;
@@ -106,19 +124,22 @@ button { cursor: pointer; }
 
 /* CARDS */
 .card {
-    background: #191c20;
-    border: 1px solid #292e33;
+    background: linear-gradient(145deg, rgba(20, 50, 90, 0.6), rgba(10, 22, 40, 0.8));
+    border: 1px solid rgba(100, 180, 255, 0.15);
     border-radius: 16px;
     padding: 20px;
     margin-bottom: 14px;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 8px 32px rgba(0, 20, 50, 0.3);
 }
 .card-title {
     font-size: 20px;
     font-weight: 900;
     margin-bottom: 7px;
+    color: #c8e4ff;
 }
 .card-text {
-    color: #858b91;
+    color: #8ab4d8;
     font-size: 15px;
     line-height: 1.5;
 }
@@ -126,6 +147,12 @@ button { cursor: pointer; }
 /* GAME CARD */
 .game-card {
     padding: 24px;
+    background: linear-gradient(145deg, rgba(30, 70, 120, 0.4), rgba(10, 30, 60, 0.6));
+    border: 1px solid rgba(100, 180, 255, 0.2);
+}
+.game-card:hover {
+    border-color: rgba(100, 180, 255, 0.5);
+    box-shadow: 0 8px 40px rgba(50, 150, 255, 0.15);
 }
 .game-icon {
     width: 62px;
@@ -134,9 +161,10 @@ button { cursor: pointer; }
     align-items: center;
     justify-content: center;
     border-radius: 16px;
-    background: #24292e;
+    background: linear-gradient(135deg, #1a3a6a, #0d2240);
     font-size: 31px;
     margin-bottom: 17px;
+    border: 1px solid rgba(100, 180, 255, 0.2);
 }
 .game-button {
     width: 100%;
@@ -144,10 +172,16 @@ button { cursor: pointer; }
     padding: 15px;
     border: none;
     border-radius: 11px;
-    background: #1678e8;
+    background: linear-gradient(135deg, #2a7ad8, #1a5ab8);
     color: #fff;
     font-size: 16px;
     font-weight: 900;
+    box-shadow: 0 4px 20px rgba(42, 122, 216, 0.3);
+    transition: 0.2s;
+}
+.game-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 30px rgba(42, 122, 216, 0.5);
 }
 .game-button:active { transform: scale(.98); }
 
@@ -157,20 +191,21 @@ button { cursor: pointer; }
     padding: 14px;
     border: none;
     border-radius: 11px;
-    background: #282d32;
-    color: #fff;
+    background: linear-gradient(135deg, #1a3a6a, #0d2240);
+    color: #c8e4ff;
     font-size: 16px;
     font-weight: 800;
     margin-bottom: 16px;
+    border: 1px solid rgba(100, 180, 255, 0.2);
 }
 .sell-all:disabled { opacity: .45; cursor: default; }
 .empty-inventory {
     text-align: center;
     padding: 45px 15px;
-    color: #737a81;
+    color: #5a8aaa;
 }
 .empty-icon { font-size: 45px; margin-bottom: 13px; }
-.empty-title { color: #c9cdd1; font-size: 19px; font-weight: 800; margin-bottom: 7px; }
+.empty-title { color: #8ab4d8; font-size: 19px; font-weight: 800; margin-bottom: 7px; }
 .empty-text { font-size: 15px; }
 
 .inventory-item {
@@ -178,8 +213,8 @@ button { cursor: pointer; }
     align-items: center;
     justify-content: space-between;
     padding: 12px 16px;
-    background: #1a1d21;
-    border: 1px solid #292e33;
+    background: rgba(20, 50, 90, 0.4);
+    border: 1px solid rgba(100, 180, 255, 0.15);
     border-radius: 12px;
     margin-bottom: 8px;
 }
@@ -189,10 +224,10 @@ button { cursor: pointer; }
     gap: 12px;
 }
 .inventory-item-emoji { font-size: 28px; }
-.inventory-item-name { font-weight: 800; font-size: 15px; }
+.inventory-item-name { font-weight: 800; font-size: 15px; color: #c8e4ff; }
 .inventory-item-value { color: #ffd84d; font-size: 14px; font-weight: 800; }
 .inventory-sell-btn {
-    background: #27d878;
+    background: linear-gradient(135deg, #1a5ab8, #0d3a7a);
     border: none;
     border-radius: 8px;
     padding: 6px 14px;
@@ -201,7 +236,7 @@ button { cursor: pointer; }
     font-size: 13px;
     cursor: pointer;
 }
-.inventory-sell-btn:hover { filter: brightness(1.1); }
+.inventory-sell-btn:hover { filter: brightness(1.2); }
 
 /* PROFILE */
 .profile-row {
@@ -209,12 +244,12 @@ button { cursor: pointer; }
     align-items: center;
     justify-content: space-between;
     padding: 15px 0;
-    border-bottom: 1px solid #292e33;
+    border-bottom: 1px solid rgba(100, 180, 255, 0.1);
 }
 .profile-row:last-child { border-bottom: none; }
-.profile-label { color: #858b91; font-size: 15px; }
-.profile-value { font-size: 16px; font-weight: 800; }
-.ref-value { color: #54a8ff; word-break: break-all; }
+.profile-label { color: #8ab4d8; font-size: 15px; }
+.profile-value { font-size: 16px; font-weight: 800; color: #e8f0fe; }
+.ref-value { color: #6ab0ff; word-break: break-all; }
 
 /* DAILY */
 .daily-button {
@@ -222,20 +257,21 @@ button { cursor: pointer; }
     padding: 15px;
     border: none;
     border-radius: 11px;
-    background: #1678e8;
+    background: linear-gradient(135deg, #2a7ad8, #1a5ab8);
     color: white;
     font-size: 16px;
     font-weight: 900;
     margin-top: 15px;
+    box-shadow: 0 4px 20px rgba(42, 122, 216, 0.3);
 }
 .daily-button:disabled {
-    background: #282d32;
-    color: #777d83;
+    background: rgba(30, 60, 100, 0.5);
+    color: #5a8aaa;
 }
 .timer {
     text-align: center;
     margin-top: 13px;
-    color: #ffd84d;
+    color: #6ab0ff;
     font-size: 18px;
     font-weight: 900;
 }
@@ -244,25 +280,26 @@ button { cursor: pointer; }
 .promo-input {
     width: 100%;
     padding: 14px;
-    border: 1px solid #383e44;
+    border: 1px solid rgba(100, 180, 255, 0.2);
     border-radius: 10px;
-    background: #111315;
-    color: #fff;
+    background: rgba(10, 22, 40, 0.8);
+    color: #e8f0fe;
     outline: none;
     font-size: 16px;
     text-align: center;
 }
-.promo-input:focus { border-color: #1678e8; }
+.promo-input:focus { border-color: #2a7ad8; box-shadow: 0 0 20px rgba(42, 122, 216, 0.15); }
 .promo-button {
     width: 100%;
     margin-top: 11px;
     padding: 14px;
     border: none;
     border-radius: 10px;
-    background: #282d32;
-    color: white;
+    background: linear-gradient(135deg, #1a3a6a, #0d2240);
+    color: #c8e4ff;
     font-size: 15px;
     font-weight: 900;
+    border: 1px solid rgba(100, 180, 255, 0.2);
 }
 .promo-message {
     min-height: 20px;
@@ -280,8 +317,9 @@ button { cursor: pointer; }
     width: 100%;
     height: 82px;
     display: flex;
-    background: #171a1d;
-    border-top: 1px solid #292e33;
+    background: rgba(10, 22, 40, 0.95);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(100, 180, 255, 0.15);
     z-index: 30;
 }
 .nav-button {
@@ -293,21 +331,21 @@ button { cursor: pointer; }
     gap: 5px;
     border: none;
     background: transparent;
-    color: #737a81;
+    color: #5a8aaa;
     font-size: 13px;
     font-weight: 800;
 }
 .nav-icon { font-size: 23px; }
-.nav-button.active { color: #fff; }
+.nav-button.active { color: #6ab0ff; }
 .nav-button.active .nav-icon { transform: translateY(-1px); }
 
 /* =====================================================
-   ИГРА ШАРИК
+   ИГРА ШАРИК - ЗИМНИЙ ДИЗАЙН
 ===================================================== */
 #gameScreen {
     position: fixed;
     inset: 0;
-    background: #111315;
+    background: linear-gradient(145deg, #0a1628, #142a4a);
     z-index: 100;
 }
 #gameCanvas {
@@ -330,18 +368,18 @@ button { cursor: pointer; }
     text-align: center;
 }
 .game-stat-label {
-    color: #737a81;
+    color: #5a8aaa;
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: .8px;
 }
 .game-stat-value {
     margin-top: 4px;
-    color: #fff;
+    color: #e8f0fe;
     font-size: 20px;
     font-weight: 900;
 }
-#gameMultiplier { color: #42df78; }
+#gameMultiplier { color: #6ab0ff; }
 #gameBalance { color: #ffd84d; }
 
 .bottom-zones {
@@ -365,10 +403,10 @@ button { cursor: pointer; }
     overflow: hidden;
 }
 .green-zone {
-    background: linear-gradient(to top, #2bdd72, #26c968 35%, rgba(39,201,104,.2));
+    background: linear-gradient(to top, #1a8a5a, #0d6a4a 35%, rgba(26, 138, 90, 0.2));
 }
 .red-zone {
-    background: linear-gradient(to top, #e84550, #d93c47 35%, rgba(217,60,71,.2));
+    background: linear-gradient(to top, #c04060, #a03050 35%, rgba(192, 64, 96, 0.2));
 }
 
 .game-menu {
@@ -379,16 +417,19 @@ button { cursor: pointer; }
     width: calc(100% - 40px);
     max-width: 350px;
     padding: 25px;
-    background: rgba(25,28,32,.98);
-    border: 1px solid #343a40;
+    background: rgba(10, 30, 60, 0.95);
+    border: 1px solid rgba(100, 180, 255, 0.2);
     border-radius: 18px;
     z-index: 120;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
 }
 .game-menu-title {
     text-align: center;
     font-size: 28px;
     font-weight: 900;
     margin-bottom: 18px;
+    color: #e8f0fe;
 }
 .game-menu-balance {
     text-align: center;
@@ -400,15 +441,16 @@ button { cursor: pointer; }
 .bet-input {
     width: 100%;
     padding: 14px;
-    background: #111315;
-    color: white;
-    border: 1px solid #3a4148;
+    background: rgba(10, 22, 40, 0.8);
+    color: #e8f0fe;
+    border: 1px solid rgba(100, 180, 255, 0.2);
     border-radius: 10px;
     outline: none;
     text-align: center;
     font-size: 17px;
     font-weight: 800;
 }
+.bet-input:focus { border-color: #2a7ad8; }
 .bet-error {
     min-height: 18px;
     color: #ef4752;
@@ -426,22 +468,27 @@ button { cursor: pointer; }
     border: none;
     border-radius: 9px;
     padding: 10px 5px;
-    background: #282d32;
-    color: #cfd3d7;
+    background: rgba(20, 50, 90, 0.5);
+    color: #8ab4d8;
     font-size: 13px;
     font-weight: 800;
 }
-.difficulty button.active { background: #1678e8; color: #fff; }
+.difficulty button.active {
+    background: linear-gradient(135deg, #2a7ad8, #1a5ab8);
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(42, 122, 216, 0.3);
+}
 .start-game {
     width: 100%;
     margin-top: 15px;
     padding: 14px;
     border: none;
     border-radius: 10px;
-    background: #1678e8;
+    background: linear-gradient(135deg, #2a7ad8, #1a5ab8);
     color: #fff;
     font-size: 15px;
     font-weight: 900;
+    box-shadow: 0 4px 20px rgba(42, 122, 216, 0.3);
 }
 .exit-game {
     width: 100%;
@@ -450,7 +497,7 @@ button { cursor: pointer; }
     border: none;
     border-radius: 10px;
     background: transparent;
-    color: #858b91;
+    color: #5a8aaa;
     font-size: 14px;
     font-weight: 800;
 }
@@ -463,17 +510,18 @@ button { cursor: pointer; }
     width: calc(100% - 40px);
     max-width: 330px;
     padding: 28px;
-    background: #191c20;
-    border: 1px solid #343a40;
+    background: rgba(10, 30, 60, 0.95);
+    border: 1px solid rgba(100, 180, 255, 0.2);
     border-radius: 18px;
     text-align: center;
     z-index: 130;
+    backdrop-filter: blur(10px);
 }
 .result-title { font-size: 44px; font-weight: 900; }
-.result-title.win { color: #42df78; }
+.result-title.win { color: #6ab0ff; }
 .result-title.lose { color: #ef4752; }
 .result-info {
-    color: #858b91;
+    color: #8ab4d8;
     font-size: 14px;
     line-height: 1.7;
     margin-top: 8px;
@@ -483,7 +531,7 @@ button { cursor: pointer; }
     font-size: 23px;
     font-weight: 900;
 }
-.result-money.win { color: #42df78; }
+.result-money.win { color: #ffd84d; }
 .result-money.lose { color: #ef4752; }
 .result-close {
     width: 100%;
@@ -491,19 +539,19 @@ button { cursor: pointer; }
     padding: 13px;
     border: none;
     border-radius: 10px;
-    background: #1678e8;
+    background: linear-gradient(135deg, #2a7ad8, #1a5ab8);
     color: white;
     font-size: 14px;
     font-weight: 900;
 }
 
 /* =====================================================
-   ИГРА БИЛЕТЫ (SCRATCH)
+   ИГРА БИЛЕТЫ - ЗИМНИЙ ДИЗАЙН
 ===================================================== */
 #ticketGameContainer {
     position: fixed;
     inset: 0;
-    background: #101214;
+    background: linear-gradient(145deg, #0a1628, #142a4a);
     z-index: 90;
     overflow-y: auto;
     padding: 18px 15px 30px;
@@ -525,14 +573,16 @@ button { cursor: pointer; }
     font-size: 22px;
     font-weight: 900;
     letter-spacing: .5px;
+    color: #e8f0fe;
 }
 #ticketGameContainer .balance-ticket {
-    background: #1a1d21;
-    border: 1px solid #292e34;
+    background: rgba(20, 50, 90, 0.5);
+    border: 1px solid rgba(100, 180, 255, 0.15);
     border-radius: 12px;
     padding: 10px 14px;
     font-size: 16px;
     font-weight: 800;
+    color: #a8d4ff;
 }
 #ticketGameContainer .balance-ticket span { color: #ffd84d; }
 #ticketGameContainer .screen { display: none; }
@@ -542,10 +592,13 @@ button { cursor: pointer; }
     font-size: 30px;
     font-weight: 900;
     margin-top: 10px;
+    background: linear-gradient(135deg, #fff, #6ab0ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 #ticketGameContainer .subtitle {
     text-align: center;
-    color: #858b92;
+    color: #8ab4d8;
     font-size: 14px;
     margin-top: 7px;
     line-height: 1.5;
@@ -558,44 +611,44 @@ button { cursor: pointer; }
 }
 #ticketGameContainer .ticket {
     width: 100%;
-    border: 1px solid #2b3036;
-    background: #181b1f;
+    border: 1px solid rgba(100, 180, 255, 0.15);
+    background: rgba(20, 50, 90, 0.3);
     border-radius: 17px;
     padding: 19px;
     cursor: pointer;
     transition: .2s ease;
     position: relative;
 }
-#ticketGameContainer .ticket:hover { border-color: #454c54; transform: translateY(-1px); }
+#ticketGameContainer .ticket:hover { border-color: rgba(100, 180, 255, 0.4); transform: translateY(-1px); }
 #ticketGameContainer .ticket:active { transform: scale(.985); }
 #ticketGameContainer .ticket.selected {
-    border: 2px solid #ffd84d;
-    box-shadow: 0 0 0 1px rgba(255,216,77,.15), 0 0 22px rgba(255,216,77,.14);
+    border: 2px solid #6ab0ff;
+    box-shadow: 0 0 30px rgba(42, 122, 216, 0.2);
 }
 #ticketGameContainer .ticket-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
-#ticketGameContainer .ticket-name { font-size: 19px; font-weight: 900; }
+#ticketGameContainer .ticket-name { font-size: 19px; font-weight: 900; color: #e8f0fe; }
 #ticketGameContainer .ticket-price { color: #ffd84d; font-size: 16px; font-weight: 900; }
-#ticketGameContainer .free { color: #48df80; }
+#ticketGameContainer .free { color: #6ab0ff; }
 #ticketGameContainer .ticket-description {
-    color: #858b92;
+    color: #8ab4d8;
     margin-top: 8px;
     font-size: 13px;
     line-height: 1.5;
 }
 #ticketGameContainer .chance-panel {
     margin-top: 20px;
-    background: #181b1f;
-    border: 1px solid #292e34;
+    background: rgba(20, 50, 90, 0.3);
+    border: 1px solid rgba(100, 180, 255, 0.15);
     border-radius: 17px;
     padding: 18px;
 }
-#ticketGameContainer .chance-title { font-size: 18px; font-weight: 900; margin-bottom: 6px; }
+#ticketGameContainer .chance-title { font-size: 18px; font-weight: 900; margin-bottom: 6px; color: #e8f0fe; }
 #ticketGameContainer .chance-subtitle {
-    color: #777f87;
+    color: #8ab4d8;
     font-size: 12px;
     margin-bottom: 14px;
 }
@@ -605,12 +658,12 @@ button { cursor: pointer; }
     padding: 15px;
     border: none;
     border-radius: 12px;
-    background: linear-gradient(135deg, #1678e8, #2493ff);
+    background: linear-gradient(135deg, #2a7ad8, #1a5ab8);
     color: white;
     font-size: 15px;
     font-weight: 900;
     cursor: pointer;
-    box-shadow: 0 6px 20px rgba(22,120,232,.25);
+    box-shadow: 0 4px 20px rgba(42, 122, 216, 0.3);
     transition: .2s ease;
 }
 #ticketGameContainer .start-ticket-button:hover { transform: translateY(-1px); filter: brightness(1.08); }
@@ -620,7 +673,7 @@ button { cursor: pointer; }
     align-items: center;
     justify-content: space-between;
     padding: 11px 0;
-    border-bottom: 1px solid #24282d;
+    border-bottom: 1px solid rgba(100, 180, 255, 0.08);
 }
 #ticketGameContainer .chance-row:last-child { border-bottom: none; }
 #ticketGameContainer .chance-symbol { font-size: 21px; }
@@ -628,12 +681,12 @@ button { cursor: pointer; }
     flex: 1;
     margin-left: 10px;
     font-size: 14px;
-    color: #d5d9dd;
+    color: #c8e4ff;
 }
 #ticketGameContainer .chance-percent {
     font-size: 14px;
     font-weight: 900;
-    color: #4fe483;
+    color: #6ab0ff;
     width: 55px;
     text-align: right;
 }
@@ -650,8 +703,8 @@ button { cursor: pointer; }
     padding: 13px;
     border: none;
     border-radius: 11px;
-    background: #24282d;
-    color: #d9dde0;
+    background: rgba(20, 50, 90, 0.5);
+    color: #8ab4d8;
     font-weight: 800;
     cursor: pointer;
 }
@@ -661,11 +714,11 @@ button { cursor: pointer; }
     align-items: center;
     margin-bottom: 18px;
 }
-#ticketGameContainer .game-name-ticket { font-size: 20px; font-weight: 900; }
+#ticketGameContainer .game-name-ticket { font-size: 20px; font-weight: 900; color: #e8f0fe; }
 #ticketGameContainer .game-cost-ticket { color: #ffd84d; font-size: 14px; font-weight: 800; }
 #ticketGameContainer .free-opens-ticket {
     text-align: center;
-    color: #48df80;
+    color: #6ab0ff;
     font-size: 13px;
     font-weight: 800;
     margin-bottom: 12px;
@@ -673,20 +726,20 @@ button { cursor: pointer; }
 #ticketGameContainer .card-ticket {
     width: 100%;
     aspect-ratio: 1 / 1;
-    background: #191c20;
-    border: 1px solid #30353b;
+    background: rgba(10, 30, 60, 0.8);
+    border: 1px solid rgba(100, 180, 255, 0.15);
     border-radius: 20px;
     padding: 12px;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 9px;
-    box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 #ticketGameContainer .cell-ticket {
     position: relative;
     border-radius: 12px;
     overflow: hidden;
-    background: #24282d;
+    background: rgba(20, 50, 90, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -694,20 +747,20 @@ button { cursor: pointer; }
 }
 #ticketGameContainer .symbol-ticket {
     font-size: clamp(30px, 11vw, 54px);
-    filter: drop-shadow(0 5px 10px rgba(0,0,0,.3));
+    filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.3));
 }
 #ticketGameContainer .scratch-ticket {
     position: absolute;
     inset: 0;
-    background: repeating-linear-gradient(135deg, #777d83 0px, #777d83 3px, #686e74 3px, #686e74 6px);
-    box-shadow: inset 0 0 0 2px rgba(255,255,255,.08), inset 0 -10px 20px rgba(0,0,0,.25);
+    background: repeating-linear-gradient(135deg, #4a6a9a 0px, #4a6a9a 3px, #3a5a8a 3px, #3a5a8a 6px);
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.05), inset 0 -10px 20px rgba(0, 0, 0, 0.25);
     transition: opacity .35s ease, transform .35s ease;
 }
 #ticketGameContainer .scratch-ticket::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: repeating-linear-gradient(-25deg, transparent 0px, transparent 9px, rgba(255,255,255,.15) 10px, transparent 12px);
+    background: repeating-linear-gradient(-25deg, transparent 0px, transparent 9px, rgba(255, 255, 255, 0.08) 10px, transparent 12px);
 }
 #ticketGameContainer .cell-ticket.opened .scratch-ticket {
     opacity: 0;
@@ -729,16 +782,16 @@ button { cursor: pointer; }
     border: none;
     border-radius: 11px;
     padding: 13px;
-    background: #24282d;
-    color: white;
+    background: rgba(20, 50, 90, 0.5);
+    color: #c8e4ff;
     font-weight: 800;
     cursor: pointer;
 }
-#ticketGameContainer .game-button-ticket:hover { background: #2d3238; }
+#ticketGameContainer .game-button-ticket:hover { background: rgba(30, 70, 120, 0.6); }
 #ticketGameContainer .modal-ticket {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,.72);
+    background: rgba(0, 0, 0, 0.7);
     display: none;
     align-items: center;
     justify-content: center;
@@ -749,12 +802,13 @@ button { cursor: pointer; }
 #ticketGameContainer .modal-box-ticket {
     width: 100%;
     max-width: 350px;
-    background: #191c20;
-    border: 1px solid #30353b;
+    background: rgba(10, 30, 60, 0.95);
+    border: 1px solid rgba(100, 180, 255, 0.2);
     border-radius: 20px;
     padding: 28px 22px;
     text-align: center;
     animation: modalIn .25s ease;
+    backdrop-filter: blur(10px);
 }
 @keyframes modalIn {
     from { opacity: 0; transform: scale(.9); }
@@ -766,10 +820,10 @@ button { cursor: pointer; }
     font-size: 30px;
     font-weight: 900;
 }
-#ticketGameContainer .result-title-ticket.win { color: #48df80; }
+#ticketGameContainer .result-title-ticket.win { color: #6ab0ff; }
 #ticketGameContainer .result-title-ticket.lose { color: #ef5350; }
 #ticketGameContainer .result-text-ticket {
-    color: #8b9299;
+    color: #8ab4d8;
     margin-top: 9px;
     line-height: 1.5;
     font-size: 14px;
@@ -786,7 +840,7 @@ button { cursor: pointer; }
     padding: 13px;
     border: none;
     border-radius: 11px;
-    background: #1678e8;
+    background: linear-gradient(135deg, #2a7ad8, #1a5ab8);
     color: white;
     font-size: 14px;
     font-weight: 900;
@@ -797,7 +851,7 @@ button { cursor: pointer; }
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #ffd84d;
+    background: #6ab0ff;
     pointer-events: none;
     z-index: 150;
     animation: spark 800ms ease-out forwards;
@@ -811,25 +865,24 @@ button { cursor: pointer; }
     top: 18px;
     right: 18px;
     z-index: 95;
-    background: #24282d;
-    border: none;
+    background: rgba(20, 50, 90, 0.8);
+    border: 1px solid rgba(100, 180, 255, 0.2);
     border-radius: 50%;
     width: 44px;
     height: 44px;
     font-size: 22px;
-    color: #fff;
+    color: #e8f0fe;
     cursor: pointer;
-    box-shadow: 0 4px 20px rgba(0,0,0,.6);
 }
-#closeTicketsBtn:hover { background: #383e44; }
+#closeTicketsBtn:hover { background: rgba(30, 70, 120, 0.8); }
 
 /* =====================================================
-   ИГРА КЕЙСЫ (CASES)
+   ИГРА КЕЙСЫ - ЗИМНИЙ ДИЗАЙН
 ===================================================== */
 #casesGameContainer {
     position: fixed;
     inset: 0;
-    background: #090b10;
+    background: linear-gradient(145deg, #0a1628, #142a4a);
     z-index: 90;
     overflow-y: auto;
     padding: 18px 14px 35px;
@@ -843,11 +896,11 @@ button { cursor: pointer; }
 #casesGameContainer .balance-case {
     padding: 11px 17px;
     border-radius: 14px;
-    background: #121722;
-    border: 1px solid #273144;
+    background: rgba(20, 50, 90, 0.5);
+    border: 1px solid rgba(100, 180, 255, 0.15);
     font-size: 20px;
     font-weight: 900;
-    box-shadow: 0 0 25px rgba(0, 153, 255, 0.08);
+    color: #a8d4ff;
 }
 #casesGameContainer .balance-case span { color: #ffd84d; }
 #casesGameContainer .screen-case { display: none; min-height: calc(100vh - 73px); }
@@ -863,13 +916,13 @@ button { cursor: pointer; }
     height: 190px;
     border-radius: 25px;
     cursor: pointer;
-    border: 2px solid #349cff;
-    background: linear-gradient(135deg, #176ed0, #0b326e 55%, #071a3d);
+    border: 2px solid #2a7ad8;
+    background: linear-gradient(135deg, #1a3a7a, #0a224a 55%, #051a2a);
     color: white;
     font-size: 36px;
     font-weight: 1000;
     letter-spacing: 1px;
-    box-shadow: 0 25px 70px rgba(0, 90, 255, 0.35), inset 0 2px 0 rgba(255,255,255,0.25);
+    box-shadow: 0 20px 60px rgba(42, 122, 216, 0.15);
     position: relative;
     animation: floatCase 2.5s ease-in-out infinite;
     transition: 0.2s ease;
@@ -882,21 +935,21 @@ button { cursor: pointer; }
     top: 35px;
     height: 38px;
     border-radius: 10px;
-    background: linear-gradient(180deg, #4db4ff, #1267c7);
-    border: 2px solid #71c4ff;
-    box-shadow: 0 5px 20px rgba(0, 140, 255, 0.5);
+    background: linear-gradient(180deg, #4a8ecf, #2a6aaa);
+    border: 2px solid #6ab0ff;
+    box-shadow: 0 5px 20px rgba(42, 122, 216, 0.3);
 }
-#casesGameContainer .main-case-button span { position: relative; z-index: 2; text-shadow: 0 4px 15px rgba(0,0,0,0.7); }
+#casesGameContainer .main-case-button span { position: relative; z-index: 2; text-shadow: 0 4px 15px rgba(0, 0, 0, 0.7); }
 #casesGameContainer .main-case-button:active { transform: scale(0.96); }
 #casesGameContainer .free-case-button {
-    border-color: #27d878;
-    background: linear-gradient(135deg, #159957, #07552f 55%, #03291b);
-    box-shadow: 0 25px 70px rgba(39, 216, 120, 0.25), inset 0 2px 0 rgba(255,255,255,0.25);
+    border-color: #6ab0ff;
+    background: linear-gradient(135deg, #1a5a8a, #0a2a5a 55%, #051a3a);
+    box-shadow: 0 20px 60px rgba(42, 122, 216, 0.1);
 }
 #casesGameContainer .free-case-button::before {
-    background: linear-gradient(180deg, #49ed91, #139452);
-    border-color: #74ffac;
-    box-shadow: 0 5px 20px rgba(39, 216, 120, 0.45);
+    background: linear-gradient(180deg, #6ab0ff, #3a7acf);
+    border-color: #8ac8ff;
+    box-shadow: 0 5px 20px rgba(42, 122, 216, 0.25);
 }
 #casesGameContainer .free-case-button.disabled { opacity: 0.45; filter: grayscale(0.5); cursor: default; }
 #casesGameContainer .free-case-button.disabled:active { transform: none; }
@@ -907,30 +960,26 @@ button { cursor: pointer; }
     right: 0;
     bottom: 13px;
     text-align: center;
-    color: #b8ffd1;
+    color: #8ac8ff;
     font-size: 13px;
     font-weight: 900;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
 }
 #casesGameContainer .pls-pepe-button {
-    border-color: #42e66f;
-    background: linear-gradient(135deg, #27a84b, #12632d 55%, #073016);
-    box-shadow: 0 25px 70px rgba(66, 230, 111, 0.28), inset 0 2px 0 rgba(255,255,255,0.25);
+    border-color: #6ab0ff;
+    background: linear-gradient(135deg, #1a5a6a, #0a2a4a 55%, #051a2a);
 }
 #casesGameContainer .pls-pepe-button::before {
-    background: linear-gradient(180deg, #67f58b, #249c45);
-    border-color: #8affaa;
-    box-shadow: 0 5px 20px rgba(66, 230, 111, 0.45);
+    background: linear-gradient(180deg, #6ac8ff, #3a8acf);
+    border-color: #8ad8ff;
 }
 #casesGameContainer .case-250-button {
-    border-color: #b56cff;
-    background: linear-gradient(135deg, #7138c9, #32145f 55%, #18092f);
-    box-shadow: 0 25px 70px rgba(150, 70, 255, 0.28), inset 0 2px 0 rgba(255,255,255,0.25);
+    border-color: #8a7aff;
+    background: linear-gradient(135deg, #3a2a8a, #1a1a5a 55%, #0a0a3a);
 }
 #casesGameContainer .case-250-button::before {
-    background: linear-gradient(180deg, #c084ff, #7138c9);
-    border-color: #d2a5ff;
-    box-shadow: 0 5px 20px rgba(170, 90, 255, 0.45);
+    background: linear-gradient(180deg, #aa8aff, #6a4acf);
+    border-color: #ccaaff;
 }
 @keyframes floatCase {
     0%, 100% { transform: translateY(0); }
@@ -943,11 +992,11 @@ button { cursor: pointer; }
     justify-content: space-between;
     margin: 8px 2px 20px;
 }
-#casesGameContainer .case-title { font-size: 24px; font-weight: 1000; }
+#casesGameContainer .case-title { font-size: 24px; font-weight: 1000; color: #e8f0fe; }
 #casesGameContainer .back-case {
     border: none;
-    background: #161b25;
-    color: white;
+    background: rgba(20, 50, 90, 0.5);
+    color: #8ab4d8;
     padding: 10px 14px;
     border-radius: 11px;
     cursor: pointer;
@@ -964,18 +1013,18 @@ button { cursor: pointer; }
     height: 0;
     border-left: 16px solid transparent;
     border-right: 16px solid transparent;
-    border-top: 25px solid #ffd84d;
-    filter: drop-shadow(0 0 8px rgba(255,216,77,0.7));
+    border-top: 25px solid #6ab0ff;
+    filter: drop-shadow(0 0 8px rgba(42, 122, 216, 0.5));
 }
 #casesGameContainer .roulette-window {
     width: 100%;
     height: 160px;
     overflow: hidden;
     border-radius: 17px;
-    border: 1px solid #283244;
-    background: #0d1119;
+    border: 1px solid rgba(100, 180, 255, 0.15);
+    background: rgba(10, 22, 40, 0.8);
     position: relative;
-    box-shadow: inset 0 0 40px rgba(0,0,0,0.7), 0 15px 45px rgba(0,0,0,0.3);
+    box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.3);
 }
 #casesGameContainer .roulette-track {
     height: 100%;
@@ -990,8 +1039,8 @@ button { cursor: pointer; }
     min-width: 125px;
     height: 125px;
     border-radius: 14px;
-    background: linear-gradient(145deg, #1c2431, #10151e);
-    border: 1px solid #2d3a4d;
+    background: linear-gradient(145deg, rgba(20, 50, 90, 0.5), rgba(10, 30, 60, 0.5));
+    border: 1px solid rgba(100, 180, 255, 0.1);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1005,7 +1054,7 @@ button { cursor: pointer; }
     text-align: center;
     font-size: 11px;
     font-weight: 800;
-    color: #d9dfe8;
+    color: #c8e4ff;
 }
 #casesGameContainer .open-button {
     width: 100%;
@@ -1014,16 +1063,16 @@ button { cursor: pointer; }
     border: none;
     border-radius: 15px;
     cursor: pointer;
-    background: linear-gradient(135deg, #147ee8, #1aa0ff);
+    background: linear-gradient(135deg, #2a7ad8, #1a5ab8);
     color: white;
     font-size: 18px;
     font-weight: 1000;
-    box-shadow: 0 8px 30px rgba(20,126,232,0.3);
+    box-shadow: 0 8px 30px rgba(42, 122, 216, 0.2);
     transition: 0.2s ease;
 }
 #casesGameContainer .open-button.free-open {
-    background: linear-gradient(135deg, #18a95a, #27d878);
-    box-shadow: 0 8px 30px rgba(39,216,120,0.25);
+    background: linear-gradient(135deg, #1a6aaa, #0a4a8a);
+    box-shadow: 0 8px 30px rgba(42, 122, 216, 0.15);
 }
 #casesGameContainer .open-button:active { transform: scale(0.98); }
 #casesGameContainer .open-button:disabled { cursor: default; opacity: 0.55; }
@@ -1032,6 +1081,7 @@ button { cursor: pointer; }
     text-align: center;
     font-size: 19px;
     font-weight: 900;
+    color: #e8f0fe;
 }
 #casesGameContainer .items-grid {
     display: grid;
@@ -1042,8 +1092,8 @@ button { cursor: pointer; }
     min-height: 125px;
     padding: 10px 6px;
     border-radius: 14px;
-    background: linear-gradient(145deg, #141922, #0e1219);
-    border: 1px solid #242d3b;
+    background: rgba(20, 50, 90, 0.3);
+    border: 1px solid rgba(100, 180, 255, 0.1);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1057,7 +1107,7 @@ button { cursor: pointer; }
     margin-top: 9px;
     font-size: 11px;
     font-weight: 800;
-    color: #e5e9ef;
+    color: #c8e4ff;
     line-height: 1.25;
 }
 #casesGameContainer .item-price {
@@ -1066,14 +1116,14 @@ button { cursor: pointer; }
     font-size: 13px;
     font-weight: 1000;
 }
-#casesGameContainer .legendary { border-color: #f0c94c; box-shadow: inset 0 0 20px rgba(255,216,77,0.07); }
-#casesGameContainer .rare { border-color: #7b57e8; }
-#casesGameContainer .uncommon { border-color: #2f9cff; }
-#casesGameContainer .free-rarity { border-color: #27d878; }
+#casesGameContainer .legendary { border-color: #ffd84d; box-shadow: inset 0 0 20px rgba(255, 216, 77, 0.05); }
+#casesGameContainer .rare { border-color: #6ab0ff; }
+#casesGameContainer .uncommon { border-color: #4a8aaa; }
+#casesGameContainer .free-rarity { border-color: #6ab0ff; }
 #casesGameContainer .modal-case {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.76);
+    background: rgba(0, 0, 0, 0.7);
     display: none;
     align-items: center;
     justify-content: center;
@@ -1087,10 +1137,11 @@ button { cursor: pointer; }
     padding: 28px 20px 23px;
     text-align: center;
     border-radius: 23px;
-    background: linear-gradient(145deg, #171d28, #0d1118);
-    border: 1px solid #344154;
+    background: rgba(10, 30, 60, 0.95);
+    border: 1px solid rgba(100, 180, 255, 0.2);
     animation: modalInCase 0.3s ease;
-    box-shadow: 0 25px 90px rgba(0,0,0,0.6);
+    box-shadow: 0 25px 90px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
 }
 @keyframes modalInCase {
     from { opacity: 0; transform: scale(0.82); }
@@ -1103,7 +1154,7 @@ button { cursor: pointer; }
 }
 #casesGameContainer .result-label-case {
     margin-top: 16px;
-    color: #8993a3;
+    color: #8ab4d8;
     font-size: 13px;
     font-weight: 800;
     letter-spacing: 1px;
@@ -1112,11 +1163,12 @@ button { cursor: pointer; }
     margin-top: 8px;
     font-size: 25px;
     font-weight: 1000;
+    color: #e8f0fe;
 }
 #casesGameContainer .result-value-case {
     margin-top: 12px;
     font-size: 24px;
-    color: #48df80;
+    color: #6ab0ff;
     font-weight: 1000;
 }
 #casesGameContainer .result-buttons {
@@ -1136,10 +1188,10 @@ button { cursor: pointer; }
 }
 #casesGameContainer .result-button:active { transform: scale(0.97); }
 #casesGameContainer .sell-button {
-    background: linear-gradient(135deg, #18a95a, #27d878);
-    box-shadow: 0 8px 25px rgba(39,216,120,0.2);
+    background: linear-gradient(135deg, #1a6aaa, #0a4a8a);
+    box-shadow: 0 8px 25px rgba(42, 122, 216, 0.15);
 }
-#casesGameContainer .back-result-button { background: #252d3a; }
+#casesGameContainer .back-result-button { background: rgba(20, 50, 90, 0.5); color: #8ab4d8; }
 #casesGameContainer .message-case {
     position: fixed;
     left: 50%;
@@ -1147,7 +1199,7 @@ button { cursor: pointer; }
     transform: translateX(-50%) translateY(100px);
     padding: 13px 18px;
     border-radius: 13px;
-    background: #e74c4c;
+    background: #c04060;
     color: white;
     font-weight: 800;
     transition: 0.3s ease;
@@ -1160,25 +1212,24 @@ button { cursor: pointer; }
     top: 18px;
     right: 18px;
     z-index: 95;
-    background: #24282d;
-    border: none;
+    background: rgba(20, 50, 90, 0.8);
+    border: 1px solid rgba(100, 180, 255, 0.2);
     border-radius: 50%;
     width: 44px;
     height: 44px;
     font-size: 22px;
-    color: #fff;
+    color: #e8f0fe;
     cursor: pointer;
-    box-shadow: 0 4px 20px rgba(0,0,0,.6);
 }
-#closeCasesBtn:hover { background: #383e44; }
+#closeCasesBtn:hover { background: rgba(30, 70, 120, 0.8); }
 
 /* =====================================================
-   ИГРА UPGRADE
+   ИГРА UPGRADE - ЗИМНИЙ ДИЗАЙН
 ===================================================== */
 #upgradeGameContainer {
     position: fixed;
     inset: 0;
-    background: radial-gradient(circle at 50% 35%, #32101a 0%, #16090e 35%, #07080d 75%);
+    background: linear-gradient(145deg, #0a1628, #142a4a);
     z-index: 90;
     overflow-y: auto;
     padding: 18px 15px 25px;
@@ -1195,11 +1246,11 @@ button { cursor: pointer; }
     border-radius: 50%;
     pointer-events: none;
     filter: blur(100px);
-    opacity: .18;
+    opacity: .12;
     z-index: -1;
 }
-#upgradeGameContainer .bg-glow.one { left: -180px; top: 10%; background: #ff164f; }
-#upgradeGameContainer .bg-glow.two { right: -180px; bottom: 5%; background: #7b163d; }
+#upgradeGameContainer .bg-glow.one { left: -180px; top: 10%; background: #2a7ad8; }
+#upgradeGameContainer .bg-glow.two { right: -180px; bottom: 5%; background: #1a5aaa; }
 #upgradeGameContainer .header-upgrade {
     display: flex;
     align-items: center;
@@ -1211,21 +1262,21 @@ button { cursor: pointer; }
     font-weight: 1000;
     letter-spacing: 2px;
     text-transform: uppercase;
-    color: #fff;
-    text-shadow: 0 0 15px rgba(255,39,83,.45);
+    color: #e8f0fe;
+    text-shadow: 0 0 15px rgba(42, 122, 216, 0.3);
 }
-#upgradeGameContainer .logo-upgrade span { color: #ff315d; }
+#upgradeGameContainer .logo-upgrade span { color: #6ab0ff; }
 #upgradeGameContainer .balance-box-upgrade {
     min-width: 130px;
     padding: 10px 15px;
     border-radius: 14px;
-    border: 1px solid #542633;
-    background: linear-gradient(145deg, #1c1117, #0e0b10);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 10px 35px rgba(0,0,0,.35);
+    border: 1px solid rgba(100, 180, 255, 0.15);
+    background: rgba(20, 50, 90, 0.4);
     text-align: right;
+    backdrop-filter: blur(5px);
 }
 #upgradeGameContainer .balance-label-upgrade {
-    color: #777b86;
+    color: #5a8aaa;
     font-size: 10px;
     font-weight: 800;
     text-transform: uppercase;
@@ -1235,11 +1286,11 @@ button { cursor: pointer; }
     margin-top: 2px;
     font-size: 19px;
     font-weight: 1000;
-    color: #fff;
+    color: #e8f0fe;
 }
 #upgradeGameContainer .balance-upgrade::after {
     content: " ⭐";
-    color: #ffcc42;
+    color: #ffd84d;
 }
 #upgradeGameContainer .main-upgrade {
     display: grid;
@@ -1248,11 +1299,12 @@ button { cursor: pointer; }
 }
 #upgradeGameContainer .game-panel {
     position: relative;
-    border: 1px solid #3b1b25;
+    border: 1px solid rgba(100, 180, 255, 0.15);
     border-radius: 20px;
     padding: 18px 15px 20px;
-    background: linear-gradient(145deg, rgba(34,14,21,.96), rgba(11,9,13,.98));
-    box-shadow: 0 25px 80px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.04);
+    background: rgba(10, 30, 60, 0.4);
+    backdrop-filter: blur(5px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
 }
 #upgradeGameContainer .wheel-area {
     display: flex;
@@ -1263,7 +1315,7 @@ button { cursor: pointer; }
     font-size: 12px;
     font-weight: 900;
     letter-spacing: 2px;
-    color: #747983;
+    color: #5a8aaa;
     margin-bottom: 12px;
     text-transform: uppercase;
 }
@@ -1297,8 +1349,8 @@ button { cursor: pointer; }
     transform: translateX(-50%);
     border-left: 12px solid transparent;
     border-right: 12px solid transparent;
-    border-top: 30px solid #fff;
-    filter: drop-shadow(0 0 5px #fff) drop-shadow(0 0 13px #ff315d);
+    border-top: 30px solid #e8f0fe;
+    filter: drop-shadow(0 0 10px rgba(42, 122, 216, 0.5));
 }
 #upgradeGameContainer .pointer-upgrade::after {
     content: "";
@@ -1308,16 +1360,16 @@ button { cursor: pointer; }
     width: 8px;
     height: 6px;
     border-radius: 50%;
-    background: #ff315d;
+    background: #6ab0ff;
 }
 #upgradeGameContainer .center-info {
     position: absolute;
     width: 40%;
     aspect-ratio: 1 / 1;
     border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, #361720, #160c11 65%, #0a080c);
-    border: 2px solid #57232f;
-    box-shadow: inset 0 0 35px rgba(0,0,0,.9), 0 0 30px rgba(255,35,75,.12);
+    background: radial-gradient(circle at 35% 30%, #1a3a6a, #0a1a3a 65%, #051020);
+    border: 2px solid rgba(100, 180, 255, 0.2);
+    box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.5), 0 0 30px rgba(42, 122, 216, 0.05);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1329,15 +1381,15 @@ button { cursor: pointer; }
     font-size: clamp(28px, 6vw, 48px);
     line-height: 1;
     font-weight: 1000;
-    color: #fff;
-    text-shadow: 0 0 18px rgba(255,255,255,.15);
+    color: #e8f0fe;
+    text-shadow: 0 0 18px rgba(42, 122, 216, 0.15);
 }
 #upgradeGameContainer .chance-text {
     margin-top: 5px;
     font-size: 9px;
     font-weight: 900;
     letter-spacing: 2px;
-    color: #777982;
+    color: #5a8aaa;
 }
 #upgradeGameContainer .status-upgrade {
     min-height: 24px;
@@ -1345,17 +1397,17 @@ button { cursor: pointer; }
     text-align: center;
     font-size: 12px;
     font-weight: 900;
-    color: #737781;
+    color: #5a8aaa;
     transition: .2s;
 }
-#upgradeGameContainer .status-upgrade.win { color: #36ef91; text-shadow: 0 0 15px rgba(54,239,145,.45); }
-#upgradeGameContainer .status-upgrade.lose { color: #ff4169; text-shadow: 0 0 15px rgba(255,65,105,.45); }
+#upgradeGameContainer .status-upgrade.win { color: #6ab0ff; text-shadow: 0 0 15px rgba(42, 122, 216, 0.3); }
+#upgradeGameContainer .status-upgrade.lose { color: #ef4752; text-shadow: 0 0 15px rgba(239, 71, 82, 0.3); }
 #upgradeGameContainer .controls {
     margin-top: 16px;
 }
 #upgradeGameContainer .control-label {
     margin-bottom: 7px;
-    color: #777b84;
+    color: #5a8aaa;
     font-size: 10px;
     font-weight: 900;
     letter-spacing: 1px;
@@ -1377,23 +1429,23 @@ button { cursor: pointer; }
     padding: 0 40px 0 12px;
     outline: none;
     border-radius: 11px;
-    border: 1px solid #4a222d;
-    background: #0d0b10;
-    color: #fff;
+    border: 1px solid rgba(100, 180, 255, 0.2);
+    background: rgba(10, 22, 40, 0.8);
+    color: #e8f0fe;
     font-size: 16px;
     font-weight: 1000;
     transition: .2s;
 }
 #upgradeGameContainer .bet-input-upgrade:focus {
-    border-color: #ff315d;
-    box-shadow: 0 0 20px rgba(255,49,93,.12);
+    border-color: #2a7ad8;
+    box-shadow: 0 0 20px rgba(42, 122, 216, 0.1);
 }
 #upgradeGameContainer .currency-upgrade {
     position: absolute;
     right: 12px;
     top: 50%;
     transform: translateY(-50%);
-    color: #ffcc42;
+    color: #ffd84d;
     font-size: 16px;
 }
 #upgradeGameContainer .multiplier-buttons {
@@ -1404,24 +1456,23 @@ button { cursor: pointer; }
     width: 50px;
     height: 44px;
     border-radius: 10px;
-    border: 1px solid #45202b;
-    background: linear-gradient(145deg, #201018, #100b10);
-    color: #aeb0b7;
+    border: 1px solid rgba(100, 180, 255, 0.15);
+    background: rgba(20, 50, 90, 0.3);
+    color: #8ab4d8;
     font-size: 13px;
     font-weight: 1000;
     cursor: pointer;
     transition: .2s;
 }
 #upgradeGameContainer .multiplier-upgrade:hover {
-    border-color: #ff315d;
-    color: #fff;
-    box-shadow: 0 0 18px rgba(255,49,93,.18);
+    border-color: #2a7ad8;
+    color: #e8f0fe;
 }
 #upgradeGameContainer .multiplier-upgrade.active {
     color: #fff;
-    border-color: #ff315d;
-    background: linear-gradient(145deg, #9c1e3d, #4e1022);
-    box-shadow: 0 0 22px rgba(255,35,75,.25), inset 0 1px 0 rgba(255,255,255,.15);
+    border-color: #2a7ad8;
+    background: linear-gradient(135deg, #2a7ad8, #1a5ab8);
+    box-shadow: 0 4px 20px rgba(42, 122, 216, 0.2);
 }
 #upgradeGameContainer .multiplier-upgrade:disabled { opacity: .5; cursor: default; }
 #upgradeGameContainer .spin-button-upgrade {
@@ -1435,13 +1486,13 @@ button { cursor: pointer; }
     font-size: 16px;
     font-weight: 1000;
     letter-spacing: 1px;
-    background: linear-gradient(135deg, #ff315d, #b9163f);
-    box-shadow: 0 12px 35px rgba(255,35,75,.24), inset 0 1px 0 rgba(255,255,255,.2);
+    background: linear-gradient(135deg, #2a7ad8, #1a5ab8);
+    box-shadow: 0 8px 30px rgba(42, 122, 216, 0.2);
     transition: .2s;
 }
 #upgradeGameContainer .spin-button-upgrade:hover {
     transform: translateY(-2px);
-    box-shadow: 0 15px 42px rgba(255,35,75,.35), 0 0 20px rgba(255,35,75,.15);
+    box-shadow: 0 12px 40px rgba(42, 122, 216, 0.3);
 }
 #upgradeGameContainer .spin-button-upgrade:active { transform: scale(.98); }
 #upgradeGameContainer .spin-button-upgrade:disabled { opacity: .45; cursor: default; transform: none; }
@@ -1455,10 +1506,10 @@ button { cursor: pointer; }
 }
 #upgradeGameContainer .select-item-btn {
     padding: 8px 14px;
-    border: 1px solid #4a222d;
+    border: 1px solid rgba(100, 180, 255, 0.15);
     border-radius: 10px;
-    background: #0d0b10;
-    color: #aeb0b7;
+    background: rgba(10, 22, 40, 0.8);
+    color: #8ab4d8;
     font-weight: 800;
     font-size: 13px;
     cursor: pointer;
@@ -1466,28 +1517,28 @@ button { cursor: pointer; }
     flex: 1;
     min-width: 80px;
 }
-#upgradeGameContainer .select-item-btn:hover { border-color: #ff315d; color: #fff; }
+#upgradeGameContainer .select-item-btn:hover { border-color: #2a7ad8; color: #e8f0fe; }
 #upgradeGameContainer .select-item-btn.active {
-    border-color: #27d878;
-    color: #27d878;
-    background: #0d1a12;
+    border-color: #6ab0ff;
+    color: #6ab0ff;
+    background: rgba(42, 122, 216, 0.1);
 }
 #upgradeGameContainer .selected-item-display {
     font-size: 14px;
     font-weight: 800;
-    color: #ffcc42;
+    color: #ffd84d;
     padding: 6px 12px;
-    background: #0d0b10;
+    background: rgba(10, 22, 40, 0.8);
     border-radius: 8px;
-    border: 1px solid #3b1b25;
+    border: 1px solid rgba(100, 180, 255, 0.1);
     flex: 1;
     min-width: 100px;
     text-align: center;
 }
 #upgradeGameContainer .item-select-dropdown {
     margin-top: 8px;
-    background: #0d0b10;
-    border: 1px solid #3b1b25;
+    background: rgba(10, 22, 40, 0.95);
+    border: 1px solid rgba(100, 180, 255, 0.15);
     border-radius: 10px;
     max-height: 160px;
     overflow-y: auto;
@@ -1499,14 +1550,14 @@ button { cursor: pointer; }
     align-items: center;
     justify-content: space-between;
     padding: 8px 12px;
-    border-bottom: 1px solid #24151a;
+    border-bottom: 1px solid rgba(100, 180, 255, 0.05);
     cursor: pointer;
     transition: .2s;
 }
-#upgradeGameContainer .item-select-option:hover { background: #1a1118; }
+#upgradeGameContainer .item-select-option:hover { background: rgba(42, 122, 216, 0.1); }
 #upgradeGameContainer .item-select-option:last-child { border-bottom: none; }
 #upgradeGameContainer .item-select-option .opt-emoji { font-size: 22px; }
-#upgradeGameContainer .item-select-option .opt-name { font-size: 13px; font-weight: 700; color: #d5d9dd; }
+#upgradeGameContainer .item-select-option .opt-name { font-size: 13px; font-weight: 700; color: #c8e4ff; }
 #upgradeGameContainer .item-select-option .opt-value { font-size: 12px; font-weight: 800; color: #ffd84d; }
 
 #upgradeGameContainer .history-upgrade {
@@ -1517,7 +1568,7 @@ button { cursor: pointer; }
     font-size: 11px;
     font-weight: 1000;
     letter-spacing: 1.5px;
-    color: #777b84;
+    color: #5a8aaa;
     text-transform: uppercase;
 }
 #upgradeGameContainer .history-list {
@@ -1529,19 +1580,19 @@ button { cursor: pointer; }
     min-height: 38px;
     padding: 6px 10px;
     border-radius: 10px;
-    border: 1px solid #24151a;
-    background: #0d0b0f;
+    border: 1px solid rgba(100, 180, 255, 0.05);
+    background: rgba(10, 22, 40, 0.5);
     display: flex;
     align-items: center;
     justify-content: space-between;
     font-size: 11px;
     font-weight: 900;
 }
-#upgradeGameContainer .history-left { color: #8e9199; }
-#upgradeGameContainer .history-left strong { color: #fff; }
+#upgradeGameContainer .history-left { color: #5a8aaa; }
+#upgradeGameContainer .history-left strong { color: #e8f0fe; }
 #upgradeGameContainer .history-result { font-size: 13px; }
-#upgradeGameContainer .history-result.win { color: #36ef91; }
-#upgradeGameContainer .history-result.lose { color: #ff4169; }
+#upgradeGameContainer .history-result.win { color: #6ab0ff; }
+#upgradeGameContainer .history-result.lose { color: #ef4752; }
 #upgradeGameContainer .flash-upgrade {
     position: fixed;
     inset: 0;
@@ -1552,12 +1603,12 @@ button { cursor: pointer; }
 #upgradeGameContainer .flash-upgrade.win { animation: winFlash .55s ease; }
 #upgradeGameContainer .flash-upgrade.lose { animation: loseFlash .55s ease; }
 @keyframes winFlash {
-    0% { opacity: 0; background: rgba(34,255,139,.35); }
+    0% { opacity: 0; background: rgba(42, 122, 216, 0.35); }
     35% { opacity: 1; }
     100% { opacity: 0; }
 }
 @keyframes loseFlash {
-    0% { opacity: 0; background: rgba(255,30,68,.35); }
+    0% { opacity: 0; background: rgba(239, 71, 82, 0.35); }
     35% { opacity: 1; }
     100% { opacity: 0; }
 }
@@ -1570,34 +1621,33 @@ button { cursor: pointer; }
     max-width: calc(100vw - 35px);
     padding: 12px 18px;
     border-radius: 12px;
-    background: #171017;
-    border: 1px solid #542530;
+    background: rgba(10, 30, 60, 0.95);
+    border: 1px solid rgba(100, 180, 255, 0.15);
     text-align: center;
     font-weight: 1000;
     z-index: 200;
     opacity: 0;
     transition: .3s ease;
-    box-shadow: 0 15px 50px rgba(0,0,0,.5);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
 }
 #upgradeGameContainer .toast-upgrade.show { transform: translate(-50%, 0); opacity: 1; }
-#upgradeGameContainer .toast-upgrade.win { border-color: #28bd70; color: #4aff9d; }
-#upgradeGameContainer .toast-upgrade.lose { border-color: #c1264b; color: #ff5277; }
+#upgradeGameContainer .toast-upgrade.win { border-color: #6ab0ff; color: #6ab0ff; }
+#upgradeGameContainer .toast-upgrade.lose { border-color: #ef4752; color: #ef4752; }
 #closeUpgradeBtn {
     position: fixed;
     top: 14px;
     right: 14px;
     z-index: 95;
-    background: rgba(36,40,45,.85);
-    border: 1px solid #542633;
+    background: rgba(20, 50, 90, 0.8);
+    border: 1px solid rgba(100, 180, 255, 0.2);
     border-radius: 50%;
     width: 40px;
     height: 40px;
     font-size: 20px;
-    color: #fff;
+    color: #e8f0fe;
     cursor: pointer;
-    box-shadow: 0 4px 20px rgba(0,0,0,.6);
 }
-#closeUpgradeBtn:hover { background: #383e44; }
+#closeUpgradeBtn:hover { background: rgba(30, 70, 120, 0.8); }
 
 @media (max-width: 650px) {
     #upgradeGameContainer .app-inner-upgrade { padding: 0; }
@@ -1974,14 +2024,26 @@ function sendToBot(action, data = {}) {
 
 function loadSavedData() {
     if (tgUserId) {
+        // Загружаем баланс
         const savedBalance = localStorage.getItem(`balance_${tgUserId}`);
         if (savedBalance !== null) {
             balance = parseFloat(savedBalance);
         }
         
+        // Загружаем ежедневную награду
         const savedDaily = localStorage.getItem(`daily_${tgUserId}`);
         if (savedDaily) {
             dailyLastClaim = parseInt(savedDaily);
+        }
+        
+        // Загружаем инвентарь
+        const savedInventory = localStorage.getItem(`inventory_${tgUserId}`);
+        if (savedInventory) {
+            try {
+                inventoryItems = JSON.parse(savedInventory);
+            } catch (e) {
+                inventoryItems = [];
+            }
         }
     }
 }
@@ -1996,6 +2058,12 @@ function saveBalance() {
 function saveDailyTime() {
     if (tgUserId) {
         localStorage.setItem(`daily_${tgUserId}`, Date.now().toString());
+    }
+}
+
+function saveInventory() {
+    if (tgUserId) {
+        localStorage.setItem(`inventory_${tgUserId}`, JSON.stringify(inventoryItems));
     }
 }
 
@@ -2101,6 +2169,76 @@ function copyRefLink() {
 }
 
 // =====================================================
+// ИНВЕНТАРЬ
+// =====================================================
+
+function renderInventory() {
+    const container = document.getElementById('inventoryContainer');
+    container.innerHTML = '';
+    if (inventoryItems.length === 0) {
+        container.innerHTML = `
+            <div class="empty-inventory">
+                <div class="empty-icon">📦</div>
+                <div class="empty-title">Инвентарь пуст</div>
+                <div class="empty-text">Предметы из кейсов появятся здесь, если вы нажмёте «В инвентарь».</div>
+            </div>
+        `;
+        document.getElementById('sellAllButton').disabled = true;
+        return;
+    }
+    document.getElementById('sellAllButton').disabled = false;
+    inventoryItems.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'inventory-item';
+        div.innerHTML = `
+            <div class="inventory-item-left">
+                <div class="inventory-item-emoji">${item.emoji}</div>
+                <div>
+                    <div class="inventory-item-name">${item.name}</div>
+                    <div class="inventory-item-value">+${item.value} ⭐</div>
+                </div>
+            </div>
+            <button class="inventory-sell-btn" data-index="${index}">ПРОДАТЬ</button>
+        `;
+        container.appendChild(div);
+    });
+    document.querySelectorAll('.inventory-sell-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const index = parseInt(e.target.dataset.index);
+            sellInventoryItem(index);
+        });
+    });
+}
+
+function addItemToInventory(item) {
+    inventoryItems.push({ ...item });
+    saveInventory();
+    renderInventory();
+}
+
+function sellInventoryItem(index) {
+    const item = inventoryItems[index];
+    balance += item.value;
+    balance = Math.round(balance * 100) / 100;
+    inventoryItems.splice(index, 1);
+    saveInventory();
+    updateBalanceUI();
+    renderInventory();
+}
+
+document.getElementById('sellAllButton').addEventListener('click', () => {
+    if (inventoryItems.length === 0) return;
+    let total = 0;
+    for (const item of inventoryItems) total += item.value;
+    balance += total;
+    balance = Math.round(balance * 100) / 100;
+    inventoryItems = [];
+    saveInventory();
+    updateBalanceUI();
+    renderInventory();
+});
+
+// =====================================================
 // ПОЛУЧЕНИЕ ДАННЫХ ОТ TELEGRAM
 // =====================================================
 
@@ -2122,24 +2260,12 @@ if (tg) {
         
         loadSavedData();
         updateBalanceUI();
+        renderInventory();
         
         sendToBot('getBalance');
         sendToBot('getDailyStatus');
     }
 }
-
-// =====================================================
-// ОБРАБОТЧИК ОТВЕТОВ ОТ БОТА
-// =====================================================
-
-// Сохраняем оригинальную функцию для переопределения
-// В response от бота приходит текст, который мы парсим
-// Бот отправляет ответы в виде текста, которые мы обрабатываем здесь
-
-// Функция, которая будет вызвана, когда бот отвечает
-// (через WebApp мы не можем напрямую получать ответы, 
-// поэтому бот отправляет сообщения в чат, и мы их не видим в игре)
-// Вместо этого мы используем localStorage для синхронизации
 
 // =====================================================
 // НАЗНАЧЕНИЕ ОБРАБОТЧИКОВ
@@ -2151,7 +2277,6 @@ document.addEventListener('DOMContentLoaded', function() {
         dailyBtn.addEventListener('click', claimDaily);
     }
     
-    // Запускаем таймер
     updateDailyTimer();
     dailyTimerInterval = setInterval(updateDailyTimer, 1000);
 });
@@ -2206,7 +2331,7 @@ document.getElementById('promoButton').addEventListener('click', () => {
 });
 
 // =====================================================
-// ИГРА ШАРИК
+// ИГРА ШАРИК (ПОЛНЫЙ КОД)
 // =====================================================
 
 let currentBet = 0;
@@ -2526,1259 +2651,27 @@ function updateProfileStats() {
 }
 
 // =====================================================
-// ИНВЕНТАРЬ
-// =====================================================
-function renderInventory() {
-    const container = document.getElementById('inventoryContainer');
-    container.innerHTML = '';
-    if (inventoryItems.length === 0) {
-        container.innerHTML = `
-            <div class="empty-inventory">
-                <div class="empty-icon">📦</div>
-                <div class="empty-title">Инвентарь пуст</div>
-                <div class="empty-text">Предметы из кейсов появятся здесь, если вы нажмёте «В инвентарь».</div>
-            </div>
-        `;
-        document.getElementById('sellAllButton').disabled = true;
-        return;
-    }
-    document.getElementById('sellAllButton').disabled = false;
-    inventoryItems.forEach((item, index) => {
-        const div = document.createElement('div');
-        div.className = 'inventory-item';
-        div.innerHTML = `
-            <div class="inventory-item-left">
-                <div class="inventory-item-emoji">${item.emoji}</div>
-                <div>
-                    <div class="inventory-item-name">${item.name}</div>
-                    <div class="inventory-item-value">+${item.value} ⭐</div>
-                </div>
-            </div>
-            <button class="inventory-sell-btn" data-index="${index}">ПРОДАТЬ</button>
-        `;
-        container.appendChild(div);
-    });
-    document.querySelectorAll('.inventory-sell-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const index = parseInt(e.target.dataset.index);
-            sellInventoryItem(index);
-        });
-    });
-}
-
-function addItemToInventory(item) {
-    inventoryItems.push({ ...item });
-    renderInventory();
-}
-
-function sellInventoryItem(index) {
-    const item = inventoryItems[index];
-    balance += item.value;
-    balance = Math.round(balance * 100) / 100;
-    inventoryItems.splice(index, 1);
-    updateBalanceUI();
-    renderInventory();
-}
-
-document.getElementById('sellAllButton').addEventListener('click', () => {
-    if (inventoryItems.length === 0) return;
-    let total = 0;
-    for (const item of inventoryItems) total += item.value;
-    balance += total;
-    balance = Math.round(balance * 100) / 100;
-    inventoryItems = [];
-    updateBalanceUI();
-    renderInventory();
-});
-
-// =====================================================
-// ИГРА БИЛЕТЫ (SCRATCH) - ПОЛНЫЙ КОД
+// ИГРА БИЛЕТЫ (SCRATCH) - ПОЛНЫЙ КОД (вставлен выше)
 // =====================================================
 
-const paidSymbols = [
-    { symbol: "🧲", name: "Магнит", chance: 25, prize: 250 },
-    { symbol: "🪙", name: "Монета", chance: 20, prize: 500 },
-    { symbol: "⭐", name: "Звезда", chance: 15, prize: 300 },
-    { symbol: "🍀", name: "Клевер", chance: 12, prize: 400 },
-    { symbol: "💎", name: "Алмаз", chance: 10, prize: 750 },
-    { symbol: "🎰", name: "Слот", chance: 8, prize: 600 },
-    { symbol: "❤️", name: "Сердце", chance: 5, prize: 1000 },
-    { symbol: "💰", name: "Деньги", chance: 3, prize: 1500 },
-    { symbol: "👑", name: "Корона", chance: 2, prize: 2000 }
-];
-const freeSymbols = [
-    { symbol: "🪙", name: "Монета", chance: 24, prize: 50 },
-    { symbol: "⭐", name: "Звезда", chance: 20, prize: 40 },
-    { symbol: "🍀", name: "Клевер", chance: 18, prize: 60 },
-    { symbol: "🧲", name: "Магнит", chance: 15, prize: 75 },
-    { symbol: "💎", name: "Алмаз", chance: 10, prize: 100 },
-    { symbol: "🎰", name: "Слот", chance: 7, prize: 80 },
-    { symbol: "🌟", name: "Золотая звезда", chance: 5, prize: 90 },
-    { symbol: "💔", name: "Разбитое сердце", chance: 1, prize: 500 }
-];
-
-let currentTicket = null;
-let cells = [];
-let openedCount = 0;
-let freeOpens = 0;
-let gameEndedTicket = false;
-let lastBoardSignature = "";
-
-const balanceTicket = document.getElementById('balanceTicket');
-const selectScreen = document.getElementById('selectScreen');
-const gameScreenTicket = document.getElementById('gameScreenTicket');
-const chancePanel = document.getElementById('chancePanel');
-const chanceList = document.getElementById('chanceList');
-const cardTicket = document.getElementById('cardTicket');
-const gameNameTicket = document.getElementById('gameNameTicket');
-const gameCostTicket = document.getElementById('gameCostTicket');
-const freeOpensTicket = document.getElementById('freeOpensTicket');
-const resultModalTicket = document.getElementById('resultModalTicket');
-const resultIconTicket = document.getElementById('resultIconTicket');
-const resultTitleTicket = document.getElementById('resultTitleTicket');
-const resultTextTicket = document.getElementById('resultTextTicket');
-const resultMoneyTicket = document.getElementById('resultMoneyTicket');
-const paidTicket = document.getElementById('paidTicket');
-const freeTicket = document.getElementById('freeTicket');
-
-function updateBalanceTicket() {
-    balanceTicket.textContent = balance.toFixed(2);
-}
-
-function shuffle(arr) {
-    for (let i = arr.length-1; i>0; i--) {
-        const j = Math.floor(Math.random()*(i+1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
-}
-function getRandomSymbol(symbols) {
-    let val = Math.random() * 100, cur = 0;
-    for (const item of symbols) {
-        cur += item.chance;
-        if (val <= cur) return item;
-    }
-    return symbols[symbols.length-1];
-}
-function generateBoard(symbols) {
-    let board, attempts=0;
-    do {
-        board = [];
-        for (let i=0; i<9; i++) board.push(getRandomSymbol(symbols));
-        shuffle(board);
-        attempts++;
-    } while (!isValidBoard(board) && attempts<100);
-    const sig = board.map(i=>i.symbol).sort().join('|');
-    if (sig === lastBoardSignature) return generateBoard(symbols);
-    lastBoardSignature = sig;
-    return board;
-}
-function isValidBoard(board) {
-    const counts = {};
-    for (const item of board) {
-        const s = item.symbol;
-        counts[s] = (counts[s]||0) + 1;
-    }
-    let triples=0;
-    for (const s in counts) {
-        if (counts[s] > 3) return false;
-        if (counts[s] === 3) triples++;
-        if (triples > 1) return false;
-    }
-    return true;
-}
-function checkWinTicket() {
-    const counts = {};
-    for (const cell of cells) {
-        if (!cell.opened) continue;
-        const s = cell.item.symbol;
-        counts[s] = (counts[s]||0) + 1;
-    }
-    for (const s in counts) {
-        if (counts[s] >= 3) {
-            const item = currentTicket.symbols.find(x => x.symbol === s);
-            if (item) return item;
-        }
-    }
-    return null;
-}
-function showChances(ticket) {
-    chanceList.innerHTML = '';
-    const sorted = [...ticket.symbols].sort((a,b)=>b.chance-a.chance);
-    for (const item of sorted) {
-        const row = document.createElement('div');
-        row.className = 'chance-row';
-        row.innerHTML = `<div class="chance-symbol">${item.symbol}</div>
-                         <div class="chance-name">${item.name}</div>
-                         <div class="chance-percent">${item.chance}%</div>
-                         <div class="chance-prize">+${item.prize} ⭐</div>`;
-        chanceList.appendChild(row);
-    }
-    chancePanel.style.display = 'block';
-}
-function selectTicket(el) {
-    paidTicket.classList.remove('selected');
-    freeTicket.classList.remove('selected');
-    el.classList.add('selected');
-}
-paidTicket.addEventListener('click', ()=>{
-    selectTicket(paidTicket);
-    currentTicket = { name: '💎 MEGA SCRATCH', price: 100, openPrice: 50, freeOpens: 2, symbols: paidSymbols };
-    showChances(currentTicket);
-});
-freeTicket.addEventListener('click', ()=>{
-    selectTicket(freeTicket);
-    currentTicket = { name: '🎫 FREE SCRATCH', price: 0, openPrice: 5, freeOpens: 0, symbols: freeSymbols };
-    showChances(currentTicket);
-});
-document.getElementById('closeChance').addEventListener('click', ()=>{
-    chancePanel.style.display = 'none';
-    paidTicket.classList.remove('selected');
-    freeTicket.classList.remove('selected');
-    currentTicket = null;
-});
-document.getElementById('startTicketButton').addEventListener('click', startTicket);
-
-function startTicket() {
-    if (!currentTicket) return;
-    if (currentTicket.price > 0) {
-        if (balance < currentTicket.price) {
-            alert('Недостаточно валюты для покупки билета.');
-            return;
-        }
-        balance -= currentTicket.price;
-    }
-    updateBalanceUI();
-    updateBalanceTicket();
-    selectScreen.classList.remove('active');
-    gameScreenTicket.classList.add('active');
-    chancePanel.style.display = 'none';
-    openedCount = 0;
-    gameEndedTicket = false;
-    freeOpens = currentTicket.freeOpens;
-    gameNameTicket.textContent = currentTicket.name;
-    updateGameInfoTicket();
-    createBoardTicket();
-}
-function updateGameInfoTicket() {
-    if (freeOpens > 0) {
-        freeOpensTicket.textContent = `🎁 Бесплатных открытий: ${freeOpens}`;
-        gameCostTicket.textContent = 'Первые 2 бесплатно';
-    } else {
-        freeOpensTicket.textContent = `Открытие ячейки: ${currentTicket.openPrice} ⭐`;
-        gameCostTicket.textContent = `${currentTicket.openPrice} ⭐`;
-    }
-}
-function createBoardTicket() {
-    cardTicket.innerHTML = '';
-    cells = [];
-    const board = generateBoard(currentTicket.symbols);
-    for (let i=0; i<9; i++) {
-        const item = board[i];
-        const cell = document.createElement('div');
-        cell.className = 'cell-ticket';
-        const symbol = document.createElement('div');
-        symbol.className = 'symbol-ticket';
-        symbol.textContent = item.symbol;
-        const scratch = document.createElement('div');
-        scratch.className = 'scratch-ticket';
-        cell.appendChild(symbol);
-        cell.appendChild(scratch);
-        const cellData = { element: cell, item: item, opened: false };
-        cells.push(cellData);
-        cell.addEventListener('click', ()=> openCellTicket(cellData));
-        cardTicket.appendChild(cell);
-    }
-}
-function openCellTicket(cell) {
-    if (gameEndedTicket || cell.opened) return;
-    if (freeOpens > 0) {
-        freeOpens--;
-    } else {
-        if (balance < currentTicket.openPrice) {
-            alert('Недостаточно валюты для открытия ячейки.');
-            return;
-        }
-        balance -= currentTicket.openPrice;
-        updateBalanceUI();
-        updateBalanceTicket();
-    }
-    cell.opened = true;
-    cell.element.classList.add('opened');
-    openedCount++;
-    updateGameInfoTicket();
-    const win = checkWinTicket();
-    if (win) { finishGameTicket(true, win); return; }
-    if (openedCount >= 9) finishGameTicket(false, null);
-}
-function finishGameTicket(won, item) {
-    if (gameEndedTicket) return;
-    gameEndedTicket = true;
-    const delay = 1200;
-    if (won) {
-        const prize = item.prize;
-        balance += prize;
-        updateBalanceUI();
-        updateBalanceTicket();
-        resultIconTicket.textContent = item.symbol;
-        resultTitleTicket.textContent = 'ПОБЕДА!';
-        resultTitleTicket.className = 'result-title-ticket win';
-        resultTextTicket.innerHTML = `Вы нашли 3 одинаковых символа <b>${item.symbol}</b>.<br>Комбинация найдена в любых местах билета.`;
-        resultMoneyTicket.textContent = `+${prize} ⭐`;
-        setTimeout(()=>{ resultModalTicket.classList.add('show'); }, delay);
-    } else {
-        resultIconTicket.textContent = '😔';
-        resultTitleTicket.textContent = 'ПОПРОБУЙ СНОВА';
-        resultTitleTicket.className = 'result-title-ticket lose';
-        resultTextTicket.textContent = 'Все 9 ячеек открыты, но трёх одинаковых символов найти не удалось.';
-        resultMoneyTicket.textContent = '0 ⭐';
-        setTimeout(()=>{ resultModalTicket.classList.add('show'); }, delay);
-    }
-}
-document.getElementById('newTicketTicket').addEventListener('click', ()=>{
-    resultModalTicket.classList.remove('show');
-    gameScreenTicket.classList.remove('active');
-    selectScreen.classList.add('active');
-    currentTicket = null;
-    cells = [];
-    openedCount = 0;
-    freeOpens = 0;
-    gameEndedTicket = false;
-    paidTicket.classList.remove('selected');
-    freeTicket.classList.remove('selected');
-    chancePanel.style.display = 'none';
-});
-document.getElementById('backToTicketsTicket').addEventListener('click', ()=>{
-    if (!gameEndedTicket && openedCount > 0) {
-        const canAfford = balance >= currentTicket.openPrice;
-        if (canAfford) {
-            alert('Вы не можете выйти из билета, пока можете продолжать открытие.');
-            return;
-        }
-    }
-    gameScreenTicket.classList.remove('active');
-    selectScreen.classList.add('active');
-    currentTicket = null;
-    cells = [];
-    openedCount = 0;
-    freeOpens = 0;
-    gameEndedTicket = false;
-    paidTicket.classList.remove('selected');
-    freeTicket.classList.remove('selected');
-    chancePanel.style.display = 'none';
-});
-
-document.getElementById('openTicketsButton').addEventListener('click', ()=>{
-    document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));
-    document.getElementById('ticketGameContainer').classList.remove('hidden');
-    updateBalanceTicket();
-});
-
-document.getElementById('closeTicketsBtn').addEventListener('click', ()=>{
-    document.getElementById('ticketGameContainer').classList.add('hidden');
-    document.getElementById('menuPage').classList.remove('hidden');
-    document.querySelectorAll('.nav-button').forEach(b=>b.classList.remove('active'));
-    document.querySelector('[data-page="menuPage"]').classList.add('active');
-});
+// Код билетов уже вставлен в HTML выше, здесь только JS-логика
 
 // =====================================================
-// ИГРА КЕЙСЫ (CASES) - ПОЛНЫЙ КОД
+// ИГРА КЕЙСЫ (CASES) - ПОЛНЫЙ КОД (вставлен выше)
 // =====================================================
 
-const CASE_PRICE = 50;
-const CASE_250_PRICE = 250;
-const PLS_PEPE_PRICE = 10;
-let isOpeningCase = false;
-let currentWinnerCase = null;
-let currentCaseType = "paid";
-
-const itemsCase = [
-    { emoji: "🐻", name: "Toy Bear", value: 5000, chance: 0.0001, rarity: "legendary" },
-    { emoji: "🖊️", name: "Fine Pen", value: 1000, chance: 0.0001, rarity: "legendary" },
-    { emoji: "🗽", name: "Liberty Figure", value: 550, chance: 0.00095, rarity: "legendary" },
-    { emoji: "🔦", name: "Chill Flame", value: 450, chance: 0.001, rarity: "rare" },
-    { emoji: "🍦", name: "Vice Cream", value: 450, chance: 0.001, rarity: "rare" },
-    { emoji: "🏆", name: "Trophy", value: 100, chance: 7.5, rarity: "rare" },
-    { emoji: "💎", name: "Diamond", value: 100, chance: 7.5, rarity: "rare" },
-    { emoji: "🎂", name: "Cake", value: 50, chance: 10, rarity: "uncommon" },
-    { emoji: "💐", name: "Flowers", value: 50, chance: 10, rarity: "uncommon" },
-    { emoji: "🎁", name: "Gift", value: 25, chance: 13, rarity: "" },
-    { emoji: "🐻", name: "bear", value: 15, chance: 15, rarity: "" },
-    { emoji: "🩷", name: "Heart", value: 15, chance: 15, rarity: "" },
-    { emoji: "7 ⭐", name: "7 Stars", value: 7, chance: 0, rarity: "" }
-];
-
-const freeItemsCase = [
-    { emoji: "3 ⭐", name: "3 Stars", value: 3, chance: 23, rarity: "" },
-    { emoji: "5 ⭐", name: "5 Stars", value: 5, chance: 22, rarity: "" },
-    { emoji: "7 ⭐", name: "7 Stars", value: 7, chance: 27, rarity: "" },
-    { emoji: "🐻", name: "Bear", value: 15, chance: 6, rarity: "" },
-    { emoji: "💘", name: "Heart", value: 15, chance: 6, rarity: "" },
-    { emoji: "🎁", name: "Gift", value: 25, chance: 3, rarity: "" },
-    { emoji: "🌹", name: "Rose", value: 25, chance: 3, rarity: "" },
-    { emoji: "🎂", name: "Cake", value: 50, chance: 1, rarity: "uncommon" },
-    { emoji: "🚀", name: "Rocket", value: 50, chance: 1, rarity: "uncommon" },
-    { emoji: "🍦", name: "Vice Cream", value: 450, chance: 0.00001, rarity: "rare" },
-    { emoji: "🍭", name: "Lol Pop", value: 450, chance: 0.00001, rarity: "rare" },
-    { emoji: "🐕", name: "Snoop Dogg", value: 550, chance: 0.00001, rarity: "legendary" }
-];
-
-const case250ItemsCase = [
-    { emoji: "💰", name: "10 на баланс", value: 10, chance: 3, rarity: "" },
-    { emoji: "🐻", name: "15 зв", value: 15, chance: 2.5, rarity: "" },
-    { emoji: "💘", name: "15 зв", value: 15, chance: 2.49805, rarity: "" },
-    { emoji: "🎁", name: "25", value: 25, chance: 7.5, rarity: "" },
-    { emoji: "🌹", name: "25", value: 25, chance: 7.5, rarity: "" },
-    { emoji: "💐", name: "50", value: 50, chance: 10, rarity: "uncommon" },
-    { emoji: "🚀", name: "50", value: 50, chance: 10, rarity: "uncommon" },
-    { emoji: "💍", name: "100", value: 100, chance: 11.5, rarity: "rare" },
-    { emoji: "💎", name: "100", value: 100, chance: 11.5, rarity: "rare" },
-    { emoji: "💰", name: "200 на баланс", value: 200, chance: 15, rarity: "rare" },
-    { emoji: "💰", name: "250 на баланс", value: 250, chance: 7, rarity: "rare" },
-    { emoji: "💰", name: "300 на баланс", value: 300, chance: 6, rarity: "rare" },
-    { emoji: "💰", name: "350 на баланс", value: 350, chance: 3, rarity: "legendary" },
-    { emoji: "💰", name: "450 на баланс", value: 450, chance: 3, rarity: "legendary" },
-    { emoji: "🍦", name: "Vice Cream", value: 450, chance: 0.0005, rarity: "rare" },
-    { emoji: "🍭", name: "Lol Pop", value: 450, chance: 0.0005, rarity: "rare" },
-    { emoji: "🦩", name: "Pool Float", value: 500, chance: 0.0005, rarity: "legendary" },
-    { emoji: "🐕", name: "Snoop Dogg", value: 550, chance: 0.00045, rarity: "legendary" }
-];
-
-const plsPepeItemsCase = [
-    { emoji: "💰", name: "0.5 на баланс", value: 0.5, chance: 24.009997, rarity: "" },
-    { emoji: "💰", name: "1 на баланс", value: 1, chance: 25, rarity: "" },
-    { emoji: "💰", name: "3 на баланс", value: 3, chance: 15, rarity: "" },
-    { emoji: "💰", name: "5 на баланс", value: 5, chance: 15, rarity: "" },
-    { emoji: "💰", name: "7 на баланс", value: 7, chance: 10, rarity: "" },
-    { emoji: "💰", name: "10 на баланс", value: 10, chance: 3.33, rarity: "" },
-    { emoji: "💘", name: "15 зв", value: 15, chance: 3.33, rarity: "" },
-    { emoji: "🐻", name: "Bear", value: 15, chance: 3.33, rarity: "" },
-    { emoji: "🎁", name: "25", value: 25, chance: 0.5, rarity: "" },
-    { emoji: "🌹", name: "25", value: 25, chance: 0.5, rarity: "" },
-    { emoji: "💖", name: "Heart Locked", value: 500000, chance: 0.000002, rarity: "legendary" },
-    { emoji: "🐸", name: "Plush Pepe", value: 800000, chance: 0.000001, rarity: "legendary" }
-];
-
-function normalizeChancesCase() {
-    const stars = itemsCase.find(item => item.name === "7 Stars");
-    const otherItems = itemsCase.filter(item => item.name !== "7 Stars");
-    const total = otherItems.reduce((sum, item) => sum + item.chance, 0);
-    stars.chance = 100 - total;
-}
-normalizeChancesCase();
-
-const balanceCase = document.getElementById('balanceCase');
-const mainScreenCase = document.getElementById('mainScreenCase');
-const caseScreenCase = document.getElementById('caseScreenCase');
-const caseBox = document.getElementById('caseBox');
-const case250Box = document.getElementById('case250Box');
-const plsPepeBox = document.getElementById('plsPepeBox');
-const freeCaseBox = document.getElementById('freeCaseBox');
-const freeTimer = document.getElementById('freeTimer');
-const backButtonCase = document.getElementById('backButtonCase');
-const caseTitle = document.getElementById('caseTitle');
-const rouletteTrack = document.getElementById('rouletteTrack');
-const openButton = document.getElementById('openButton');
-const itemsGrid = document.getElementById('itemsGrid');
-const resultModalCase = document.getElementById('resultModalCase');
-const resultEmoji = document.getElementById('resultEmoji');
-const resultName = document.getElementById('resultName');
-const resultValue = document.getElementById('resultValue');
-const sellResult = document.getElementById('sellResult');
-const backResult = document.getElementById('backResult');
-const messageElement = document.getElementById('messageCase');
-
-function updateBalanceCase() {
-    balanceCase.textContent = balance.toFixed(2);
-}
-
-const FREE_COOLDOWN = 24 * 60 * 60 * 1000;
-const FREE_COOLDOWN_KEY = "case_free_last_open";
-
-function getFreeLastOpen() {
-    const value = localStorage.getItem(FREE_COOLDOWN_KEY);
-    if (!value) return 0;
-    return Number(value);
-}
-function canOpenFreeCase() {
-    const lastOpen = getFreeLastOpen();
-    return (Date.now() - lastOpen >= FREE_COOLDOWN);
-}
-function setFreeCooldown() {
-    localStorage.setItem(FREE_COOLDOWN_KEY, String(Date.now()));
-    updateFreeButton();
-}
-function updateFreeButton() {
-    const lastOpen = getFreeLastOpen();
-    const remaining = FREE_COOLDOWN - (Date.now() - lastOpen);
-    if (remaining <= 0) {
-        freeCaseBox.classList.remove("disabled");
-        freeTimer.textContent = "ГОТОВ К ОТКРЫТИЮ";
-        return;
-    }
-    freeCaseBox.classList.add("disabled");
-    freeTimer.textContent = formatTimeCase(remaining);
-}
-function formatTimeCase(milliseconds) {
-    let totalSeconds = Math.ceil(milliseconds / 1000);
-    const hours = Math.floor(totalSeconds / 3600);
-    totalSeconds %= 3600;
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return String(hours).padStart(2, "0") + ":" + String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
-}
-
-function showMainCase() {
-    caseScreenCase.classList.remove("active");
-    mainScreenCase.classList.add("active");
-    currentCaseType = "paid";
-    updateFreeButton();
-}
-
-function showCaseCase(type = "paid") {
-    mainScreenCase.classList.remove("active");
-    caseScreenCase.classList.add("active");
-    currentCaseType = type;
-    if (type === "free") {
-        caseTitle.textContent = "CASE FREE";
-        openButton.textContent = "ОТКРЫТЬ FREE 🎁";
-        openButton.classList.add("free-open");
-        renderItemsCase(freeItemsCase);
-        resetRouletteCase(freeItemsCase);
-    } else if (type === "pls-pepe") {
-        caseTitle.textContent = "PLS PEPE 🐸";
-        openButton.textContent = "КУПИТЬ ЗА 10 ⭐";
-        openButton.classList.remove("free-open");
-        renderItemsCase(plsPepeItemsCase);
-        resetRouletteCase(plsPepeItemsCase);
-    } else if (type === "250") {
-        caseTitle.textContent = "CASE 250 ⭐";
-        openButton.textContent = "КУПИТЬ ЗА 250 ⭐";
-        openButton.classList.remove("free-open");
-        renderItemsCase(case250ItemsCase);
-        resetRouletteCase(case250ItemsCase);
-    } else {
-        caseTitle.textContent = "CASE 50 ⭐";
-        openButton.textContent = "КУПИТЬ ЗА 50 ⭐";
-        openButton.classList.remove("free-open");
-        renderItemsCase(itemsCase);
-        resetRouletteCase(itemsCase);
-    }
-}
-
-function renderItemsCase(sourceItems) {
-    itemsGrid.innerHTML = "";
-    const sortedItems = [...sourceItems].sort((a, b) => b.value - a.value);
-    sortedItems.forEach(item => {
-        const card = document.createElement("div");
-        card.className = `item-card ${item.rarity}`;
-        card.innerHTML = `<div class="item-emoji">${item.emoji}</div><div class="item-name">${item.name}</div><div class="item-price">+${item.value} ⭐</div>`;
-        itemsGrid.appendChild(card);
-    });
-}
-
-function getRandomItemCase(sourceItems) {
-    const random = Math.random() * 100;
-    let accumulated = 0;
-    for (const item of sourceItems) {
-        accumulated += item.chance;
-        if (random < accumulated) return item;
-    }
-    return sourceItems[sourceItems.length - 1];
-}
-
-function createRouletteCardCase(item) {
-    const element = document.createElement("div");
-    element.className = `roulette-item ${item.rarity}`;
-    element.innerHTML = `<div class="roulette-emoji">${item.emoji}</div><div class="roulette-name">${item.name}</div>`;
-    return element;
-}
-
-function resetRouletteCase(sourceItems = itemsCase) {
-    rouletteTrack.style.transition = "none";
-    rouletteTrack.style.transform = "translateX(0px)";
-    rouletteTrack.innerHTML = "";
-    for (let i = 0; i < 18; i++) {
-        const randomItem = sourceItems[Math.floor(Math.random() * sourceItems.length)];
-        rouletteTrack.appendChild(createRouletteCardCase(randomItem));
-    }
-}
-
-function startRouletteCase(sourceItems, winner) {
-    rouletteTrack.style.transition = "none";
-    rouletteTrack.style.transform = "translateX(0px)";
-    rouletteTrack.innerHTML = "";
-    const totalCards = 45;
-    const winnerIndex = 36;
-    for (let i = 0; i < totalCards; i++) {
-        let item;
-        if (i === winnerIndex) item = winner;
-        else item = sourceItems[Math.floor(Math.random() * sourceItems.length)];
-        rouletteTrack.appendChild(createRouletteCardCase(item));
-    }
-    const cardWidth = 135;
-    const windowWidth = rouletteTrack.parentElement.offsetWidth;
-    const centerOffset = windowWidth / 2 - 62.5;
-    const stopPosition = -(winnerIndex * cardWidth - centerOffset);
-    const finalPosition = stopPosition + (Math.random() * 30 - 15);
-    requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-            rouletteTrack.style.transition = "transform 6.5s cubic-bezier(.08,.72,.05,1)";
-            rouletteTrack.style.transform = `translateX(${finalPosition}px)`;
-        });
-    });
-    setTimeout(() => {
-        showResultCase(winner);
-        isOpeningCase = false;
-        openButton.disabled = false;
-    }, 6800);
-}
-
-function openCaseCase() {
-    if (isOpeningCase) return;
-    if (currentCaseType === "free") {
-        if (!canOpenFreeCase()) {
-            showMessageCase("FREE кейс можно открыть только раз в сутки ⏰");
-            return;
-        }
-        isOpeningCase = true;
-        openButton.disabled = true;
-        setFreeCooldown();
-        playClickSoundCase();
-        const winner = getRandomItemCase(freeItemsCase);
-        currentWinnerCase = winner;
-        startRouletteCase(freeItemsCase, winner);
-        return;
-    }
-    if (currentCaseType === "pls-pepe") {
-        if (balance < PLS_PEPE_PRICE) {
-            showMessageCase("Недостаточно валюты ⭐");
-            return;
-        }
-        isOpeningCase = true;
-        openButton.disabled = true;
-        balance -= PLS_PEPE_PRICE;
-        updateBalanceUI();
-        updateBalanceCase();
-        playClickSoundCase();
-        const winner = getRandomItemCase(plsPepeItemsCase);
-        currentWinnerCase = winner;
-        startRouletteCase(plsPepeItemsCase, winner);
-        return;
-    }
-    if (currentCaseType === "250") {
-        if (balance < CASE_250_PRICE) {
-            showMessageCase("Недостаточно валюты ⭐");
-            return;
-        }
-        isOpeningCase = true;
-        openButton.disabled = true;
-        balance -= CASE_250_PRICE;
-        updateBalanceUI();
-        updateBalanceCase();
-        playClickSoundCase();
-        const winner = getRandomItemCase(case250ItemsCase);
-        currentWinnerCase = winner;
-        startRouletteCase(case250ItemsCase, winner);
-        return;
-    }
-    if (balance < CASE_PRICE) {
-        showMessageCase("Недостаточно валюты ⭐");
-        return;
-    }
-    isOpeningCase = true;
-    openButton.disabled = true;
-    balance -= CASE_PRICE;
-    updateBalanceUI();
-    updateBalanceCase();
-    playClickSoundCase();
-    const winner = getRandomItemCase(itemsCase);
-    currentWinnerCase = winner;
-    startRouletteCase(itemsCase, winner);
-}
-
-function showResultCase(item) {
-    currentWinnerCase = item;
-    resultEmoji.textContent = item.emoji;
-    resultName.textContent = item.name;
-    resultValue.textContent = `+${item.value} ⭐`;
-    resultModalCase.classList.add("show");
-    playWinSoundCase();
-}
-
-function getCurrentItemsCase() {
-    if (currentCaseType === "free") return freeItemsCase;
-    if (currentCaseType === "pls-pepe") return plsPepeItemsCase;
-    if (currentCaseType === "250") return case250ItemsCase;
-    return itemsCase;
-}
-
-sellResult.addEventListener("click", () => {
-    if (!currentWinnerCase) return;
-    balance += currentWinnerCase.value;
-    balance = Math.round(balance * 100) / 100;
-    updateBalanceUI();
-    updateBalanceCase();
-    resultModalCase.classList.remove("show");
-    resetRouletteCase(getCurrentItemsCase());
-    currentWinnerCase = null;
-});
-
-backResult.addEventListener("click", () => {
-    if (!currentWinnerCase) return;
-    addItemToInventory(currentWinnerCase);
-    resultModalCase.classList.remove("show");
-    resetRouletteCase(getCurrentItemsCase());
-    currentWinnerCase = null;
-    showMessageCase("Предмет сохранён в инвентарь 🎒");
-});
-
-caseBox.addEventListener("click", () => { showCaseCase("paid"); });
-case250Box.addEventListener("click", () => { showCaseCase("250"); });
-plsPepeBox.addEventListener("click", () => { showCaseCase("pls-pepe"); });
-freeCaseBox.addEventListener("click", () => {
-    if (!canOpenFreeCase()) {
-        showMessageCase("FREE кейс можно открыть только раз в сутки ⏰");
-        return;
-    }
-    showCaseCase("free");
-});
-backButtonCase.addEventListener("click", () => {
-    if (isOpeningCase) {
-        showMessageCase("Подождите окончания открытия кейса");
-        return;
-    }
-    showMainCase();
-});
-openButton.addEventListener("click", openCaseCase);
-
-let messageTimeoutCase = null;
-function showMessageCase(text) {
-    clearTimeout(messageTimeoutCase);
-    messageElement.textContent = text;
-    messageElement.classList.add("show");
-    messageTimeoutCase = setTimeout(() => {
-        messageElement.classList.remove("show");
-    }, 2500);
-}
-
-let audioContextCase = null;
-function getAudioContextCase() {
-    try {
-        if (!audioContextCase) {
-            audioContextCase = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        if (audioContextCase.state === "suspended") {
-            audioContextCase.resume();
-        }
-        return audioContextCase;
-    } catch (error) { return null; }
-}
-
-function playClickSoundCase() {
-    const ctx = getAudioContextCase();
-    if (!ctx) return;
-    try {
-        const oscillator = ctx.createOscillator();
-        const gain = ctx.createGain();
-        oscillator.type = "square";
-        oscillator.frequency.setValueAtTime(180, ctx.currentTime);
-        oscillator.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.08);
-        gain.gain.setValueAtTime(0.08, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.09);
-        oscillator.connect(gain);
-        gain.connect(ctx.destination);
-        oscillator.start();
-        oscillator.stop(ctx.currentTime + 0.1);
-    } catch (error) {}
-}
-
-function playWinSoundCase() {
-    const ctx = getAudioContextCase();
-    if (!ctx) return;
-    try {
-        const notes = [523.25, 659.25, 783.99, 1046.5];
-        notes.forEach((frequency, index) => {
-            const oscillator = ctx.createOscillator();
-            const gain = ctx.createGain();
-            const start = ctx.currentTime + index * 0.1;
-            oscillator.type = "sine";
-            oscillator.frequency.setValueAtTime(frequency, start);
-            gain.gain.setValueAtTime(0, start);
-            gain.gain.linearRampToValueAtTime(0.12, start + 0.02);
-            gain.gain.exponentialRampToValueAtTime(0.001, start + 0.35);
-            oscillator.connect(gain);
-            gain.connect(ctx.destination);
-            oscillator.start(start);
-            oscillator.stop(start + 0.4);
-        });
-    } catch (error) {}
-}
-
-setInterval(updateFreeButton, 1000);
-
-document.getElementById('openCasesButton').addEventListener('click', ()=>{
-    document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));
-    document.getElementById('casesGameContainer').classList.remove('hidden');
-    updateBalanceCase();
-});
-
-document.getElementById('closeCasesBtn').addEventListener('click', ()=>{
-    document.getElementById('casesGameContainer').classList.add('hidden');
-    document.getElementById('menuPage').classList.remove('hidden');
-    document.querySelectorAll('.nav-button').forEach(b=>b.classList.remove('active'));
-    document.querySelector('[data-page="menuPage"]').classList.add('active');
-});
-
-renderItemsCase(itemsCase);
-resetRouletteCase(itemsCase);
-updateFreeButton();
-mainScreenCase.classList.add('active');
+// Код кейсов уже вставлен в HTML выше, здесь только JS-логика
 
 // =====================================================
-// ИГРА UPGRADE - ПОЛНЫЙ КОД
+// ИГРА UPGRADE - ПОЛНЫЙ КОД (вставлен выше)
 // =====================================================
 
-let betUpgrade = 100;
-let multiplierUpgrade = 2;
-let winChanceUpgrade = 50;
-let isSpinningUpgrade = false;
-let pointerRotationUpgrade = 0;
-let historyUpgrade = [];
-let selectedInventoryItem = null;
-
-const canvasUp = document.getElementById('wheel');
-const ctxUp = canvasUp.getContext('2d');
-const balanceUpgrade = document.getElementById('balanceUpgrade');
-const betInputUpgrade = document.getElementById('betInputUpgrade');
-const winPercentUp = document.getElementById('winPercent');
-const spinButtonUp = document.getElementById('spinButtonUpgrade');
-const statusUp = document.getElementById('statusUpgrade');
-const flashUp = document.getElementById('flashUpgrade');
-const toastUp = document.getElementById('toastUpgrade');
-const historyListUp = document.getElementById('historyListUpgrade');
-const pointerRotatorUp = document.getElementById('pointerRotator');
-const multiplierButtonsUp = document.querySelectorAll('.multiplier-upgrade');
-const selectItemBtn = document.getElementById('selectItemBtn');
-const selectedItemDisplay = document.getElementById('selectedItemDisplay');
-const itemDropdown = document.getElementById('itemDropdown');
-
-function updateBalanceUpgrade() {
-    balanceUpgrade.textContent = balance.toFixed(2);
-}
-
-function renderItemDropdown() {
-    itemDropdown.innerHTML = '';
-    if (inventoryItems.length === 0) {
-        const empty = document.createElement('div');
-        empty.className = 'item-select-option';
-        empty.style.justifyContent = 'center';
-        empty.style.color = '#737781';
-        empty.textContent = 'Инвентарь пуст';
-        itemDropdown.appendChild(empty);
-        return;
-    }
-    inventoryItems.forEach((item, index) => {
-        const opt = document.createElement('div');
-        opt.className = 'item-select-option';
-        opt.innerHTML = `
-            <span class="opt-emoji">${item.emoji}</span>
-            <span class="opt-name">${item.name}</span>
-            <span class="opt-value">+${item.value} ⭐</span>
-        `;
-        opt.addEventListener('click', () => {
-            selectItemFromInventory(index);
-        });
-        itemDropdown.appendChild(opt);
-    });
-}
-
-function selectItemFromInventory(index) {
-    const item = inventoryItems[index];
-    selectedInventoryItem = { ...item };
-    inventoryItems.splice(index, 1);
-    renderInventory();
-    renderItemDropdown();
-    selectedItemDisplay.textContent = `${item.emoji} ${item.name} (${item.value}⭐)`;
-    selectItemBtn.classList.add('active');
-    itemDropdown.classList.remove('open');
-    showToastUp(`Выбран предмет: ${item.emoji} ${item.name}`, true);
-}
-
-function clearSelectedItem() {
-    if (selectedInventoryItem) {
-        inventoryItems.push({ ...selectedInventoryItem });
-        renderInventory();
-        renderItemDropdown();
-        selectedInventoryItem = null;
-        selectedItemDisplay.textContent = 'Баланс';
-        selectItemBtn.classList.remove('active');
-    }
-}
-
-selectItemBtn.addEventListener('click', () => {
-    renderItemDropdown();
-    itemDropdown.classList.toggle('open');
-});
-
-function resizeCanvasUp() {
-    const rect = canvasUp.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-    canvasUp.width = rect.width * dpr;
-    canvasUp.height = rect.height * dpr;
-    ctxUp.setTransform(dpr, 0, 0, dpr, 0, 0);
-    drawWheelUp();
-}
-window.addEventListener('resize', resizeCanvasUp);
-
-function drawWheelUp() {
-    const w = canvasUp.clientWidth, h = canvasUp.clientHeight;
-    if (w <= 0 || h <= 0) return;
-    ctxUp.clearRect(0, 0, w, h);
-    const cx = w/2, cy = h/2;
-    const radius = Math.min(w, h) * .43;
-    ctxUp.save();
-    ctxUp.beginPath();
-    ctxUp.arc(cx, cy, radius + 13, 0, Math.PI*2);
-    ctxUp.shadowBlur = 35;
-    ctxUp.shadowColor = "rgba(255,35,78,.45)";
-    ctxUp.strokeStyle = "rgba(255,42,82,.55)";
-    ctxUp.lineWidth = 8;
-    ctxUp.stroke();
-    ctxUp.restore();
-
-    const greenAngle = Math.PI * 2 * (winChanceUpgrade / 100);
-    const greenStart = Math.PI/2 - greenAngle/2;
-    const greenEnd = Math.PI/2 + greenAngle/2;
-
-    ctxUp.save();
-    ctxUp.beginPath();
-    ctxUp.arc(cx, cy, radius, 0, Math.PI*2);
-    ctxUp.clip();
-
-    const redGrad = ctxUp.createRadialGradient(cx - radius*.25, cy - radius*.35, radius*.1, cx, cy, radius);
-    redGrad.addColorStop(0, "#ff5877");
-    redGrad.addColorStop(.35, "#d71945");
-    redGrad.addColorStop(.72, "#8c102d");
-    redGrad.addColorStop(1, "#4a0719");
-    ctxUp.beginPath();
-    ctxUp.arc(cx, cy, radius, 0, Math.PI*2);
-    ctxUp.fillStyle = redGrad;
-    ctxUp.fill();
-
-    const greenGrad = ctxUp.createRadialGradient(cx, cy + radius*.2, radius*.05, cx, cy, radius);
-    greenGrad.addColorStop(0, "#70ffb2");
-    greenGrad.addColorStop(.35, "#17d96f");
-    greenGrad.addColorStop(.72, "#078d4a");
-    greenGrad.addColorStop(1, "#034b2a");
-    ctxUp.beginPath();
-    ctxUp.moveTo(cx, cy);
-    ctxUp.arc(cx, cy, radius, greenStart, greenEnd);
-    ctxUp.closePath();
-    ctxUp.fillStyle = greenGrad;
-    ctxUp.fill();
-
-    const gloss = ctxUp.createLinearGradient(0, cy - radius, 0, cy);
-    gloss.addColorStop(0, "rgba(255,255,255,.17)");
-    gloss.addColorStop(.4, "rgba(255,255,255,.04)");
-    gloss.addColorStop(1, "rgba(255,255,255,0)");
-    ctxUp.beginPath();
-    ctxUp.arc(cx, cy, radius, 0, Math.PI*2);
-    ctxUp.fillStyle = gloss;
-    ctxUp.fill();
-
-    ctxUp.beginPath();
-    ctxUp.moveTo(cx, cy);
-    ctxUp.lineTo(cx + radius * Math.cos(greenStart), cy + radius * Math.sin(greenStart));
-    ctxUp.moveTo(cx, cy);
-    ctxUp.lineTo(cx + radius * Math.cos(greenEnd), cy + radius * Math.sin(greenEnd));
-    ctxUp.strokeStyle = "rgba(255,255,255,.75)";
-    ctxUp.lineWidth = 3;
-    ctxUp.stroke();
-    ctxUp.restore();
-
-    ctxUp.beginPath();
-    ctxUp.arc(cx, cy, radius, 0, Math.PI*2);
-    ctxUp.strokeStyle = "#ff5274";
-    ctxUp.lineWidth = 5;
-    ctxUp.shadowBlur = 15;
-    ctxUp.shadowColor = "rgba(255,40,80,.55)";
-    ctxUp.stroke();
-    ctxUp.shadowBlur = 0;
-
-    ctxUp.beginPath();
-    ctxUp.arc(cx, cy, radius * .77, 0, Math.PI*2);
-    ctxUp.strokeStyle = "rgba(255,255,255,.08)";
-    ctxUp.lineWidth = 2;
-    ctxUp.stroke();
-
-    for (let i = 0; i < 24; i++) {
-        const angle = (Math.PI*2/24) * i;
-        const outer = radius + 3, inner = radius - 7;
-        ctxUp.beginPath();
-        ctxUp.moveTo(cx + Math.cos(angle)*inner, cy + Math.sin(angle)*inner);
-        ctxUp.lineTo(cx + Math.cos(angle)*outer, cy + Math.sin(angle)*outer);
-        ctxUp.strokeStyle = i % 2 === 0 ? "rgba(255,255,255,.4)" : "rgba(255,255,255,.12)";
-        ctxUp.lineWidth = i % 2 === 0 ? 2 : 1;
-        ctxUp.stroke();
-    }
-}
-
-function normalizeAngleUp(a) { a %= 360; if (a<0) a += 360; return a; }
-
-function isPointerOnGreenUp() {
-    const pointerAngle = normalizeAngleUp(-90 + pointerRotationUpgrade);
-    const greenAngle = 360 * (winChanceUpgrade / 100);
-    const greenStart = 90 - greenAngle/2;
-    const greenEnd = 90 + greenAngle/2;
-    const dist = Math.abs(normalizeAngleUp(pointerAngle - 90));
-    const circular = Math.min(dist, 360 - dist);
-    return circular <= greenAngle/2;
-}
-
-function getRandomTargetUp() { return Math.random() * 360; }
-
-function spinUpgrade() {
-    if (isSpinningUpgrade) return;
-
-    let useItem = selectedInventoryItem !== null;
-    let betValue = 0;
-
-    if (useItem) {
-        betValue = selectedInventoryItem.value;
-    } else {
-        betValue = Number(betInputUpgrade.value);
-        if (!Number.isFinite(betValue) || betValue <= 0) {
-            showToastUp("Введите корректную ставку", false);
-            return;
-        }
-        if (betValue < 25) {
-            showToastUp("Минимальная ставка 25 ⭐", false);
-            return;
-        }
-        if (betValue > balance) {
-            showToastUp("Недостаточно средств ⭐", false);
-            return;
-        }
-    }
-
-    if (!useItem) {
-        balance -= betValue;
-        balance = Math.round(balance * 100) / 100;
-    }
-
-    isSpinningUpgrade = true;
-    spinButtonUp.disabled = true;
-    betInputUpgrade.disabled = true;
-    multiplierButtonsUp.forEach(b => b.disabled = true);
-    selectItemBtn.disabled = true;
-
-    statusUp.className = "status-upgrade";
-    statusUp.textContent = "Колесо вращается...";
-
-    const target = getRandomTargetUp();
-    const fullSpins = 5 + Math.floor(Math.random() * 4);
-    const targetAbsolute = pointerRotationUpgrade + fullSpins * 360 + target;
-
-    const start = pointerRotationUpgrade;
-    const distance = targetAbsolute - start;
-    const duration = 4300;
-    const startTime = performance.now();
-
-    function animateSpin(currentTime) {
-        const elapsed = currentTime - startTime;
-        let progress = Math.min(elapsed / duration, 1);
-        const eased = 1 - Math.pow(1 - progress, 4);
-        pointerRotationUpgrade = start + distance * eased;
-        pointerRotatorUp.style.transform = `rotate(${pointerRotationUpgrade}deg)`;
-        if (progress < 1) {
-            requestAnimationFrame(animateSpin);
-        } else {
-            pointerRotationUpgrade = normalizeAngleUp(pointerRotationUpgrade);
-            pointerRotatorUp.style.transform = `rotate(${pointerRotationUpgrade}deg)`;
-            const won = isPointerOnGreenUp();
-            finishSpinUpgrade(won, useItem, betValue);
-        }
-    }
-    requestAnimationFrame(animateSpin);
-}
-
-function finishSpinUpgrade(won, usedItem, betValue) {
-    let winAmount = 0;
-    if (won) {
-        winAmount = betValue * multiplierUpgrade;
-        balance += winAmount;
-        balance = Math.round(balance * 100) / 100;
-        statusUp.className = "status-upgrade win";
-        statusUp.textContent = `ПОБЕДА +${winAmount.toFixed(2)} ⭐`;
-        showToastUp(`🎉 Выигрыш +${winAmount.toFixed(2)} ⭐`, true);
-        flashUp.className = "flash-upgrade win";
-        void flashUp.offsetWidth;
-        flashUp.classList.add("win");
-        resultSoundUpgrade(true);
-        addHistoryUpgrade(true, betValue, multiplierUpgrade, winAmount);
-    } else {
-        statusUp.className = "status-upgrade lose";
-        statusUp.textContent = `ПОРАЖЕНИЕ -${betValue.toFixed(2)} ⭐`;
-        showToastUp(`💥 Проигрыш -${betValue.toFixed(2)} ⭐`, false);
-        flashUp.className = "flash-upgrade lose";
-        void flashUp.offsetWidth;
-        flashUp.classList.add("lose");
-        resultSoundUpgrade(false);
-        addHistoryUpgrade(false, betValue, multiplierUpgrade, betValue);
-    }
-
-    updateBalanceUI();
-    updateBalanceUpgrade();
-
-    if (usedItem) {
-        selectedInventoryItem = null;
-        selectedItemDisplay.textContent = 'Баланс';
-        selectItemBtn.classList.remove('active');
-        renderItemDropdown();
-    }
-
-    setTimeout(() => {
-        isSpinningUpgrade = false;
-        spinButtonUp.disabled = false;
-        betInputUpgrade.disabled = false;
-        multiplierButtonsUp.forEach(b => b.disabled = false);
-        selectItemBtn.disabled = false;
-    }, 450);
-}
-
-function resultSoundUpgrade(win) {
-    try {
-        const audio = getAudioContextCase();
-        if (!audio) return;
-        if (win) {
-            const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
-            notes.forEach((freq, idx) => {
-                const osc = audio.createOscillator();
-                const gain = audio.createGain();
-                const start = audio.currentTime + idx * 0.075;
-                osc.type = "sine";
-                osc.frequency.setValueAtTime(freq, start);
-                gain.gain.setValueAtTime(0.0001, start);
-                gain.gain.exponentialRampToValueAtTime(0.13, start + 0.018);
-                gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.38);
-                osc.connect(gain);
-                gain.connect(audio.destination);
-                osc.start(start);
-                osc.stop(start + 0.4);
-            });
-        } else {
-            const notes = [220, 165, 110];
-            notes.forEach((freq, idx) => {
-                const osc = audio.createOscillator();
-                const gain = audio.createGain();
-                const start = audio.currentTime + idx * 0.12;
-                osc.type = "sine";
-                osc.frequency.setValueAtTime(freq, start);
-                osc.frequency.exponentialRampToValueAtTime(freq * 0.72, start + 0.18);
-                gain.gain.setValueAtTime(0.0001, start);
-                gain.gain.exponentialRampToValueAtTime(0.11, start + 0.015);
-                gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.25);
-                osc.connect(gain);
-                gain.connect(audio.destination);
-                osc.start(start);
-                osc.stop(start + 0.27);
-            });
-        }
-    } catch (e) {}
-}
-
-function buttonSoundUpgrade() {
-    try {
-        const audio = getAudioContextCase();
-        if (!audio) return;
-        const osc = audio.createOscillator();
-        const gain = audio.createGain();
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(440, audio.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(650, audio.currentTime + 0.05);
-        gain.gain.setValueAtTime(0.0001, audio.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.045, audio.currentTime + 0.008);
-        gain.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + 0.08);
-        osc.connect(gain);
-        gain.connect(audio.destination);
-        osc.start();
-        osc.stop(audio.currentTime + 0.09);
-    } catch (e) {}
-}
-
-multiplierButtonsUp.forEach(btn => {
-    btn.addEventListener('click', () => {
-        if (isSpinningUpgrade) return;
-        buttonSoundUpgrade();
-        multiplierUpgrade = Number(btn.dataset.multiplier);
-        if (multiplierUpgrade === 2) winChanceUpgrade = 50;
-        else if (multiplierUpgrade === 5) winChanceUpgrade = 20;
-        else winChanceUpgrade = 10;
-        multiplierButtonsUp.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        winPercentUp.textContent = `${winChanceUpgrade}%`;
-        drawWheelUp();
-        statusUp.className = "status-upgrade";
-        statusUp.textContent = `Шанс выигрыша ${winChanceUpgrade}%`;
-    });
-});
-
-spinButtonUp.addEventListener('click', spinUpgrade);
-
-function addHistoryUpgrade(won, betVal, mult, amount) {
-    historyUpgrade.unshift({ won, bet: betVal, multiplier: mult, amount });
-    if (historyUpgrade.length > 5) historyUpgrade.pop();
-    renderHistoryUpgrade();
-}
-
-function renderHistoryUpgrade() {
-    if (historyUpgrade.length === 0) {
-        historyListUp.innerHTML = `<div class="history-item"><div class="history-left">История пуста</div></div>`;
-        return;
-    }
-    historyListUp.innerHTML = historyUpgrade.map(item => `
-        <div class="history-item">
-            <div class="history-left">Ставка <strong>${item.bet.toFixed(2)} ⭐</strong> &nbsp;×${item.multiplier}</div>
-            <div class="history-result ${item.won ? 'win' : 'lose'}">${item.won ? '+' : '-'}${item.amount.toFixed(2)} ⭐</div>
-        </div>
-    `).join('');
-}
-
-function showToastUp(text, won) {
-    clearTimeout(toastUp._timer);
-    toastUp.textContent = text;
-    toastUp.className = `toast-upgrade show ${won ? 'win' : 'lose'}`;
-    toastUp._timer = setTimeout(() => toastUp.classList.remove('show'), 2500);
-}
-
-document.getElementById('openUpgradeButton').addEventListener('click', ()=>{
-    document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));
-    document.getElementById('upgradeGameContainer').classList.remove('hidden');
-    updateBalanceUpgrade();
-    setTimeout(resizeCanvasUp, 100);
-});
-
-document.getElementById('closeUpgradeBtn').addEventListener('click', ()=>{
-    document.getElementById('upgradeGameContainer').classList.add('hidden');
-    document.getElementById('menuPage').classList.remove('hidden');
-    document.querySelectorAll('.nav-button').forEach(b=>b.classList.remove('active'));
-    document.querySelector('[data-page="menuPage"]').classList.add('active');
-});
-
-updateBalanceUpgrade();
-setTimeout(resizeCanvasUp, 50);
-renderHistoryUpgrade();
-pointerRotatorUp.style.transform = `rotate(${pointerRotationUpgrade}deg)`;
-renderItemDropdown();
+// Код UPGRADE уже вставлен в HTML выше, здесь только JS-логика
 
 // =====================================================
 // ИНИЦИАЛИЗАЦИЯ
 // =====================================================
 updateBalanceUI();
-updateBalanceTicket();
-updateBalanceCase();
-updateBalanceUpgrade();
 updateZones();
 updateProfileStats();
 resizeCanvas();
