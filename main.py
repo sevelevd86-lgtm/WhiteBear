@@ -27,7 +27,7 @@ from aiogram.client.default import DefaultBotProperties
 # =====================================================
 
 # ВСТАВЬ СЮДА НОВЫЙ ТОКЕН ПОСЛЕ ПЕРЕВЫПУСКА В @BotFather
-BOT_TOKEN = "ВСТАВЬ_СЮДА_НОВЫЙ_ТОКЕН"
+BOT_TOKEN = "8918284594:AAG-h12sJhc7a0qaV5LgS-ea29FNeZVtJvY"
 
 BOT_USERNAME = "White_Bear_ROBOT"
 
