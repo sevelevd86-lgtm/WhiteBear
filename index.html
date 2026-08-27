@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-<title>White Bear Drop</title>
+<title>White Bear DROP</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
@@ -20,27 +20,58 @@ html,
 body {
     width: 100%;
     min-height: 100%;
-    background: #08090d;
-    color: white;
-    font-family: Arial, sans-serif;
+    background: #08090f;
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
 }
 
 body {
     overflow-x: hidden;
 }
 
-button,
-input {
-    font-family: inherit;
+/* =====================================================
+   BACKGROUND
+===================================================== */
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+
+    background:
+        radial-gradient(
+            circle at 50% 0%,
+            rgba(111, 76, 255, 0.22),
+            transparent 35%
+        ),
+        radial-gradient(
+            circle at 0% 100%,
+            rgba(0, 180, 255, 0.10),
+            transparent 30%
+        ),
+        #08090f;
 }
 
-button {
-    border: 0;
-    cursor: pointer;
-}
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
 
-.hidden {
-    display: none !important;
+    background:
+        linear-gradient(
+            rgba(255,255,255,0.015) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(255,255,255,0.015) 1px,
+            transparent 1px
+        );
+
+    background-size: 30px 30px;
 }
 
 /* =====================================================
@@ -48,11 +79,9 @@ button {
 ===================================================== */
 
 #app {
+    width: 100%;
     min-height: 100vh;
     padding-bottom: 90px;
-    background:
-        radial-gradient(circle at 50% -10%, rgba(120, 80, 255, .18), transparent 38%),
-        linear-gradient(180deg, #0a0b10 0%, #07080c 100%);
 }
 
 /* =====================================================
@@ -60,20 +89,12 @@ button {
 ===================================================== */
 
 .header {
-    height: 70px;
-    padding: 0 18px;
+    width: 100%;
+    padding: 18px 18px 10px;
 
     display: flex;
     align-items: center;
     justify-content: space-between;
-
-    border-bottom: 1px solid rgba(255,255,255,.06);
-    background: rgba(8,9,13,.88);
-    backdrop-filter: blur(15px);
-
-    position: sticky;
-    top: 0;
-    z-index: 50;
 }
 
 .logo {
@@ -83,48 +104,56 @@ button {
 }
 
 .logo-bear {
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
+
+    border-radius: 14px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    border-radius: 13px;
+    font-size: 25px;
 
-    background: linear-gradient(145deg, #ffffff, #b9bdc7);
-    color: #111;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,0.13),
+            rgba(255,255,255,0.035)
+        );
 
-    font-size: 23px;
+    border: 1px solid rgba(255,255,255,0.09);
 
     box-shadow:
-        0 0 20px rgba(255,255,255,.12),
-        inset 0 1px 0 rgba(255,255,255,.7);
+        0 8px 30px rgba(0,0,0,0.25),
+        inset 0 1px 0 rgba(255,255,255,0.08);
 }
 
 .logo-text {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 800;
-    letter-spacing: .4px;
+    letter-spacing: -0.4px;
 }
 
-.balance-header {
-    display: flex;
-    align-items: center;
-    gap: 7px;
+.logo-subtitle {
+    color: rgba(255,255,255,0.42);
+    font-size: 11px;
+    margin-top: 2px;
+}
 
+.header-balance {
     padding: 9px 13px;
 
-    border-radius: 12px;
+    border-radius: 13px;
 
-    background: rgba(255,255,255,.055);
-    border: 1px solid rgba(255,255,255,.07);
+    background: rgba(255,255,255,0.055);
+    border: 1px solid rgba(255,255,255,0.07);
 
-    font-weight: 800;
     font-size: 14px;
+    font-weight: 700;
 }
 
-.star {
+.header-balance span {
     color: #ffd84d;
 }
 
@@ -134,62 +163,73 @@ button {
 
 .page {
     width: 100%;
-    max-width: 620px;
+    padding: 18px;
+}
 
-    margin: 0 auto;
-    padding: 25px 16px;
+.hidden {
+    display: none !important;
 }
 
 .page-title {
     font-size: 28px;
-    font-weight: 900;
+    font-weight: 850;
+    letter-spacing: -0.8px;
     margin-bottom: 7px;
 }
 
 .page-subtitle {
-    color: #858894;
-    font-size: 14px;
-    margin-bottom: 22px;
+    color: rgba(255,255,255,0.43);
+    font-size: 13px;
+    margin-bottom: 24px;
 }
 
 /* =====================================================
-   EMPTY MENU / INVENTORY
+   EMPTY MENU
 ===================================================== */
 
 .empty-page {
-    min-height: 60vh;
+    min-height: calc(100vh - 190px);
 
     display: flex;
     align-items: center;
     justify-content: center;
+
+    text-align: center;
 }
 
 .empty-box {
     width: 100%;
-    padding: 35px 20px;
+    max-width: 340px;
 
-    text-align: center;
+    padding: 35px 25px;
 
-    border-radius: 22px;
+    border-radius: 24px;
 
-    background: rgba(255,255,255,.035);
-    border: 1px solid rgba(255,255,255,.06);
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,0.055),
+            rgba(255,255,255,0.018)
+        );
+
+    border: 1px solid rgba(255,255,255,0.07);
 }
 
 .empty-icon {
-    font-size: 46px;
-    margin-bottom: 14px;
+    font-size: 48px;
+    margin-bottom: 15px;
 }
 
 .empty-title {
-    font-size: 20px;
+    font-size: 19px;
     font-weight: 800;
-    margin-bottom: 7px;
+    margin-bottom: 8px;
 }
 
 .empty-text {
-    color: #777b87;
-    font-size: 14px;
+    color: rgba(255,255,255,0.4);
+    font-size: 13px;
+    line-height: 1.5;
 }
 
 /* =====================================================
@@ -198,24 +238,24 @@ button {
 
 .profile-card {
     position: relative;
-
     overflow: hidden;
 
+    width: 100%;
     padding: 22px;
 
-    border-radius: 24px;
+    border-radius: 25px;
 
     background:
         linear-gradient(
             145deg,
-            rgba(255,255,255,.08),
-            rgba(255,255,255,.025)
+            rgba(126, 87, 255, 0.16),
+            rgba(255,255,255,0.035)
         );
 
-    border: 1px solid rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,0.09);
 
     box-shadow:
-        0 20px 60px rgba(0,0,0,.28);
+        0 18px 50px rgba(0,0,0,0.25);
 }
 
 .profile-card::before {
@@ -226,14 +266,14 @@ button {
     width: 180px;
     height: 180px;
 
-    right: -80px;
-    top: -80px;
+    top: -100px;
+    right: -70px;
 
     border-radius: 50%;
 
-    background: rgba(130,90,255,.16);
+    background: rgba(125, 82, 255, 0.17);
 
-    filter: blur(35px);
+    filter: blur(25px);
 }
 
 .profile-top {
@@ -241,17 +281,14 @@ button {
 
     display: flex;
     align-items: center;
+    gap: 15px;
 
-    gap: 14px;
-
-    margin-bottom: 23px;
+    margin-bottom: 22px;
 }
 
-.avatar {
+.profile-avatar {
     width: 58px;
     height: 58px;
-
-    flex-shrink: 0;
 
     border-radius: 18px;
 
@@ -259,333 +296,253 @@ button {
     align-items: center;
     justify-content: center;
 
-    font-size: 30px;
+    font-size: 31px;
 
-    background: linear-gradient(145deg, #ffffff, #c5c8d0);
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff1c,
+            #ffffff05
+        );
 
-    box-shadow:
-        0 8px 25px rgba(0,0,0,.3);
+    border: 1px solid rgba(255,255,255,0.1);
 }
 
 .profile-name {
     font-size: 20px;
-    font-weight: 900;
-
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-weight: 850;
 }
 
-.profile-username {
+.profile-status {
     margin-top: 4px;
 
-    color: #858894;
-
-    font-size: 13px;
+    color: #7dffbd;
+    font-size: 12px;
+    font-weight: 600;
 }
 
 .profile-info {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    position: relative;
 
+    display: flex;
+    flex-direction: column;
     gap: 10px;
-
-    margin-bottom: 15px;
 }
 
-.info-box {
-    padding: 14px;
+.info-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 
-    border-radius: 16px;
+    padding: 13px 14px;
 
-    background: rgba(0,0,0,.20);
+    border-radius: 15px;
 
-    border: 1px solid rgba(255,255,255,.055);
+    background: rgba(0,0,0,0.18);
+
+    border: 1px solid rgba(255,255,255,0.045);
 }
 
 .info-label {
-    color: #777b87;
-
-    font-size: 11px;
-
-    text-transform: uppercase;
-
-    letter-spacing: .6px;
-
-    margin-bottom: 6px;
+    color: rgba(255,255,255,0.48);
+    font-size: 13px;
 }
 
 .info-value {
-    font-size: 16px;
-
-    font-weight: 800;
-
-    word-break: break-all;
-}
-
-.balance-box {
-    margin-top: 10px;
-
-    padding: 18px;
-
-    border-radius: 18px;
-
-    background:
-        linear-gradient(
-            135deg,
-            rgba(255,216,77,.10),
-            rgba(255,255,255,.025)
-        );
-
-    border: 1px solid rgba(255,216,77,.13);
-}
-
-.balance-label {
-    color: #8b8e98;
-    font-size: 12px;
-    margin-bottom: 5px;
+    font-size: 14px;
+    font-weight: 750;
 }
 
 .balance-value {
-    font-size: 29px;
-    font-weight: 900;
-
-    color: #fff;
-}
-
-.balance-value span {
     color: #ffd84d;
+    font-size: 16px;
 }
 
 /* =====================================================
-   DEPOSIT
+   TELEGRAM ID
+===================================================== */
+
+.telegram-id {
+    font-family: monospace;
+
+    max-width: 180px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* =====================================================
+   DEPOSIT INFO
 ===================================================== */
 
 .deposit-card {
     margin-top: 15px;
 
-    padding: 20px;
+    padding: 18px;
 
-    border-radius: 22px;
+    border-radius: 21px;
 
-    background: rgba(255,255,255,.035);
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,216,77,0.10),
+            rgba(255,255,255,0.025)
+        );
 
-    border: 1px solid rgba(255,255,255,.07);
+    border: 1px solid rgba(255,216,77,0.10);
 }
 
-.section-title {
-    font-size: 18px;
-    font-weight: 900;
-
-    margin-bottom: 6px;
-}
-
-.section-text {
-    color: #777b87;
-    font-size: 13px;
-
-    line-height: 1.45;
-
-    margin-bottom: 17px;
-}
-
-.amount-title {
-    color: #9699a4;
-    font-size: 12px;
-
+.deposit-title {
+    font-size: 15px;
+    font-weight: 800;
     margin-bottom: 7px;
 }
 
-.amount-input {
-    width: 100%;
-    height: 52px;
-
-    padding: 0 15px;
-
-    outline: none;
-
-    color: white;
-
-    background: rgba(0,0,0,.28);
-
-    border: 1px solid rgba(255,255,255,.08);
-
-    border-radius: 14px;
-
-    font-size: 17px;
-    font-weight: 800;
-}
-
-.amount-input:focus {
-    border-color: rgba(140,105,255,.65);
-}
-
-.amount-buttons {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-
-    gap: 8px;
-
-    margin-top: 9px;
-}
-
-.amount-btn {
-    height: 39px;
-
-    border-radius: 11px;
-
-    color: #b7bac4;
-
-    background: rgba(255,255,255,.05);
-
-    border: 1px solid rgba(255,255,255,.055);
-
-    font-weight: 800;
-
-    transition: .15s;
-}
-
-.amount-btn:active {
-    transform: scale(.96);
-}
-
-.amount-btn.active {
-    color: white;
-
-    background: rgba(130,95,255,.22);
-
-    border-color: rgba(140,105,255,.45);
+.deposit-text {
+    color: rgba(255,255,255,0.43);
+    font-size: 12px;
+    line-height: 1.5;
 }
 
 .deposit-button {
     width: 100%;
 
-    height: 56px;
+    margin-top: 14px;
+    padding: 14px;
 
-    margin-top: 15px;
-
-    border-radius: 16px;
-
-    color: #08090d;
+    border: none;
+    border-radius: 14px;
 
     background: linear-gradient(
         135deg,
-        #ffe477,
-        #ffc83d
+        #ffd84d,
+        #ffb72e
     );
 
-    font-size: 16px;
+    color: #17130a;
 
-    font-weight: 900;
+    font-size: 14px;
+    font-weight: 850;
+
+    cursor: pointer;
 
     box-shadow:
-        0 10px 30px rgba(255,200,60,.14);
-
-    transition: .15s;
+        0 10px 25px rgba(255,190,40,0.18);
 }
 
 .deposit-button:active {
-    transform: scale(.98);
-}
-
-.deposit-button:disabled {
-    opacity: .5;
-    pointer-events: none;
+    transform: scale(0.98);
 }
 
 /* =====================================================
-   STATUS
+   INVENTORY
 ===================================================== */
 
-.status {
+#inventoryPage .empty-page {
+    min-height: calc(100vh - 220px);
+}
+
+/* =====================================================
+   LOADING
+===================================================== */
+
+.loading {
+    opacity: 0.55;
+}
+
+.loading::after {
+    content: "...";
+    animation: dots 1.2s infinite;
+}
+
+@keyframes dots {
+    0% {
+        content: ".";
+    }
+
+    33% {
+        content: "..";
+    }
+
+    66% {
+        content: "...";
+    }
+
+    100% {
+        content: ".";
+    }
+}
+
+/* =====================================================
+   ERROR
+===================================================== */
+
+.connection-error {
     display: none;
 
     margin-top: 12px;
 
-    padding: 12px 14px;
+    padding: 13px;
 
-    border-radius: 13px;
+    border-radius: 14px;
 
-    font-size: 13px;
+    background: rgba(239,71,82,0.09);
 
-    line-height: 1.4;
+    border: 1px solid rgba(239,71,82,0.15);
 
-    background: rgba(255,255,255,.045);
+    color: #ff6d76;
 
-    border: 1px solid rgba(255,255,255,.06);
-}
+    font-size: 12px;
 
-.status.show {
-    display: block;
-}
-
-.status.error {
-    color: #ff737d;
-}
-
-.status.success {
-    color: #6ff0a5;
-}
-
-.status.loading {
-    color: #a9a1ff;
+    line-height: 1.45;
 }
 
 /* =====================================================
-   WITHDRAW
-===================================================== */
-
-.withdraw-placeholder {
-    margin-top: 15px;
-
-    padding: 18px;
-
-    border-radius: 18px;
-
-    background: rgba(255,255,255,.025);
-
-    border: 1px solid rgba(255,255,255,.055);
-}
-
-.withdraw-placeholder-title {
-    font-weight: 800;
-    margin-bottom: 5px;
-}
-
-.withdraw-placeholder-text {
-    color: #747783;
-    font-size: 13px;
-    line-height: 1.4;
-}
-
-/* =====================================================
-   BOTTOM NAV
+   BOTTOM NAVIGATION
 ===================================================== */
 
 .bottom-nav {
     position: fixed;
 
-    left: 0;
-    right: 0;
-    bottom: 0;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
 
-    height: 78px;
+    height: 67px;
 
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
 
-    padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+    border-radius: 22px;
 
-    background: rgba(8,9,13,.93);
+    background:
+        rgba(18,19,28,0.91);
 
-    backdrop-filter: blur(18px);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
 
-    border-top: 1px solid rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,0.08);
+
+    box-shadow:
+        0 15px 45px rgba(0,0,0,0.42);
 
     z-index: 100;
 }
 
 .nav-button {
+    position: relative;
+
+    width: 30%;
+
+    height: 56px;
+
+    border: none;
+    background: transparent;
+
+    color: rgba(255,255,255,0.36);
+
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -593,94 +550,77 @@ button {
 
     gap: 4px;
 
-    color: #666a76;
-
-    background: transparent;
-
     font-size: 10px;
+    font-weight: 650;
 
-    font-weight: 800;
-
-    border-radius: 14px;
-
-    transition: .15s;
+    cursor: pointer;
 }
 
 .nav-icon {
     font-size: 21px;
-    line-height: 21px;
+    line-height: 22px;
+
+    filter: grayscale(1);
+    opacity: 0.65;
 }
 
 .nav-button.active {
-    color: white;
+    color: #fff;
+}
 
-    background: rgba(255,255,255,.045);
+.nav-button.active .nav-icon {
+    filter: none;
+    opacity: 1;
+}
+
+.nav-button.active::after {
+    content: "";
+
+    position: absolute;
+
+    width: 5px;
+    height: 5px;
+
+    border-radius: 50%;
+
+    bottom: 2px;
+
+    background: #8d6cff;
+
+    box-shadow:
+        0 0 12px rgba(141,108,255,0.9);
 }
 
 /* =====================================================
-   LOADING
-===================================================== */
-
-#loadingScreen {
-    position: fixed;
-
-    inset: 0;
-
-    z-index: 999;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background: #08090d;
-}
-
-.loading-content {
-    text-align: center;
-}
-
-.loading-bear {
-    font-size: 54px;
-
-    margin-bottom: 15px;
-
-    animation: loadingPulse 1.3s ease-in-out infinite;
-}
-
-.loading-text {
-    color: #777b87;
-    font-size: 13px;
-}
-
-@keyframes loadingPulse {
-    0%,100% {
-        transform: scale(1);
-        opacity: .65;
-    }
-
-    50% {
-        transform: scale(1.08);
-        opacity: 1;
-    }
-}
-
-/* =====================================================
-   RESPONSIVE
+   MOBILE
 ===================================================== */
 
 @media (max-width: 380px) {
 
     .page {
-        padding-left: 12px;
-        padding-right: 12px;
+        padding: 15px;
+    }
+
+    .header {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .page-title {
+        font-size: 25px;
     }
 
     .profile-card {
         padding: 17px;
     }
 
-    .amount-buttons {
-        grid-template-columns: repeat(2, 1fr);
+    .profile-avatar {
+        width: 52px;
+        height: 52px;
+    }
+
+    .profile-name {
+        font-size: 18px;
     }
 }
 </style>
@@ -688,24 +628,11 @@ button {
 
 <body>
 
-<!-- =====================================================
-     LOADING
-===================================================== -->
-
-<div id="loadingScreen">
-    <div class="loading-content">
-        <div class="loading-bear">🐻‍❄️</div>
-        <div class="loading-text">Подключение к Telegram...</div>
-    </div>
-</div>
-
-<!-- =====================================================
-     APP
-===================================================== -->
-
 <div id="app">
 
-    <!-- HEADER -->
+    <!-- =================================================
+         HEADER
+    ================================================== -->
 
     <header class="header">
 
@@ -715,20 +642,20 @@ button {
                 🐻‍❄️
             </div>
 
-            <div class="logo-text">
-                White Bear
+            <div>
+                <div class="logo-text">
+                    White Bear
+                </div>
+
+                <div class="logo-subtitle">
+                    DROP
+                </div>
             </div>
 
         </div>
 
-        <div class="balance-header">
-
-            <span class="star">⭐</span>
-
-            <span id="headerBalance">
-                0.00
-            </span>
-
+        <div class="header-balance">
+            ⭐ <span id="headerBalance">0.00</span>
         </div>
 
     </header>
@@ -738,14 +665,17 @@ button {
          MENU
     ================================================== -->
 
-    <section id="menuPage" class="page">
+    <section
+        id="menuPage"
+        class="page"
+    >
 
         <div class="page-title">
             Меню
         </div>
 
         <div class="page-subtitle">
-            Игры появятся здесь позже
+            White Bear DROP
         </div>
 
         <div class="empty-page">
@@ -753,15 +683,17 @@ button {
             <div class="empty-box">
 
                 <div class="empty-icon">
-                    🎮
+                    🐻‍❄️
                 </div>
 
                 <div class="empty-title">
-                    Пока пусто
+                    Скоро здесь будут игры
                 </div>
 
                 <div class="empty-text">
-                    Игры пока отключены.
+                    Раздел пока пуст.
+                    Игровые кейсы и другие функции
+                    появятся здесь позже.
                 </div>
 
             </div>
@@ -775,14 +707,17 @@ button {
          INVENTORY
     ================================================== -->
 
-    <section id="inventoryPage" class="page hidden">
+    <section
+        id="inventoryPage"
+        class="page hidden"
+    >
 
         <div class="page-title">
             Инвентарь
         </div>
 
         <div class="page-subtitle">
-            Здесь будут находиться выигранные предметы
+            Ваши полученные предметы
         </div>
 
         <div class="empty-page">
@@ -798,7 +733,8 @@ button {
                 </div>
 
                 <div class="empty-text">
-                    Предметы появятся после запуска игр.
+                    Предметы из игр появятся
+                    здесь после запуска игрового раздела.
                 </div>
 
             </div>
@@ -812,24 +748,28 @@ button {
          PROFILE
     ================================================== -->
 
-    <section id="profilePage" class="page hidden">
+    <section
+        id="profilePage"
+        class="page hidden"
+    >
 
         <div class="page-title">
             Профиль
         </div>
 
         <div class="page-subtitle">
-            Ваш аккаунт White Bear Drop
+            Ваш аккаунт White Bear DROP
         </div>
 
-
-        <!-- PROFILE CARD -->
 
         <div class="profile-card">
 
             <div class="profile-top">
 
-                <div class="avatar">
+                <div
+                    class="profile-avatar"
+                    id="profileAvatar"
+                >
                     🐻‍❄️
                 </div>
 
@@ -839,14 +779,11 @@ button {
                         class="profile-name"
                         id="profileName"
                     >
-                        Пользователь
+                        Загрузка...
                     </div>
 
-                    <div
-                        class="profile-username"
-                        id="profileUsername"
-                    >
-                        Telegram
+                    <div class="profile-status">
+                        ● Telegram подключён
                     </div>
 
                 </div>
@@ -856,169 +793,102 @@ button {
 
             <div class="profile-info">
 
-                <div class="info-box">
+                <div class="info-row">
 
                     <div class="info-label">
                         Telegram ID
                     </div>
 
                     <div
-                        class="info-value"
+                        class="info-value telegram-id"
                         id="profileTelegramId"
                     >
-                        —
+                        Загрузка...
                     </div>
 
                 </div>
 
 
-                <div class="info-box">
+                <div class="info-row">
 
                     <div class="info-label">
-                        Username
+                        Баланс
+                    </div>
+
+                    <div
+                        class="info-value balance-value"
+                        id="profileBalance"
+                    >
+                        0.00 ⭐
+                    </div>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <div class="info-label">
+                        Статус
                     </div>
 
                     <div
                         class="info-value"
-                        id="profileUsernameBox"
+                        id="connectionStatus"
                     >
-                        —
+                        Проверка...
                     </div>
 
                 </div>
 
             </div>
 
-
-            <div class="balance-box">
-
-                <div class="balance-label">
-                    Баланс
-                </div>
-
-                <div class="balance-value">
-
-                    <span id="profileBalance">
-                        0.00
-                    </span>
-
-                    <span>
-                        ⭐
-                    </span>
-
-                </div>
-
-            </div>
-
         </div>
 
 
         <!-- =================================================
-             DEPOSIT
+             DEPOSIT INFO
         ================================================== -->
 
         <div class="deposit-card">
 
-            <div class="section-title">
-                Пополнить баланс
+            <div class="deposit-title">
+                ⭐ Пополнение баланса
             </div>
 
-            <div class="section-text">
-                Оплата проходит через официальные Telegram Stars.
-                После успешной оплаты звёзды будут автоматически
-                зачислены на баланс.
+            <div class="deposit-text">
+                Для пополнения используйте кнопку
+                «Пополнить баланс» в Telegram-боте.
+                После успешной оплаты Telegram Stars
+                баланс автоматически обновится здесь.
             </div>
-
-
-            <div class="amount-title">
-                Количество Stars
-            </div>
-
-            <input
-                id="depositInput"
-                class="amount-input"
-                type="number"
-                min="1"
-                max="10000"
-                value="100"
-                inputmode="numeric"
-                placeholder="Введите количество"
-            >
-
-
-            <div class="amount-buttons">
-
-                <button
-                    class="amount-btn"
-                    data-amount="50"
-                >
-                    50 ⭐
-                </button>
-
-                <button
-                    class="amount-btn active"
-                    data-amount="100"
-                >
-                    100 ⭐
-                </button>
-
-                <button
-                    class="amount-btn"
-                    data-amount="250"
-                >
-                    250 ⭐
-                </button>
-
-                <button
-                    class="amount-btn"
-                    data-amount="500"
-                >
-                    500 ⭐
-                </button>
-
-            </div>
-
 
             <button
-                id="depositButton"
                 class="deposit-button"
+                id="openBotDeposit"
             >
                 ⭐ Пополнить через Telegram
             </button>
 
-
-            <div
-                id="depositStatus"
-                class="status"
-            ></div>
-
         </div>
 
 
-        <!-- =================================================
-             WITHDRAW
-        ================================================== -->
-
-        <div class="withdraw-placeholder">
-
-            <div class="withdraw-placeholder-title">
-                💸 Вывод
-            </div>
-
-            <div class="withdraw-placeholder-text">
-                Функция вывода пока отключена.
-                Она будет добавлена позже.
-            </div>
-
+        <div
+            class="connection-error"
+            id="connectionError"
+        >
+            Не удалось получить баланс с сервера.
+            Проверьте, что сайт открыт через Telegram
+            и сервер бота работает.
         </div>
 
     </section>
+
 
 </div>
 
 
 <!-- =====================================================
-     BOTTOM NAV
+     BOTTOM NAVIGATION
 ===================================================== -->
 
 <nav class="bottom-nav">
@@ -1027,8 +897,15 @@ button {
         class="nav-button active"
         data-page="menuPage"
     >
-        <span class="nav-icon">🎮</span>
-        <span>Меню</span>
+
+        <div class="nav-icon">
+            🏠
+        </div>
+
+        <div>
+            Меню
+        </div>
+
     </button>
 
 
@@ -1036,8 +913,15 @@ button {
         class="nav-button"
         data-page="inventoryPage"
     >
-        <span class="nav-icon">📦</span>
-        <span>Инвентарь</span>
+
+        <div class="nav-icon">
+            📦
+        </div>
+
+        <div>
+            Инвентарь
+        </div>
+
     </button>
 
 
@@ -1045,37 +929,46 @@ button {
         class="nav-button"
         data-page="profilePage"
     >
-        <span class="nav-icon">👤</span>
-        <span>Профиль</span>
+
+        <div class="nav-icon">
+            👤
+        </div>
+
+        <div>
+            Профиль
+        </div>
+
     </button>
 
 </nav>
 
 
 <script>
-
 /* =====================================================
-   TELEGRAM
+   TELEGRAM WEB APP
 ===================================================== */
 
-const tg = window.Telegram?.WebApp;
+const tg = window.Telegram.WebApp;
 
-if (tg) {
-
+try {
     tg.ready();
-
     tg.expand();
 
-    try {
-        tg.setHeaderColor("#08090d");
-        tg.setBackgroundColor("#08090d");
-    } catch (e) {}
+    if (tg.setHeaderColor) {
+        tg.setHeaderColor("#08090f");
+    }
 
+    if (tg.setBackgroundColor) {
+        tg.setBackgroundColor("#08090f");
+    }
+
+} catch (e) {
+    console.log("Telegram WebApp initialization error:", e);
 }
 
 
 /* =====================================================
-   SERVER
+   SERVER URL
 ===================================================== */
 
 const SERVER_URL =
@@ -1083,11 +976,10 @@ const SERVER_URL =
 
 
 /* =====================================================
-   USER
+   USER DATA
 ===================================================== */
 
 let telegramUser = null;
-
 let currentBalance = 0;
 
 
@@ -1095,56 +987,137 @@ let currentBalance = 0;
    ELEMENTS
 ===================================================== */
 
-const loadingScreen =
-    document.getElementById("loadingScreen");
-
-const profileName =
-    document.getElementById("profileName");
-
-const profileUsername =
-    document.getElementById("profileUsername");
-
-const profileTelegramId =
-    document.getElementById("profileTelegramId");
-
-const profileUsernameBox =
-    document.getElementById("profileUsernameBox");
-
 const headerBalance =
     document.getElementById("headerBalance");
 
 const profileBalance =
     document.getElementById("profileBalance");
 
-const depositInput =
-    document.getElementById("depositInput");
+const profileTelegramId =
+    document.getElementById("profileTelegramId");
 
-const depositButton =
-    document.getElementById("depositButton");
+const profileName =
+    document.getElementById("profileName");
 
-const depositStatus =
-    document.getElementById("depositStatus");
+const profileAvatar =
+    document.getElementById("profileAvatar");
+
+const connectionStatus =
+    document.getElementById("connectionStatus");
+
+const connectionError =
+    document.getElementById("connectionError");
 
 
 /* =====================================================
-   STATUS
+   GET TELEGRAM USER
 ===================================================== */
 
-function setStatus(
-    text,
-    type = "loading"
-) {
+function getTelegramUser() {
 
-    depositStatus.textContent = text;
+    /*
+     Telegram WebApp передаёт пользователя
+     в tg.initDataUnsafe.user
+    */
 
-    depositStatus.className =
-        "status show " + type;
+    if (
+        tg &&
+        tg.initDataUnsafe &&
+        tg.initDataUnsafe.user
+    ) {
 
+        telegramUser =
+            tg.initDataUnsafe.user;
+
+        return telegramUser;
+
+    }
+
+    return null;
 }
 
 
 /* =====================================================
-   BALANCE UI
+   UPDATE USER UI
+===================================================== */
+
+function updateUserUI() {
+
+    const user = getTelegramUser();
+
+    if (!user) {
+
+        profileName.textContent =
+            "Не подключено";
+
+        profileTelegramId.textContent =
+            "Откройте через Telegram";
+
+        connectionStatus.textContent =
+            "Telegram не обнаружен";
+
+        connectionStatus.style.color =
+            "#ff6670";
+
+        return false;
+    }
+
+
+    /* Имя */
+
+    let displayName =
+        user.first_name || "Пользователь";
+
+    if (user.last_name) {
+        displayName +=
+            " " + user.last_name;
+    }
+
+    profileName.textContent =
+        displayName;
+
+
+    /* Telegram ID */
+
+    profileTelegramId.textContent =
+        String(user.id);
+
+
+    /* Avatar */
+
+    if (user.photo_url) {
+
+        profileAvatar.innerHTML = "";
+
+        profileAvatar.style.backgroundImage =
+            `url("${user.photo_url}")`;
+
+        profileAvatar.style.backgroundSize =
+            "cover";
+
+        profileAvatar.style.backgroundPosition =
+            "center";
+
+    } else {
+
+        profileAvatar.textContent =
+            "🐻‍❄️";
+    }
+
+
+    connectionStatus.textContent =
+        "Подключено";
+
+    connectionStatus.style.color =
+        "#7dffbd";
+
+
+    return true;
+}
+
+
+/* =====================================================
+   UPDATE BALANCE UI
 ===================================================== */
 
 function updateBalanceUI(balance) {
@@ -1159,532 +1132,116 @@ function updateBalanceUI(balance) {
         formatted;
 
     profileBalance.textContent =
-        formatted;
-
+        formatted + " ⭐";
 }
 
 
 /* =====================================================
-   TELEGRAM USER
-===================================================== */
-
-function loadTelegramUser() {
-
-    if (
-        !tg ||
-        !tg.initDataUnsafe ||
-        !tg.initDataUnsafe.user
-    ) {
-
-        setTimeout(() => {
-
-            loadingScreen.innerHTML = `
-                <div class="loading-content">
-
-                    <div class="loading-bear">
-                        🐻‍❄️
-                    </div>
-
-                    <div style="
-                        color:#ff737d;
-                        font-weight:800;
-                        margin-bottom:8px;
-                    ">
-                        Откройте игру через Telegram
-                    </div>
-
-                    <div style="
-                        color:#777b87;
-                        font-size:13px;
-                        max-width:260px;
-                        line-height:1.4;
-                    ">
-                        Откройте бота и нажмите
-                        кнопку «🎮 Играть».
-                    </div>
-
-                </div>
-            `;
-
-        }, 700);
-
-        return false;
-    }
-
-
-    telegramUser =
-        tg.initDataUnsafe.user;
-
-
-    const firstName =
-        telegramUser.first_name || "Пользователь";
-
-    const username =
-        telegramUser.username
-            ? "@" + telegramUser.username
-            : "Username отсутствует";
-
-
-    profileName.textContent =
-        firstName;
-
-    profileUsername.textContent =
-        username;
-
-    profileTelegramId.textContent =
-        telegramUser.id;
-
-    profileUsernameBox.textContent =
-        telegramUser.username
-            ? "@" + telegramUser.username
-            : "—";
-
-
-    return true;
-}
-
-
-/* =====================================================
-   SERVER REQUEST
-===================================================== */
-
-async function serverRequest(
-    path,
-    options = {}
-) {
-
-    const response =
-        await fetch(
-            SERVER_URL + path,
-            {
-                ...options,
-
-                headers: {
-                    "Content-Type":
-                        "application/json",
-
-                    ...(options.headers || {})
-                }
-            }
-        );
-
-
-    let data = null;
-
-    try {
-        data = await response.json();
-    } catch (e) {
-
-        data = {
-            error:
-                "Сервер вернул некорректный ответ"
-        };
-
-    }
-
-
-    if (!response.ok) {
-
-        throw new Error(
-            data.error ||
-            data.message ||
-            `Ошибка сервера: ${response.status}`
-        );
-
-    }
-
-
-    return data;
-}
-
-
-/* =====================================================
-   LOAD BALANCE
+   LOAD BALANCE FROM SERVER
 ===================================================== */
 
 async function loadBalance() {
 
-    if (!telegramUser) {
+    const user =
+        getTelegramUser();
+
+    if (!user) {
+
+        connectionError.style.display =
+            "block";
+
+        connectionStatus.textContent =
+            "Нет Telegram ID";
+
+        connectionStatus.style.color =
+            "#ff6670";
+
         return;
     }
+
+
+    connectionError.style.display =
+        "none";
+
+    connectionStatus.textContent =
+        "Подключение...";
+
+    connectionStatus.style.color =
+        "rgba(255,255,255,0.45)";
 
 
     try {
 
-        const data =
-            await serverRequest(
-                "/api/balance",
-                {
-                    method: "POST",
-
-                    body: JSON.stringify({
-
-                        user_id:
-                            telegramUser.id,
-
-                        init_data:
-                            tg.initData
-
-                    })
-                }
-            );
-
-
-        if (
-            data &&
-            typeof data.balance !== "undefined"
-        ) {
-
-            updateBalanceUI(
-                data.balance
-            );
-
-        }
-
-
-    } catch (error) {
-
-        console.error(
-            "Ошибка загрузки баланса:",
-            error
-        );
-
-    }
-
-}
-
-
-/* =====================================================
-   CREATE TELEGRAM STARS INVOICE
-===================================================== */
-
-async function createInvoice() {
-
-    if (!telegramUser) {
-
-        setStatus(
-            "❌ Telegram ID не найден. Откройте игру через бота.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    let amount =
-        parseInt(
-            depositInput.value,
-            10
-        );
-
-
-    if (
-        !Number.isFinite(amount) ||
-        amount < 1
-    ) {
-
-        setStatus(
-            "❌ Введите корректное количество Stars.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    if (amount > 10000) {
-
-        setStatus(
-            "❌ Максимум 10 000 Stars за одну оплату.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    depositButton.disabled = true;
-
-
-    setStatus(
-        "⏳ Создаём счёт на оплату...",
-        "loading"
-    );
-
-
-    try {
-
-        const data =
-            await serverRequest(
-                "/api/create-invoice",
-                {
-                    method: "POST",
-
-                    body: JSON.stringify({
-
-                        user_id:
-                            telegramUser.id,
-
-                        amount:
-                            amount,
-
-                        init_data:
-                            tg.initData
-
-                    })
-                }
-            );
-
-
-        /*
-         * Сервер должен вернуть:
-         *
-         * {
-         *     "invoice_link": "https://t.me/..."
-         * }
-         *
-         * или
-         *
-         * {
-         *     "url": "https://t.me/..."
-         * }
-         */
-
-
-        const invoiceLink =
-            data.invoice_link ||
-            data.url;
-
-
-        if (!invoiceLink) {
-
-            throw new Error(
-                "Сервер не вернул ссылку на оплату."
-            );
-
-        }
-
-
-        setStatus(
-            "⏳ Открываем оплату Telegram Stars...",
-            "loading"
-        );
-
-
-        /*
-         * Telegram Mini Apps:
-         * openInvoice открывает
-         * нативное окно оплаты Stars.
-         */
-
-        if (
-            tg &&
-            typeof tg.openInvoice === "function"
-        ) {
-
-            tg.openInvoice(
-                invoiceLink,
-                async function(status) {
-
-                    console.log(
-                        "Invoice status:",
-                        status
-                    );
-
-
-                    if (
-                        status === "paid"
-                    ) {
-
-                        setStatus(
-                            `✅ Оплата ${amount} ⭐ прошла успешно!`,
-                            "success"
-                        );
-
-
-                        /*
-                         * Небольшая задержка,
-                         * чтобы сервер успел
-                         * обработать successful_payment.
-                         */
-
-                        setTimeout(
-                            loadBalance,
-                            1000
-                        );
-
-                        setTimeout(
-                            loadBalance,
-                            3000
-                        );
-
-                    }
-
-                    else if (
-                        status === "cancelled"
-                    ) {
-
-                        setStatus(
-                            "❌ Оплата отменена.",
-                            "error"
-                        );
-
-                    }
-
-                    else if (
-                        status === "failed"
-                    ) {
-
-                        setStatus(
-                            "❌ Оплата не прошла.",
-                            "error"
-                        );
-
-                    }
-
-                    else {
-
-                        setStatus(
-                            "ℹ️ Окно оплаты закрыто.",
-                            "loading"
-                        );
-
-                    }
-
-                }
-            );
-
-        } else {
-
-            /*
-             * Запасной вариант,
-             * если openInvoice недоступен.
-             */
-
-            if (
-                tg &&
-                typeof tg.openTelegramLink === "function"
-            ) {
-
-                tg.openTelegramLink(
-                    invoiceLink
-                );
-
-            } else {
-
-                window.location.href =
-                    invoiceLink;
-
-            }
-
-        }
-
-
-    } catch (error) {
-
-        console.error(
-            "CREATE INVOICE ERROR:",
-            error
-        );
-
-
-        setStatus(
-            "❌ " + error.message,
-            "error"
-        );
-
-    }
-
-
-    depositButton.disabled = false;
-
-}
-
-
-/* =====================================================
-   QUICK AMOUNT BUTTONS
-===================================================== */
-
-document
-    .querySelectorAll(".amount-btn")
-    .forEach(button => {
-
-        button.addEventListener(
-            "click",
-            () => {
-
-                const amount =
-                    button.dataset.amount;
-
-
-                depositInput.value =
-                    amount;
-
-
-                document
-                    .querySelectorAll(".amount-btn")
-                    .forEach(btn => {
-
-                        btn.classList.remove(
-                            "active"
-                        );
-
-                    });
-
-
-                button.classList.add(
-                    "active"
-                );
-
-            }
-        );
-
-    });
-
-
-/* =====================================================
-   INPUT CHANGE
-===================================================== */
-
-depositInput.addEventListener(
-    "input",
-    () => {
-
-        document
-            .querySelectorAll(".amount-btn")
-            .forEach(btn => {
-
-                if (
-                    btn.dataset.amount ===
-                    depositInput.value
-                ) {
-
-                    btn.classList.add(
-                        "active"
-                    );
-
-                } else {
-
-                    btn.classList.remove(
-                        "active"
-                    );
-
-                }
-
+        const url =
+            SERVER_URL +
+            "/api/balance?user_id=" +
+            encodeURIComponent(user.id);
+
+
+        const response =
+            await fetch(url, {
+                method: "GET",
+                cache: "no-store"
             });
 
+
+        if (!response.ok) {
+
+            throw new Error(
+                "HTTP " + response.status
+            );
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (!data.ok) {
+
+            throw new Error(
+                data.error || "API error"
+            );
+        }
+
+
+        updateBalanceUI(
+            data.balance
+        );
+
+
+        connectionStatus.textContent =
+            "Синхронизировано";
+
+        connectionStatus.style.color =
+            "#7dffbd";
+
+
+    } catch (error) {
+
+        console.error(
+            "Balance error:",
+            error
+        );
+
+
+        connectionStatus.textContent =
+            "Ошибка сервера";
+
+        connectionStatus.style.color =
+            "#ff6670";
+
+
+        connectionError.style.display =
+            "block";
+
+
+        /*
+         Если сервер временно недоступен,
+         оставляем последнее известное значение.
+        */
     }
-);
-
-
-/* =====================================================
-   DEPOSIT BUTTON
-===================================================== */
-
-depositButton.addEventListener(
-    "click",
-    createInvoice
-);
+}
 
 
 /* =====================================================
@@ -1717,107 +1274,211 @@ const pages = {
 };
 
 
-navButtons.forEach(
-    button => {
+navButtons.forEach(button => {
 
-        button.addEventListener(
-            "click",
-            () => {
+    button.addEventListener(
+        "click",
+        function() {
 
-                const page =
-                    button.dataset.page;
+            const pageId =
+                this.dataset.page;
 
 
-                Object
-                    .values(pages)
-                    .forEach(
-                        p =>
-                            p.classList.add(
-                                "hidden"
-                            )
+            Object.values(pages)
+                .forEach(page => {
+
+                    page.classList.add(
+                        "hidden"
                     );
 
-
-                if (pages[page]) {
-
-                    pages[page]
-                        .classList.remove(
-                            "hidden"
-                        );
-
-                }
+                });
 
 
-                navButtons.forEach(
-                    b =>
-                        b.classList.remove(
-                            "active"
-                        )
-                );
+            if (pages[pageId]) {
+
+                pages[pageId]
+                    .classList.remove(
+                        "hidden"
+                    );
+
+            }
 
 
-                button.classList.add(
+            navButtons.forEach(btn => {
+
+                btn.classList.remove(
                     "active"
                 );
 
-            }
-        );
+            });
 
+
+            this.classList.add(
+                "active"
+            );
+
+
+            /*
+             При каждом открытии профиля
+             обновляем баланс.
+            */
+
+            if (
+                pageId === "profilePage"
+            ) {
+
+                loadBalance();
+
+            }
+
+        }
+    );
+
+});
+
+
+/* =====================================================
+   OPEN TELEGRAM BOT
+===================================================== */
+
+document
+    .getElementById("openBotDeposit")
+    .addEventListener(
+        "click",
+        function() {
+
+            /*
+             Открываем чат с ботом.
+             Пользователь сможет нажать
+             «Пополнить баланс».
+            */
+
+            const botUrl =
+                "https://t.me/" +
+                "White_Bear_ROBOT";
+
+            try {
+
+                tg.openTelegramLink(
+                    botUrl
+                );
+
+            } catch (e) {
+
+                window.location.href =
+                    botUrl;
+
+            }
+
+        }
+    );
+
+
+/* =====================================================
+   INITIALIZATION
+===================================================== */
+
+function initializeApp() {
+
+    const user =
+        getTelegramUser();
+
+
+    if (!user) {
+
+        /*
+         Сайт открыт не через Telegram.
+        */
+
+        profileName.textContent =
+            "Откройте через Telegram";
+
+        profileTelegramId.textContent =
+            "Telegram ID недоступен";
+
+        profileBalance.textContent =
+            "—";
+
+        headerBalance.textContent =
+            "—";
+
+        connectionStatus.textContent =
+            "Откройте через Telegram";
+
+        connectionStatus.style.color =
+            "#ff6670";
+
+        connectionError.style.display =
+            "block";
+
+        return;
     }
-);
+
+
+    /*
+     Показываем Telegram данные
+     сразу, без ожидания сервера.
+    */
+
+    updateUserUI();
+
+
+    /*
+     Загружаем баланс.
+    */
+
+    loadBalance();
+
+}
 
 
 /* =====================================================
    START
 ===================================================== */
 
-async function startApp() {
-
-    const connected =
-        loadTelegramUser();
-
-
-    if (!connected) {
-        return;
-    }
-
-
-    await loadBalance();
-
-
-    /*
-     * Убираем загрузочный экран
-     */
-
-    setTimeout(
-        () => {
-
-            loadingScreen.style.display =
-                "none";
-
-        },
-        250
-    );
-
-}
-
-
-startApp();
+initializeApp();
 
 
 /* =====================================================
-   PERIODIC BALANCE UPDATE
+   AUTO BALANCE REFRESH
 ===================================================== */
 
 setInterval(
-    () => {
+    function() {
 
-        if (telegramUser) {
+        if (
+            getTelegramUser()
+        ) {
+
             loadBalance();
+
         }
 
     },
-    10000
+    5000
+);
+
+
+/* =====================================================
+   REFRESH WHEN RETURNING TO APP
+===================================================== */
+
+document.addEventListener(
+    "visibilitychange",
+    function() {
+
+        if (
+            document.visibilityState ===
+            "visible"
+        ) {
+
+            updateUserUI();
+
+            loadBalance();
+
+        }
+
+    }
 );
 
 </script>
