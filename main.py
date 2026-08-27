@@ -35,7 +35,7 @@ from aiogram.client.default import DefaultBotProperties
 
 # НЕ вставляй сюда токен, который уже публиковался.
 # На Bothost создай переменную окружения BOT_TOKEN.
-BOT_TOKEN = os.getenv("BOT_TOKEN", "")
+BOT_TOKEN = os.getenv("BOT_TOKEN", "8918284594:AAFLxOg1eEx4JS6z6V9wHr-t8T3Q9Qwiepg")
 
 BOT_USERNAME = "White_Bear_ROBOT"
 
