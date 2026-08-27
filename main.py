@@ -4,7 +4,6 @@ import sys
 import sqlite3
 import secrets
 import json
-from datetime import datetime
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.enums import ParseMode
@@ -18,7 +17,6 @@ from aiogram.types import (
     InlineKeyboardMarkup,
     InlineKeyboardButton,
     LabeledPrice,
-    PreCheckoutQuery,
 )
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.client.default import DefaultBotProperties
@@ -28,8 +26,8 @@ from aiogram.client.default import DefaultBotProperties
 # КОНФИГУРАЦИЯ
 # =====================================================
 
-# !!! ВСТАВЬ СЮДА НОВЫЙ ТОКЕН ОТ @BotFather !!!
-BOT_TOKEN = "ВСТАВЬ_НОВЫЙ_BOT_TOKEN"
+# ВСТАВЬ СЮДА НОВЫЙ ТОКЕН ПОСЛЕ ПЕРЕВЫПУСКА В @BotFather
+BOT_TOKEN = "ВСТАВЬ_СЮДА_НОВЫЙ_ТОКЕН"
 
 BOT_USERNAME = "White_Bear_ROBOT"
 
@@ -60,13 +58,8 @@ def get_connection():
 
 
 def init_db():
-
     conn = get_connection()
     cursor = conn.cursor()
-
-    # -------------------------------------------------
-    # USERS
-    # -------------------------------------------------
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
@@ -80,10 +73,6 @@ def init_db():
         )
     """)
 
-    # -------------------------------------------------
-    # REFERRALS
-    # -------------------------------------------------
-
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS referrals (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -91,27 +80,18 @@ def init_db():
             referred_id INTEGER,
             reward REAL DEFAULT 10.0,
             created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (referrer_id) REFERENCES users(user_id),
-            FOREIGN KEY (referred_id) REFERENCES users(user_id)
+            UNIQUE(referrer_id, referred_id)
         )
     """)
 
-    # -------------------------------------------------
-    # PAYMENTS
-    #
-    # Храним Telegram charge_id.
-    # Это защищает от повторного начисления.
-    # -------------------------------------------------
-
+    # Таблица платежей
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS payments (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
-            telegram_payment_charge_id TEXT UNIQUE NOT NULL,
-            provider_payment_charge_id TEXT,
-            amount REAL NOT NULL,
-            currency TEXT NOT NULL,
-            payload TEXT,
+            telegram_charge_id TEXT UNIQUE,
+            provider_charge_id TEXT,
+            stars INTEGER NOT NULL,
             created_at TEXT DEFAULT CURRENT_TIMESTAMP
         )
     """)
@@ -127,7 +107,6 @@ def init_db():
 # =====================================================
 
 def get_user(user_id: int):
-
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -149,14 +128,12 @@ def create_user(
     first_name: str = None,
     invited_by: int = None
 ):
-
     conn = get_connection()
     cursor = conn.cursor()
 
     ref_code = secrets.token_hex(8)
 
     while True:
-
         cursor.execute(
             "SELECT ref_code FROM users WHERE ref_code = ?",
             (ref_code,)
@@ -190,32 +167,7 @@ def create_user(
     return ref_code
 
 
-def update_user_info(
-    user_id: int,
-    username: str = None,
-    first_name: str = None
-):
-
-    conn = get_connection()
-    cursor = conn.cursor()
-
-    cursor.execute("""
-        UPDATE users
-        SET username = ?,
-            first_name = ?
-        WHERE user_id = ?
-    """, (
-        username,
-        first_name,
-        user_id
-    ))
-
-    conn.commit()
-    conn.close()
-
-
 def get_user_by_ref_code(ref_code: str):
-
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -236,7 +188,6 @@ def get_user_by_ref_code(ref_code: str):
 # =====================================================
 
 def get_balance(user_id: int) -> float:
-
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -249,72 +200,49 @@ def get_balance(user_id: int) -> float:
 
     conn.close()
 
-    if result:
-        return float(result[0])
-
-    return 0.0
+    return float(result[0]) if result else 0.0
 
 
 def update_balance(user_id: int, amount: float):
-
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute(
-        "UPDATE users SET balance = ? WHERE user_id = ?",
-        (amount, user_id)
+        "SELECT user_id FROM users WHERE user_id = ?",
+        (user_id,)
     )
 
-    if cursor.rowcount == 0:
+    exists = cursor.fetchone()
 
-        cursor.execute("""
-            INSERT INTO users (
-                user_id,
-                balance
-            )
+    if exists:
+        cursor.execute(
+            """
+            UPDATE users
+            SET balance = ?
+            WHERE user_id = ?
+            """,
+            (round(amount, 2), user_id)
+        )
+    else:
+        cursor.execute(
+            """
+            INSERT INTO users (user_id, balance)
             VALUES (?, ?)
-        """, (
-            user_id,
-            amount
-        ))
+            """,
+            (user_id, round(amount, 2))
+        )
 
     conn.commit()
     conn.close()
 
 
 def add_balance(user_id: int, amount: float):
+    current = get_balance(user_id)
+    new_balance = current + amount
 
-    current_balance = get_balance(user_id)
-
-    new_balance = current_balance + amount
-
-    new_balance = round(new_balance, 2)
-
-    update_balance(
-        user_id,
-        new_balance
-    )
+    update_balance(user_id, new_balance)
 
     return new_balance
-
-
-def remove_balance(user_id: int, amount: float):
-
-    current_balance = get_balance(user_id)
-
-    new_balance = current_balance - amount
-
-    if new_balance < 0:
-        return False
-
-    new_balance = round(new_balance, 2)
-
-    update_balance(
-        user_id,
-        new_balance
-    )
-
-    return True
 
 
 # =====================================================
@@ -326,6 +254,8 @@ def add_referral(
     referred_id: int,
     reward: float = 10.0
 ):
+    if referrer_id == referred_id:
+        return False
 
     conn = get_connection()
     cursor = conn.cursor()
@@ -341,9 +271,7 @@ def add_referral(
     ))
 
     if cursor.fetchone():
-
         conn.close()
-
         return False
 
     cursor.execute("""
@@ -362,29 +290,22 @@ def add_referral(
     conn.commit()
     conn.close()
 
-    # Начисляем обоим пользователям
-    add_balance(
-        referrer_id,
-        reward
-    )
-
-    add_balance(
-        referred_id,
-        reward
-    )
+    # Начисляем обоим
+    add_balance(referrer_id, reward)
+    add_balance(referred_id, reward)
 
     return True
 
 
 def get_referrals_count(user_id: int) -> int:
-
     conn = get_connection()
     cursor = conn.cursor()
 
-    cursor.execute(
-        "SELECT COUNT(*) FROM referrals WHERE referrer_id = ?",
-        (user_id,)
-    )
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM referrals
+        WHERE referrer_id = ?
+    """, (user_id,))
 
     result = cursor.fetchone()
 
@@ -394,7 +315,6 @@ def get_referrals_count(user_id: int) -> int:
 
 
 def get_referral_link(user_id: int) -> str:
-
     return f"https://t.me/{BOT_USERNAME}?start=ref_{user_id}"
 
 
@@ -402,20 +322,15 @@ def get_referral_link(user_id: int) -> str:
 # ПЛАТЕЖИ
 # =====================================================
 
-def payment_exists(
-    telegram_payment_charge_id: str
-) -> bool:
-
+def payment_exists(telegram_charge_id: str) -> bool:
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
         SELECT id
         FROM payments
-        WHERE telegram_payment_charge_id = ?
-    """, (
-        telegram_payment_charge_id,
-    ))
+        WHERE telegram_charge_id = ?
+    """, (telegram_charge_id,))
 
     result = cursor.fetchone()
 
@@ -426,140 +341,30 @@ def payment_exists(
 
 def save_payment(
     user_id: int,
-    telegram_payment_charge_id: str,
-    provider_payment_charge_id: str,
-    amount: float,
-    currency: str,
-    payload: str
+    telegram_charge_id: str,
+    provider_charge_id: str,
+    stars: int
 ):
-
     conn = get_connection()
     cursor = conn.cursor()
 
-    try:
-
-        cursor.execute("""
-            INSERT INTO payments (
-                user_id,
-                telegram_payment_charge_id,
-                provider_payment_charge_id,
-                amount,
-                currency,
-                payload
-            )
-            VALUES (?, ?, ?, ?, ?, ?)
-        """, (
+    cursor.execute("""
+        INSERT INTO payments (
             user_id,
-            telegram_payment_charge_id,
-            provider_payment_charge_id,
-            amount,
-            currency,
-            payload
-        ))
-
-        conn.commit()
-
-        return True
-
-    except sqlite3.IntegrityError:
-
-        conn.rollback()
-
-        return False
-
-    finally:
-
-        conn.close()
-
-
-# =====================================================
-# ЦЕНЫ ПОПОЛНЕНИЯ
-# =====================================================
-
-STAR_PACKAGES = {
-    100: 100,
-    250: 250,
-    500: 500,
-    1000: 1000,
-}
-
-
-# =====================================================
-# КЛАВИАТУРА ПОПОЛНЕНИЯ
-# =====================================================
-
-def get_deposit_keyboard():
-
-    builder = InlineKeyboardBuilder()
-
-    builder.button(
-        text="⭐ 100",
-        callback_data="deposit_100"
-    )
-
-    builder.button(
-        text="⭐ 250",
-        callback_data="deposit_250"
-    )
-
-    builder.button(
-        text="⭐ 500",
-        callback_data="deposit_500"
-    )
-
-    builder.button(
-        text="⭐ 1000",
-        callback_data="deposit_1000"
-    )
-
-    builder.button(
-        text="🔙 Назад",
-        callback_data="back_to_start"
-    )
-
-    builder.adjust(2, 2, 1)
-
-    return builder.as_markup()
-
-
-# =====================================================
-# ОСНОВНАЯ КЛАВИАТУРА
-# =====================================================
-
-def get_main_keyboard():
-
-    builder = InlineKeyboardBuilder()
-
-    builder.button(
-        text="🎮 Открыть игры",
-        web_app=WebAppInfo(
-            url=WEBAPP_URL
+            telegram_charge_id,
+            provider_charge_id,
+            stars
         )
-    )
+        VALUES (?, ?, ?, ?)
+    """, (
+        user_id,
+        telegram_charge_id,
+        provider_charge_id,
+        stars
+    ))
 
-    builder.button(
-        text="💰 Баланс",
-        callback_data="balance"
-    )
-
-    builder.button(
-        text="👤 Профиль",
-        callback_data="profile"
-    )
-
-    builder.button(
-        text="⭐ Пополнить",
-        callback_data="deposit"
-    )
-
-    builder.button(
-        text="📎 Реферальная ссылка",
-        callback_data="referral"
-    )
-
-    builder.adjust(1, 2, 1, 1)
-
-    return builder.as_markup()
+    conn.commit()
+    conn.close()
 
 
 # =====================================================
@@ -577,16 +382,47 @@ dp = Dispatcher()
 
 
 # =====================================================
-# START
+# КЛАВИАТУРА
+# =====================================================
+
+def get_main_keyboard():
+
+    builder = InlineKeyboardBuilder()
+
+    builder.button(
+        text="🎮 Открыть игры",
+        web_app=WebAppInfo(url=WEBAPP_URL)
+    )
+
+    builder.button(
+        text="💰 Баланс",
+        callback_data="balance"
+    )
+
+    builder.button(
+        text="👤 Профиль",
+        callback_data="profile"
+    )
+
+    builder.button(
+        text="📎 Реферальная ссылка",
+        callback_data="referral"
+    )
+
+    builder.adjust(1, 2, 1)
+
+    return builder.as_markup()
+
+
+# =====================================================
+# /START
 # =====================================================
 
 @dp.message(Command("start"))
 async def start_command(message: Message):
 
     user_id = message.from_user.id
-
     username = message.from_user.username
-
     first_name = message.from_user.first_name
 
     args = message.text.split()
@@ -595,29 +431,18 @@ async def start_command(message: Message):
 
     user = get_user(user_id)
 
-    # -------------------------------------------------
-    # Создаём пользователя
-    # -------------------------------------------------
-
     if not user:
 
-        if (
-            len(args) > 1
-            and args[1].startswith("ref_")
-        ):
+        if len(args) > 1:
 
-            ref_code = args[1][4:]
+            if args[1].startswith("ref_"):
 
-            referrer_id = get_user_by_ref_code(
-                ref_code
-            )
+                ref_code = args[1][4:]
 
-            if (
-                referrer_id
-                and referrer_id != user_id
-            ):
+                referrer_id = get_user_by_ref_code(ref_code)
 
-                invited_by = referrer_id
+                if referrer_id and referrer_id != user_id:
+                    invited_by = referrer_id
 
         create_user(
             user_id,
@@ -625,10 +450,6 @@ async def start_command(message: Message):
             first_name,
             invited_by
         )
-
-        # -------------------------------------------------
-        # Реферал
-        # -------------------------------------------------
 
         if invited_by:
 
@@ -658,17 +479,27 @@ async def start_command(message: Message):
                 except Exception as e:
 
                     logger.error(
-                        f"Не удалось уведомить "
-                        f"реферера: {e}"
+                        f"Ошибка уведомления реферера: {e}"
                     )
 
     else:
 
-        update_user_info(
-            user_id,
+        # Обновляем имя и username
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            UPDATE users
+            SET username = ?, first_name = ?
+            WHERE user_id = ?
+        """, (
             username,
-            first_name
-        )
+            first_name,
+            user_id
+        ))
+
+        conn.commit()
+        conn.close()
 
     balance = get_balance(user_id)
 
@@ -678,8 +509,8 @@ async def start_command(message: Message):
 
     await message.answer(
 
-        f"🐻‍❄️ <b>Добро пожаловать "
-        f"в DROP, {first_name}!</b>\n\n"
+        f"🐻‍❄️ <b>Добро пожаловать в DROP, "
+        f"{first_name}!</b>\n\n"
 
         f"🆔 Ваш ID: "
         f"<code>{user_id}</code>\n"
@@ -693,18 +524,15 @@ async def start_command(message: Message):
         f"📎 <b>Реферальная ссылка:</b>\n"
         f"<code>{ref_link}</code>\n\n"
 
-        f"💡 Приглашайте друзей "
-        f"и получайте по 10 ⭐ за каждого!\n\n"
-
         f"🎮 Нажмите кнопку ниже, "
-        f"чтобы открыть игры.",
+        f"чтобы открыть приложение.",
 
         reply_markup=get_main_keyboard()
     )
 
 
 # =====================================================
-# GAME
+# /GAME
 # =====================================================
 
 @dp.message(Command("game"))
@@ -716,27 +544,28 @@ async def game_command(message: Message):
 
     await message.answer(
 
-        f"🎮 <b>Открываем игры...</b>\n\n"
-        f"💰 Баланс: "
-        f"<b>{balance:.2f} ⭐</b>",
+        f"🎮 <b>Открываем приложение...</b>\n\n"
+        f"💰 Баланс: <b>{balance:.2f} ⭐</b>",
 
         reply_markup=InlineKeyboardMarkup(
             inline_keyboard=[
+
                 [
                     InlineKeyboardButton(
-                        text="🎮 Открыть игры",
+                        text="🎮 Открыть",
                         web_app=WebAppInfo(
                             url=WEBAPP_URL
                         )
                     )
                 ]
+
             ]
         )
     )
 
 
 # =====================================================
-# BALANCE
+# /BALANCE
 # =====================================================
 
 @dp.message(Command("balance"))
@@ -750,27 +579,17 @@ async def balance_command(message: Message):
 
     await message.answer(
 
-        f"💰 <b>Ваш баланс:</b> "
-        f"{balance:.2f} ⭐\n\n"
+        f"💰 <b>Ваш баланс</b>\n\n"
 
-        f"👥 <b>Приглашено друзей:</b> "
-        f"{ref_count}",
+        f"⭐ {balance:.2f}\n\n"
 
-        reply_markup=InlineKeyboardMarkup(
-            inline_keyboard=[
-                [
-                    InlineKeyboardButton(
-                        text="⭐ Пополнить",
-                        callback_data="deposit"
-                    )
-                ]
-            ]
-        )
+        f"👥 Приглашено: "
+        f"{ref_count}"
     )
 
 
 # =====================================================
-# PROFILE
+# /PROFILE
 # =====================================================
 
 @dp.message(Command("profile"))
@@ -802,29 +621,12 @@ async def profile_command(message: Message):
         f"<b>{ref_count}</b>\n\n"
 
         f"📎 <b>Реферальная ссылка:</b>\n"
-        f"<code>{ref_link}</code>",
-
-        reply_markup=InlineKeyboardMarkup(
-            inline_keyboard=[
-                [
-                    InlineKeyboardButton(
-                        text="⭐ Пополнить баланс",
-                        callback_data="deposit"
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        text="🔙 Назад",
-                        callback_data="back_to_start"
-                    )
-                ]
-            ]
-        )
+        f"<code>{ref_link}</code>"
     )
 
 
 # =====================================================
-# HELP
+# /HELP
 # =====================================================
 
 @dp.message(Command("help"))
@@ -835,15 +637,13 @@ async def help_command(message: Message):
         "📖 <b>Помощь</b>\n\n"
 
         "/start — Главное меню\n"
-        "/game — Открыть игры\n"
+        "/game — Открыть приложение\n"
         "/balance — Показать баланс\n"
         "/profile — Профиль\n"
-        "/help — Эта справка\n\n"
+        "/help — Помощь\n\n"
 
-        "⭐ Пополнение выполняется "
-        "через Telegram Stars.\n\n"
-
-        "💰 Играйте и выигрывайте!"
+        "💰 Пополнение выполняется "
+        "через Telegram Stars."
     )
 
 
@@ -866,26 +666,23 @@ async def balance_callback(
 
     await callback.message.edit_text(
 
-        f"💰 <b>Ваш баланс:</b> "
-        f"{balance:.2f} ⭐\n\n"
+        f"💰 <b>Ваш баланс</b>\n\n"
 
-        f"👥 <b>Приглашено друзей:</b> "
-        f"{ref_count}",
+        f"⭐ <b>{balance:.2f}</b>\n\n"
+
+        f"👥 Приглашено: "
+        f"<b>{ref_count}</b>",
 
         reply_markup=InlineKeyboardMarkup(
             inline_keyboard=[
-                [
-                    InlineKeyboardButton(
-                        text="⭐ Пополнить",
-                        callback_data="deposit"
-                    )
-                ],
+
                 [
                     InlineKeyboardButton(
                         text="🔙 Назад",
                         callback_data="back_to_start"
                     )
                 ]
+
             ]
         )
     )
@@ -934,522 +731,19 @@ async def profile_callback(
 
         reply_markup=InlineKeyboardMarkup(
             inline_keyboard=[
-                [
-                    InlineKeyboardButton(
-                        text="⭐ Пополнить баланс",
-                        callback_data="deposit"
-                    )
-                ],
+
                 [
                     InlineKeyboardButton(
                         text="🔙 Назад",
                         callback_data="back_to_start"
                     )
                 ]
+
             ]
         )
     )
 
     await callback.answer()
-
-
-# =====================================================
-# CALLBACK: DEPOSIT
-# =====================================================
-
-@dp.callback_query(
-    lambda c: c.data == "deposit"
-)
-async def deposit_callback(
-    callback: types.CallbackQuery
-):
-
-    balance = get_balance(
-        callback.from_user.id
-    )
-
-    await callback.message.edit_text(
-
-        f"⭐ <b>Пополнение баланса</b>\n\n"
-
-        f"Ваш баланс: "
-        f"<b>{balance:.2f} ⭐</b>\n\n"
-
-        f"Выберите сумму пополнения:",
-
-        reply_markup=get_deposit_keyboard()
-    )
-
-    await callback.answer()
-
-
-# =====================================================
-# СОЗДАНИЕ INVOICE
-# =====================================================
-
-async def create_stars_invoice(
-    user_id: int,
-    amount: int
-):
-
-    if amount not in STAR_PACKAGES:
-
-        return False
-
-    # -------------------------------------------------
-    # Payload
-    # -------------------------------------------------
-
-    payload_data = {
-        "type": "balance_deposit",
-        "user_id": user_id,
-        "amount": amount,
-        "created": int(
-            datetime.now().timestamp()
-        )
-    }
-
-    payload = json.dumps(
-        payload_data,
-        separators=(",", ":")
-    )
-
-    # -------------------------------------------------
-    # Invoice
-    #
-    # Для Telegram Stars:
-    # currency = XTR
-    # provider_token = ""
-    # -------------------------------------------------
-
-    prices = [
-        LabeledPrice(
-            label=f"Пополнение на {amount} ⭐",
-            amount=amount
-        )
-    ]
-
-    await bot.send_invoice(
-
-        chat_id=user_id,
-
-        title=f"Пополнение на {amount} ⭐",
-
-        description=(
-            f"Пополнение игрового баланса "
-            f"на {amount} Telegram Stars."
-        ),
-
-        payload=payload,
-
-        currency="XTR",
-
-        prices=prices,
-
-        provider_token="",
-
-        start_parameter=f"deposit_{amount}"
-    )
-
-    return True
-
-
-# =====================================================
-# CALLBACK: ВЫБОР СУММЫ
-# =====================================================
-
-@dp.callback_query(
-    lambda c: c.data.startswith("deposit_")
-)
-async def deposit_amount_callback(
-    callback: types.CallbackQuery
-):
-
-    try:
-
-        amount = int(
-            callback.data.replace(
-                "deposit_",
-                ""
-            )
-        )
-
-    except ValueError:
-
-        await callback.answer(
-            "❌ Некорректная сумма",
-            show_alert=True
-        )
-
-        return
-
-    if amount not in STAR_PACKAGES:
-
-        await callback.answer(
-            "❌ Такая сумма недоступна",
-            show_alert=True
-        )
-
-        return
-
-    user_id = callback.from_user.id
-
-    try:
-
-        await create_stars_invoice(
-            user_id,
-            amount
-        )
-
-        await callback.answer(
-            "⭐ Счёт создан!"
-        )
-
-    except Exception as e:
-
-        logger.exception(
-            f"Ошибка создания invoice: {e}"
-        )
-
-        await callback.answer(
-            "❌ Не удалось создать счёт",
-            show_alert=True
-        )
-
-
-# =====================================================
-# PRE-CHECKOUT
-#
-# Telegram спрашивает:
-# "Можно ли провести эту оплату?"
-#
-# Мы проверяем payload и сумму.
-# =====================================================
-
-@dp.pre_checkout_query()
-async def pre_checkout_handler(
-    query: PreCheckoutQuery
-):
-
-    try:
-
-        payload = json.loads(
-            query.invoice_payload
-        )
-
-        if payload.get("type") != "balance_deposit":
-
-            await query.answer(
-                ok=False,
-                error_message="Некорректный платёж."
-            )
-
-            return
-
-        user_id = int(
-            payload.get("user_id")
-        )
-
-        amount = int(
-            payload.get("amount")
-        )
-
-        # Проверяем пользователя
-        if user_id != query.from_user.id:
-
-            await query.answer(
-                ok=False,
-                error_message="Пользователь платежа не совпадает."
-            )
-
-            return
-
-        # Проверяем сумму
-        if amount not in STAR_PACKAGES:
-
-            await query.answer(
-                ok=False,
-                error_message="Некорректная сумма."
-            )
-
-            return
-
-        # Проверяем валюту
-        if query.currency != "XTR":
-
-            await query.answer(
-                ok=False,
-                error_message="Некорректная валюта."
-            )
-
-            return
-
-        # Проверяем стоимость
-        if query.total_amount != amount:
-
-            await query.answer(
-                ok=False,
-                error_message="Некорректная стоимость."
-            )
-
-            return
-
-        await query.answer(
-            ok=True
-        )
-
-        logger.info(
-            f"✅ PreCheckout OK | "
-            f"user={user_id} | "
-            f"amount={amount}"
-        )
-
-    except Exception as e:
-
-        logger.exception(
-            f"Ошибка pre_checkout: {e}"
-        )
-
-        try:
-
-            await query.answer(
-                ok=False,
-                error_message="Ошибка проверки платежа."
-            )
-
-        except Exception:
-            pass
-
-
-# =====================================================
-# SUCCESSFUL PAYMENT
-#
-# НАСТОЯЩЕЕ НАЧИСЛЕНИЕ БАЛАНСА
-# происходит именно здесь.
-# =====================================================
-
-@dp.message(
-    lambda message:
-    message.successful_payment is not None
-)
-async def successful_payment_handler(
-    message: Message
-):
-
-    payment = message.successful_payment
-
-    user_id = message.from_user.id
-
-    # -------------------------------------------------
-    # Данные платежа
-    # -------------------------------------------------
-
-    telegram_charge_id = (
-        payment.telegram_payment_charge_id
-    )
-
-    provider_charge_id = (
-        payment.provider_payment_charge_id
-    )
-
-    amount = payment.total_amount
-
-    currency = payment.currency
-
-    payload = payment.invoice_payload
-
-    logger.info(
-        f"💰 Получен успешный платеж | "
-        f"user={user_id} | "
-        f"amount={amount} | "
-        f"currency={currency} | "
-        f"charge={telegram_charge_id}"
-    )
-
-    # -------------------------------------------------
-    # Проверяем валюту
-    # -------------------------------------------------
-
-    if currency != "XTR":
-
-        logger.error(
-            f"❌ Некорректная валюта: {currency}"
-        )
-
-        return
-
-    # -------------------------------------------------
-    # Защита от повторной оплаты
-    # -------------------------------------------------
-
-    if payment_exists(
-        telegram_charge_id
-    ):
-
-        logger.warning(
-            f"⚠️ Платёж уже обработан: "
-            f"{telegram_charge_id}"
-        )
-
-        await message.answer(
-            "ℹ️ Этот платёж уже был зачислен."
-        )
-
-        return
-
-    # -------------------------------------------------
-    # Проверяем payload
-    # -------------------------------------------------
-
-    try:
-
-        payload_data = json.loads(
-            payload
-        )
-
-        payload_type = payload_data.get(
-            "type"
-        )
-
-        payload_user_id = int(
-            payload_data.get("user_id")
-        )
-
-        payload_amount = int(
-            payload_data.get("amount")
-        )
-
-    except Exception as e:
-
-        logger.error(
-            f"❌ Ошибка payload: {e}"
-        )
-
-        return
-
-    # -------------------------------------------------
-    # Проверяем тип
-    # -------------------------------------------------
-
-    if payload_type != "balance_deposit":
-
-        logger.error(
-            f"❌ Неизвестный тип платежа: "
-            f"{payload_type}"
-        )
-
-        return
-
-    # -------------------------------------------------
-    # Проверяем пользователя
-    # -------------------------------------------------
-
-    if payload_user_id != user_id:
-
-        logger.error(
-            f"❌ User ID не совпадает: "
-            f"{payload_user_id} != {user_id}"
-        )
-
-        return
-
-    # -------------------------------------------------
-    # Проверяем сумму
-    # -------------------------------------------------
-
-    if payload_amount != amount:
-
-        logger.error(
-            f"❌ Сумма не совпадает: "
-            f"{payload_amount} != {amount}"
-        )
-
-        return
-
-    # -------------------------------------------------
-    # Проверяем допустимую сумму
-    # -------------------------------------------------
-
-    if amount not in STAR_PACKAGES:
-
-        logger.error(
-            f"❌ Недопустимая сумма: {amount}"
-        )
-
-        return
-
-    # -------------------------------------------------
-    # Сначала сохраняем платёж
-    #
-    # Это важно для защиты от повторного
-    # начисления.
-    # -------------------------------------------------
-
-    saved = save_payment(
-
-        user_id=user_id,
-
-        telegram_payment_charge_id=(
-            telegram_charge_id
-        ),
-
-        provider_payment_charge_id=(
-            provider_charge_id
-        ),
-
-        amount=amount,
-
-        currency=currency,
-
-        payload=payload
-    )
-
-    if not saved:
-
-        logger.warning(
-            "⚠️ Платёж уже существует."
-        )
-
-        await message.answer(
-            "ℹ️ Этот платёж уже был обработан."
-        )
-
-        return
-
-    # -------------------------------------------------
-    # НАЧИСЛЯЕМ БАЛАНС
-    # -------------------------------------------------
-
-    new_balance = add_balance(
-        user_id,
-        amount
-    )
-
-    logger.info(
-        f"✅ Баланс пополнен | "
-        f"user={user_id} | "
-        f"+{amount} ⭐ | "
-        f"new_balance={new_balance}"
-    )
-
-    # -------------------------------------------------
-    # Сообщение пользователю
-    # -------------------------------------------------
-
-    await message.answer(
-
-        f"🎉 <b>Оплата прошла успешно!</b>\n\n"
-
-        f"⭐ Зачислено: "
-        f"<b>+{amount} ⭐</b>\n\n"
-
-        f"💰 Новый баланс: "
-        f"<b>{new_balance:.2f} ⭐</b>\n\n"
-
-        f"Спасибо за пополнение! 🐻‍❄️",
-
-        reply_markup=get_main_keyboard()
-    )
 
 
 # =====================================================
@@ -1465,13 +759,7 @@ async def referral_callback(
 
     user_id = callback.from_user.id
 
-    ref_link = get_referral_link(
-        user_id
-    )
-
-    ref_count = get_referrals_count(
-        user_id
-    )
+    ref_link = get_referral_link(user_id)
 
     await callback.message.edit_text(
 
@@ -1479,21 +767,19 @@ async def referral_callback(
 
         f"<code>{ref_link}</code>\n\n"
 
-        f"👥 Приглашено: "
-        f"<b>{ref_count}</b>\n\n"
-
         f"💡 Приглашайте друзей "
-        f"и получайте по <b>10 ⭐</b> "
-        f"за каждого!",
+        f"и получайте по <b>10 ⭐</b>.",
 
         reply_markup=InlineKeyboardMarkup(
             inline_keyboard=[
+
                 [
                     InlineKeyboardButton(
                         text="🔙 Назад",
                         callback_data="back_to_start"
                     )
                 ]
+
             ]
         )
     )
@@ -1502,46 +788,7 @@ async def referral_callback(
 
 
 # =====================================================
-# COPY REFERRAL
-# =====================================================
-
-@dp.callback_query(
-    lambda c: c.data.startswith("copy_ref_")
-)
-async def copy_ref_callback(
-    callback: types.CallbackQuery
-):
-
-    try:
-
-        user_id = int(
-            callback.data.replace(
-                "copy_ref_",
-                ""
-            )
-        )
-
-    except ValueError:
-
-        await callback.answer(
-            "❌ Ошибка",
-            show_alert=True
-        )
-
-        return
-
-    ref_link = get_referral_link(
-        user_id
-    )
-
-    await callback.answer(
-        f"Ссылка:\n{ref_link}",
-        show_alert=True
-    )
-
-
-# =====================================================
-# BACK TO START
+# CALLBACK: BACK
 # =====================================================
 
 @dp.callback_query(
@@ -1563,23 +810,19 @@ async def back_to_start_callback(
 
     await callback.message.edit_text(
 
-        f"🐻‍❄️ <b>Добро пожаловать "
-        f"в DROP, {first_name}!</b>\n\n"
+        f"🐻‍❄️ <b>White Bear DROP</b>\n\n"
 
-        f"🆔 Ваш ID: "
-        f"<code>{user_id}</code>\n"
+        f"👤 {first_name}\n"
+
+        f"🆔 <code>{user_id}</code>\n"
 
         f"💰 Баланс: "
         f"<b>{balance:.2f} ⭐</b>\n"
 
-        f"👥 Приглашено друзей: "
+        f"👥 Рефералов: "
         f"<b>{ref_count}</b>\n\n"
 
-        f"📎 <b>Реферальная ссылка:</b>\n"
-        f"<code>{ref_link}</code>\n\n"
-
-        f"🎮 Нажмите кнопку ниже, "
-        f"чтобы открыть игры.",
+        f"📎 <code>{ref_link}</code>",
 
         reply_markup=get_main_keyboard()
     )
@@ -1588,7 +831,305 @@ async def back_to_start_callback(
 
 
 # =====================================================
-# WEBAPP DATA
+# TELEGRAM STARS — СОЗДАНИЕ ПЛАТЕЖА
+# =====================================================
+
+async def create_stars_invoice(
+    user_id: int,
+    stars: int
+):
+
+    if stars <= 0:
+        return
+
+    payload = json.dumps({
+        "type": "balance",
+        "user_id": user_id,
+        "stars": stars
+    })
+
+    await bot.send_invoice(
+
+        chat_id=user_id,
+
+        title=f"Пополнение баланса на {stars} ⭐",
+
+        description=(
+            f"Пополнение внутреннего баланса "
+            f"White Bear на {stars} Telegram Stars."
+        ),
+
+        payload=payload,
+
+        currency="XTR",
+
+        prices=[
+            LabeledPrice(
+                label=f"{stars} ⭐",
+                amount=stars
+            )
+        ]
+    )
+
+
+# =====================================================
+# CALLBACK ДЛЯ ПОПОЛНЕНИЯ
+# =====================================================
+
+@dp.callback_query(
+    lambda c: c.data.startswith("deposit_")
+)
+async def deposit_callback(
+    callback: types.CallbackQuery
+):
+
+    user_id = callback.from_user.id
+
+    try:
+
+        stars = int(
+            callback.data.replace(
+                "deposit_",
+                ""
+            )
+        )
+
+    except ValueError:
+
+        await callback.answer(
+            "❌ Некорректная сумма",
+            show_alert=True
+        )
+
+        return
+
+    if stars < 1:
+
+        await callback.answer(
+            "❌ Некорректная сумма",
+            show_alert=True
+        )
+
+        return
+
+    if stars > 100000:
+
+        await callback.answer(
+            "❌ Слишком большая сумма",
+            show_alert=True
+        )
+
+        return
+
+    try:
+
+        await create_stars_invoice(
+            user_id,
+            stars
+        )
+
+        await callback.answer()
+
+    except Exception as e:
+
+        logger.exception(
+            "Ошибка создания invoice"
+        )
+
+        await callback.answer(
+            "❌ Не удалось создать платеж",
+            show_alert=True
+        )
+
+
+# =====================================================
+# PRE-CHECKOUT
+# =====================================================
+
+@dp.pre_checkout_query()
+async def process_pre_checkout(
+    pre_checkout_query: types.PreCheckoutQuery
+):
+
+    try:
+
+        payload = json.loads(
+            pre_checkout_query.invoice_payload
+        )
+
+        if payload.get("type") != "balance":
+
+            await pre_checkout_query.answer(
+                ok=False,
+                error_message="Некорректный платеж."
+            )
+
+            return
+
+        user_id = payload.get("user_id")
+
+        stars = payload.get("stars")
+
+        if user_id != pre_checkout_query.from_user.id:
+
+            await pre_checkout_query.answer(
+                ok=False,
+                error_message="Пользователь платежа не совпадает."
+            )
+
+            return
+
+        if not isinstance(stars, int) or stars <= 0:
+
+            await pre_checkout_query.answer(
+                ok=False,
+                error_message="Некорректная сумма."
+            )
+
+            return
+
+        if pre_checkout_query.currency != "XTR":
+
+            await pre_checkout_query.answer(
+                ok=False,
+                error_message="Некорректная валюта."
+            )
+
+            return
+
+        if pre_checkout_query.total_amount != stars:
+
+            await pre_checkout_query.answer(
+                ok=False,
+                error_message="Некорректная стоимость платежа."
+            )
+
+            return
+
+        await pre_checkout_query.answer(
+            ok=True
+        )
+
+    except Exception as e:
+
+        logger.exception(
+            "Ошибка pre_checkout"
+        )
+
+        await pre_checkout_query.answer(
+            ok=False,
+            error_message="Ошибка проверки платежа."
+        )
+
+
+# =====================================================
+# УСПЕШНЫЙ ПЛАТЕЖ
+# =====================================================
+
+@dp.message(
+    lambda message:
+    message.successful_payment is not None
+)
+async def successful_payment_handler(
+    message: Message
+):
+
+    payment = message.successful_payment
+
+    user_id = message.from_user.id
+
+    charge_id = payment.telegram_payment_charge_id
+
+    if payment_exists(charge_id):
+
+        logger.warning(
+            f"Повторный платеж: {charge_id}"
+        )
+
+        await message.answer(
+            "⚠️ Этот платеж уже был обработан."
+        )
+
+        return
+
+    try:
+
+        payload = json.loads(
+            payment.invoice_payload
+        )
+
+        stars = int(
+            payload.get("stars", 0)
+        )
+
+    except Exception:
+
+        await message.answer(
+            "❌ Ошибка обработки платежа."
+        )
+
+        return
+
+    if stars <= 0:
+
+        await message.answer(
+            "❌ Некорректная сумма платежа."
+        )
+
+        return
+
+    # Проверяем, что сумма действительно совпадает
+    if payment.total_amount != stars:
+
+        logger.error(
+            "Несовпадение суммы платежа"
+        )
+
+        await message.answer(
+            "❌ Ошибка суммы платежа."
+        )
+
+        return
+
+    # Сохраняем платеж ДО начисления
+    save_payment(
+        user_id=user_id,
+        telegram_charge_id=charge_id,
+        provider_charge_id=(
+            payment.provider_payment_charge_id
+        ),
+        stars=stars
+    )
+
+    # Начисляем звезды на внутренний баланс
+    new_balance = add_balance(
+        user_id,
+        stars
+    )
+
+    logger.info(
+        f"💰 Пользователь {user_id} "
+        f"пополнил баланс на {stars} ⭐. "
+        f"Новый баланс: {new_balance}"
+    )
+
+    await message.answer(
+
+        f"✅ <b>Оплата успешно получена!</b>\n\n"
+
+        f"💰 Зачислено: "
+        f"<b>+{stars} ⭐</b>\n"
+
+        f"💳 Ваш баланс: "
+        f"<b>{new_balance:.2f} ⭐</b>\n\n"
+
+        f"🎮 Можете возвращаться "
+        f"в приложение."
+    )
+
+
+# =====================================================
+# WEB APP DATA
 # =====================================================
 
 @dp.message(
@@ -1608,23 +1149,57 @@ async def web_app_data_handler(
 
         action = data.get("action")
 
-        # -------------------------------------------------
-        # Получить баланс
-        # -------------------------------------------------
+        # ---------------------------------------------
+        # GET BALANCE
+        # ---------------------------------------------
 
         if action == "getBalance":
 
-            balance = get_balance(
+            balance = get_balance(user_id)
+
+            await message.answer(
+                json.dumps({
+                    "success": True,
+                    "balance": balance
+                })
+            )
+
+        # ---------------------------------------------
+        # GET PROFILE
+        # ---------------------------------------------
+
+        elif action == "getProfile":
+
+            user = get_user(user_id)
+
+            if not user:
+
+                create_user(
+                    user_id,
+                    message.from_user.username,
+                    message.from_user.first_name
+                )
+
+            balance = get_balance(user_id)
+
+            ref_count = get_referrals_count(
                 user_id
             )
 
             await message.answer(
-                f"{balance:.2f}"
+                json.dumps({
+                    "success": True,
+                    "user_id": user_id,
+                    "first_name": message.from_user.first_name,
+                    "username": message.from_user.username,
+                    "balance": balance,
+                    "referrals": ref_count
+                })
             )
 
-        # -------------------------------------------------
-        # Получить реферальную ссылку
-        # -------------------------------------------------
+        # ---------------------------------------------
+        # GET REFERRAL LINK
+        # ---------------------------------------------
 
         elif action == "getReferralLink":
 
@@ -1633,47 +1208,62 @@ async def web_app_data_handler(
             )
 
             await message.answer(
-                ref_link
+                json.dumps({
+                    "success": True,
+                    "referral_link": ref_link
+                })
             )
 
-        # -------------------------------------------------
-        # Открыть оплату
-        # -------------------------------------------------
+        # ---------------------------------------------
+        # CREATE PAYMENT
+        # ---------------------------------------------
 
-        elif action == "buyStars":
+        elif action == "createPayment":
 
-            amount = data.get(
-                "amount"
-            )
+            stars = data.get("stars")
 
             try:
-
-                amount = int(amount)
-
+                stars = int(stars)
             except:
+                stars = 0
+
+            if stars < 1:
 
                 await message.answer(
-                    "❌ Некорректная сумма."
+                    json.dumps({
+                        "success": False,
+                        "error": "Некорректная сумма"
+                    })
                 )
 
                 return
 
-            if amount not in STAR_PACKAGES:
+            if stars > 100000:
 
                 await message.answer(
-                    "❌ Такая сумма недоступна."
+                    json.dumps({
+                        "success": False,
+                        "error": "Слишком большая сумма"
+                    })
                 )
 
                 return
 
             await create_stars_invoice(
                 user_id,
-                amount
+                stars
             )
 
-        # -------------------------------------------------
-        # РЕФЕРАЛ
-        # -------------------------------------------------
+            await message.answer(
+                json.dumps({
+                    "success": True,
+                    "stars": stars
+                })
+            )
+
+        # ---------------------------------------------
+        # ADD REFERRAL
+        # ---------------------------------------------
 
         elif action == "addReferral":
 
@@ -1685,66 +1275,80 @@ async def web_app_data_handler(
                 "referred_id"
             )
 
-            if referrer_id and referred_id:
+            if not referrer_id:
 
-                referrer_id = int(
-                    referrer_id
+                await message.answer(
+                    json.dumps({
+                        "success": False,
+                        "error": "Нет referrer_id"
+                    })
                 )
 
-                referred_id = int(
-                    referred_id
+                return
+
+            # ВАЖНО:
+            # referred_id НЕ доверяем данным сайта.
+            # Берем настоящий Telegram ID.
+            referred_id = user_id
+
+            success = add_referral(
+                int(referrer_id),
+                referred_id,
+                10.0
+            )
+
+            if success:
+
+                await message.answer(
+                    json.dumps({
+                        "success": True,
+                        "reward": 10
+                    })
                 )
 
-                # Не позволяем добавлять
-                # реферал самому себе.
+            else:
 
-                if referrer_id == referred_id:
-
-                    await message.answer(
-                        "❌ Нельзя пригласить самого себя."
-                    )
-
-                    return
-
-                success = add_referral(
-                    referrer_id,
-                    referred_id,
-                    10.0
+                await message.answer(
+                    json.dumps({
+                        "success": False,
+                        "error": "Реферал уже существует"
+                    })
                 )
 
-                if success:
+        else:
 
-                    await message.answer(
-                        "🎉 Реферал засчитан! "
-                        "+10 ⭐"
-                    )
-
-                else:
-
-                    await message.answer(
-                        "❌ Этот реферал "
-                        "уже был засчитан."
-                    )
+            await message.answer(
+                json.dumps({
+                    "success": False,
+                    "error": "Unknown action"
+                })
+            )
 
     except json.JSONDecodeError:
 
         await message.answer(
-            "❌ Ошибка обработки данных."
+            json.dumps({
+                "success": False,
+                "error": "Invalid JSON"
+            })
         )
 
     except Exception as e:
 
         logger.exception(
-            f"Ошибка WebApp: {e}"
+            "Ошибка WebApp"
         )
 
         await message.answer(
-            "❌ Произошла ошибка."
+            json.dumps({
+                "success": False,
+                "error": "Server error"
+            })
         )
 
 
 # =====================================================
-# КОМАНДЫ И КНОПКА MENU
+# КОМАНДЫ И MENU BUTTON
 # =====================================================
 
 async def set_commands_and_menu():
@@ -1758,7 +1362,7 @@ async def set_commands_and_menu():
 
         BotCommand(
             command="game",
-            description="Открыть игры"
+            description="Открыть приложение"
         ),
 
         BotCommand(
@@ -1775,6 +1379,7 @@ async def set_commands_and_menu():
             command="help",
             description="Помощь"
         ),
+
     ]
 
     await bot.set_my_commands(
@@ -1795,7 +1400,7 @@ async def set_commands_and_menu():
     )
 
     logger.info(
-        "✅ Команды и кнопка меню установлены"
+        "✅ Команды и кнопка Mini App установлены"
     )
 
 
@@ -1806,22 +1411,15 @@ async def set_commands_and_menu():
 async def main():
 
     logger.info(
-        "🚀 Запуск White Bear Bot..."
+        "🚀 White Bear Bot запускается..."
     )
 
-    # База
     init_db()
 
-    # Команды
     await set_commands_and_menu()
 
     logger.info(
-        "⭐ Telegram Stars payments готовы"
-    )
-
-    logger.info(
-        "🌐 WebApp: %s",
-        WEBAPP_URL
+        "✅ Бот готов"
     )
 
     await dp.start_polling(
