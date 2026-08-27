@@ -30,7 +30,7 @@ from aiogram.client.default import DefaultBotProperties
 
 BOT_TOKEN = os.getenv(
     "BOT_TOKEN",
-    "8918284594:AAG-h12sJhc7a0qaV5LgS-ea29FNeZVtJvY"
+    "8918284594:AAFLxOg1eEx4JS6z6V9wHr-t8T3Q9Qwiepg"
 )
 
 BOT_USERNAME = "White_Bear_ROBOT"
