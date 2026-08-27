@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
+
 <meta name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
@@ -10,6 +11,7 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -21,10 +23,21 @@ html,
 body {
     width: 100%;
     min-height: 100%;
+
     background:
-        radial-gradient(circle at top, #252b55 0%, #0d1020 45%, #070811 100%);
+        radial-gradient(
+            circle at top,
+            #252b55 0%,
+            #0d1020 45%,
+            #070811 100%
+        );
+
     color: #fff;
-    font-family: Arial, Helvetica, sans-serif;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
 }
 
 body {
@@ -46,33 +59,40 @@ button {
     padding-bottom: 105px;
 }
 
+
 /* =====================================================
    HEADER
 ===================================================== */
 
 .header {
+
     padding: 24px 18px 12px;
+
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
 .logo-box {
+
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
 .logo {
+
     width: 48px;
     height: 48px;
+
     border-radius: 16px;
 
-    background: linear-gradient(
-        145deg,
-        #ffffff,
-        #cdd8ff
-    );
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #cdd8ff
+        );
 
     display: flex;
     align-items: center;
@@ -85,65 +105,91 @@ button {
 }
 
 .logo-text {
+
     font-size: 19px;
     font-weight: 800;
 }
 
 .logo-sub {
+
     margin-top: 3px;
+
     font-size: 11px;
+
     opacity: .5;
 }
 
 .header-balance {
+
     padding: 9px 13px;
+
     border-radius: 14px;
 
-    background: rgba(255,255,255,.08);
-    border: 1px solid rgba(255,255,255,.08);
+    background:
+        rgba(255,255,255,.08);
+
+    border:
+        1px solid rgba(255,255,255,.08);
 
     font-size: 14px;
     font-weight: 700;
 }
+
 
 /* =====================================================
    PAGES
 ===================================================== */
 
 .page {
+
     display: none;
-    padding: 10px 16px;
+
+    padding:
+        10px 16px;
 }
 
 .page.active {
     display: block;
 }
 
+
 /* =====================================================
    TITLES
 ===================================================== */
 
 .page-title {
+
     font-size: 28px;
+
     font-weight: 900;
-    margin: 10px 0 5px;
+
+    margin:
+        10px 0 5px;
 }
 
 .page-subtitle {
-    color: rgba(255,255,255,.52);
+
+    color:
+        rgba(255,255,255,.52);
+
     font-size: 13px;
+
     margin-bottom: 18px;
 }
+
 
 /* =====================================================
    PROFILE
 ===================================================== */
 
 .profile-card {
+
     position: relative;
+
     overflow: hidden;
 
     padding: 22px;
+
     border-radius: 25px;
 
     background:
@@ -153,43 +199,56 @@ button {
             rgba(255,255,255,.06)
         );
 
-    border: 1px solid rgba(255,255,255,.1);
+    border:
+        1px solid rgba(255,255,255,.1);
 
     box-shadow:
         0 15px 45px rgba(0,0,0,.25);
 }
 
 .profile-card::before {
+
     content: "";
+
     position: absolute;
+
     width: 170px;
     height: 170px;
+
     right: -70px;
     top: -70px;
 
-    background: rgba(130,150,255,.16);
+    background:
+        rgba(130,150,255,.16);
+
     border-radius: 50%;
+
     filter: blur(5px);
 }
 
 .profile-top {
+
     position: relative;
+
     display: flex;
     align-items: center;
+
     gap: 15px;
 }
 
 .avatar {
+
     width: 64px;
     height: 64px;
 
     border-radius: 21px;
 
-    background: linear-gradient(
-        145deg,
-        #ffffff,
-        #cbd5ff
-    );
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #cbd5ff
+        );
 
     display: flex;
     align-items: center;
@@ -202,42 +261,58 @@ button {
 }
 
 .profile-name {
+
     font-size: 20px;
+
     font-weight: 800;
 }
 
 .profile-id {
+
     margin-top: 5px;
+
     font-size: 12px;
+
     opacity: .5;
 }
 
 .balance-block {
+
     position: relative;
+
     margin-top: 24px;
 }
 
 .balance-label {
+
     font-size: 12px;
+
     opacity: .55;
 }
 
 .balance-value {
+
     margin-top: 5px;
+
     font-size: 34px;
+
     font-weight: 900;
 }
 
 .balance-value span {
+
     font-size: 20px;
 }
+
 
 /* =====================================================
    BUTTONS
 ===================================================== */
 
 .primary-button {
+
     width: 100%;
+
     margin-top: 16px;
 
     padding: 16px;
@@ -252,84 +327,112 @@ button {
         );
 
     font-size: 15px;
+
     font-weight: 800;
 
     box-shadow:
         0 10px 25px rgba(79,91,220,.28);
 
-    transition: transform .15s;
+    transition:
+        transform .15s;
 }
 
 .primary-button:active {
-    transform: scale(.97);
+
+    transform:
+        scale(.97);
 }
 
 .secondary-button {
+
     width: 100%;
+
     margin-top: 10px;
 
     padding: 15px;
 
     border-radius: 17px;
 
-    background: rgba(255,255,255,.07);
+    background:
+        rgba(255,255,255,.07);
 
-    border: 1px solid rgba(255,255,255,.08);
+    border:
+        1px solid rgba(255,255,255,.08);
 
     font-size: 14px;
+
     font-weight: 700;
 }
 
+
 /* =====================================================
-   PROFILE ROWS
+   INFO
 ===================================================== */
 
 .info-card {
+
     margin-top: 15px;
 
     padding: 18px;
 
     border-radius: 22px;
 
-    background: rgba(255,255,255,.055);
-    border: 1px solid rgba(255,255,255,.07);
+    background:
+        rgba(255,255,255,.055);
+
+    border:
+        1px solid rgba(255,255,255,.07);
 }
 
 .info-title {
+
     font-size: 16px;
+
     font-weight: 800;
+
     margin-bottom: 12px;
 }
 
 .info-row {
+
     display: flex;
+
     justify-content: space-between;
+
     align-items: center;
 
     padding: 13px 0;
 
-    border-bottom: 1px solid rgba(255,255,255,.06);
+    border-bottom:
+        1px solid rgba(255,255,255,.06);
 }
 
 .info-row:last-child {
+
     border-bottom: 0;
 }
 
 .info-left {
+
     opacity: .55;
+
     font-size: 13px;
 }
 
 .info-right {
+
     font-size: 13px;
+
     font-weight: 700;
 }
 
+
 /* =====================================================
-   DEPOSIT CARD
+   DEPOSIT
 ===================================================== */
 
 .deposit-card {
+
     margin-top: 15px;
 
     padding: 19px;
@@ -343,67 +446,92 @@ button {
             rgba(255,255,255,.04)
         );
 
-    border: 1px solid rgba(255,205,80,.13);
+    border:
+        1px solid rgba(255,205,80,.13);
 }
 
 .deposit-icon {
+
     font-size: 28px;
 }
 
 .deposit-title {
+
     margin-top: 8px;
+
     font-size: 17px;
+
     font-weight: 800;
 }
 
 .deposit-text {
+
     margin-top: 6px;
+
     font-size: 12px;
+
     line-height: 1.5;
+
     opacity: .55;
 }
+
 
 /* =====================================================
    MENU
 ===================================================== */
 
 .menu-grid {
+
     display: grid;
-    grid-template-columns: 1fr 1fr;
+
+    grid-template-columns:
+        1fr 1fr;
+
     gap: 12px;
 }
 
 .menu-card {
+
     min-height: 145px;
 
     padding: 18px;
 
     border-radius: 22px;
 
-    background: rgba(255,255,255,.055);
+    background:
+        rgba(255,255,255,.055);
 
-    border: 1px solid rgba(255,255,255,.07);
+    border:
+        1px solid rgba(255,255,255,.07);
 
     display: flex;
+
     flex-direction: column;
+
     justify-content: space-between;
 
-    transition: transform .15s;
+    transition:
+        transform .15s;
 }
 
 .menu-card:active {
-    transform: scale(.97);
+
+    transform:
+        scale(.97);
 }
 
 .menu-icon {
+
     width: 48px;
     height: 48px;
 
     border-radius: 16px;
 
-    background: rgba(255,255,255,.08);
+    background:
+        rgba(255,255,255,.08);
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 
@@ -411,24 +539,30 @@ button {
 }
 
 .menu-name {
+
     margin-top: 14px;
 
     font-size: 15px;
+
     font-weight: 800;
 }
 
 .menu-description {
+
     margin-top: 5px;
 
     font-size: 11px;
+
     opacity: .45;
 }
+
 
 /* =====================================================
    CASES
 ===================================================== */
 
 .case-card {
+
     position: relative;
 
     min-height: 170px;
@@ -446,13 +580,16 @@ button {
             rgba(255,255,255,.035)
         );
 
-    border: 1px solid rgba(255,255,255,.08);
+    border:
+        1px solid rgba(255,255,255,.08);
 
     overflow: hidden;
 }
 
 .case-card::after {
+
     content: "";
+
     position: absolute;
 
     width: 150px;
@@ -463,29 +600,37 @@ button {
 
     border-radius: 50%;
 
-    background: rgba(100,120,255,.12);
+    background:
+        rgba(100,120,255,.12);
 }
 
 .case-icon {
+
     font-size: 42px;
 }
 
 .case-title {
+
     margin-top: 8px;
 
     font-size: 19px;
+
     font-weight: 900;
 }
 
 .case-price {
+
     margin-top: 5px;
 
     font-size: 13px;
+
     opacity: .55;
 }
 
 .case-button {
+
     position: relative;
+
     z-index: 2;
 
     margin-top: 13px;
@@ -494,77 +639,97 @@ button {
 
     border-radius: 13px;
 
-    background: rgba(255,255,255,.1);
+    background:
+        rgba(255,255,255,.1);
 
     font-size: 12px;
+
     font-weight: 800;
 }
+
 
 /* =====================================================
    INVENTORY
 ===================================================== */
 
 .inventory-card {
+
     padding: 18px;
 
     border-radius: 22px;
 
-    background: rgba(255,255,255,.055);
+    background:
+        rgba(255,255,255,.055);
 
-    border: 1px solid rgba(255,255,255,.07);
+    border:
+        1px solid rgba(255,255,255,.07);
 
     text-align: center;
 }
 
 .inventory-icon {
+
     font-size: 55px;
 }
 
 .inventory-empty-title {
+
     margin-top: 10px;
 
     font-size: 17px;
+
     font-weight: 800;
 }
 
 .inventory-empty-text {
+
     margin-top: 6px;
 
     font-size: 12px;
+
     opacity: .45;
 }
+
 
 /* =====================================================
    PROMO
 ===================================================== */
 
 .promo-card {
+
     margin-top: 15px;
 
     padding: 18px;
 
     border-radius: 22px;
 
-    background: rgba(255,255,255,.055);
+    background:
+        rgba(255,255,255,.055);
 
-    border: 1px solid rgba(255,255,255,.07);
+    border:
+        1px solid rgba(255,255,255,.07);
 }
 
 .promo-title {
+
     font-size: 17px;
+
     font-weight: 800;
 }
 
 .promo-text {
+
     margin-top: 6px;
 
     font-size: 12px;
+
     line-height: 1.5;
 
     opacity: .5;
 }
 
 .promo-input {
+
     width: 100%;
 
     margin-top: 13px;
@@ -575,9 +740,11 @@ button {
 
     outline: none;
 
-    border: 1px solid rgba(255,255,255,.08);
+    border:
+        1px solid rgba(255,255,255,.08);
 
-    background: rgba(0,0,0,.2);
+    background:
+        rgba(0,0,0,.2);
 
     color: white;
 
@@ -585,22 +752,30 @@ button {
 }
 
 .promo-input::placeholder {
-    color: rgba(255,255,255,.3);
+
+    color:
+        rgba(255,255,255,.3);
 }
 
+
 /* =====================================================
-   BOTTOM NAVIGATION
+   BOTTOM NAV
 ===================================================== */
 
 .bottom-nav {
+
     position: fixed;
 
     left: 50%;
+
     bottom: 12px;
 
-    transform: translateX(-50%);
+    transform:
+        translateX(-50%);
 
-    width: calc(100% - 24px);
+    width:
+        calc(100% - 24px);
+
     max-width: 620px;
 
     padding: 8px;
@@ -610,55 +785,73 @@ button {
     background:
         rgba(19,22,39,.94);
 
-    backdrop-filter: blur(20px);
+    backdrop-filter:
+        blur(20px);
 
-    border: 1px solid rgba(255,255,255,.09);
+    border:
+        1px solid rgba(255,255,255,.09);
 
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+
+    grid-template-columns:
+        repeat(3, 1fr);
 
     z-index: 100;
 }
 
 .nav-button {
+
     padding: 10px 4px;
 
     border-radius: 17px;
 
-    background: transparent;
+    background:
+        transparent;
 
     display: flex;
+
     flex-direction: column;
+
     align-items: center;
 
     gap: 4px;
 
-    color: rgba(255,255,255,.45);
+    color:
+        rgba(255,255,255,.45);
 
     font-size: 10px;
+
     font-weight: 700;
 }
 
 .nav-icon {
+
     font-size: 21px;
 }
 
 .nav-button.active {
-    background: rgba(255,255,255,.09);
+
+    background:
+        rgba(255,255,255,.09);
+
     color: white;
 }
 
+
 /* =====================================================
-   STATUS
+   SYNC STATUS
 ===================================================== */
 
 .sync-status {
+
     position: fixed;
 
     top: 8px;
+
     left: 50%;
 
-    transform: translateX(-50%);
+    transform:
+        translateX(-50%);
 
     z-index: 200;
 
@@ -666,7 +859,8 @@ button {
 
     border-radius: 12px;
 
-    background: rgba(0,0,0,.35);
+    background:
+        rgba(0,0,0,.35);
 
     font-size: 9px;
 
@@ -674,42 +868,52 @@ button {
 
     pointer-events: none;
 
-    transition: opacity .2s;
+    transition:
+        opacity .2s;
 }
 
 .sync-status.show {
+
     opacity: 1;
 }
+
 
 /* =====================================================
    TOAST
 ===================================================== */
 
 .toast {
+
     position: fixed;
 
     left: 50%;
+
     bottom: 95px;
 
     transform:
         translate(-50%, 20px);
 
-    width: calc(100% - 35px);
+    width:
+        calc(100% - 35px);
+
     max-width: 500px;
 
     padding: 14px 17px;
 
     border-radius: 16px;
 
-    background: rgba(25,28,45,.97);
+    background:
+        rgba(25,28,45,.97);
 
-    border: 1px solid rgba(255,255,255,.08);
+    border:
+        1px solid rgba(255,255,255,.08);
 
     text-align: center;
 
     font-size: 13px;
 
     opacity: 0;
+
     pointer-events: none;
 
     z-index: 300;
@@ -720,11 +924,13 @@ button {
 }
 
 .toast.show {
+
     opacity: 1;
 
     transform:
         translate(-50%, 0);
 }
+
 
 /* =====================================================
    MOBILE
@@ -744,204 +950,98 @@ button {
         min-height: 130px;
     }
 }
+
 </style>
 </head>
+
 
 <body>
 
 <div id="app">
 
-    <!-- HEADER -->
 
-    <header class="header">
+<!-- =====================================================
+     HEADER
+===================================================== -->
 
-        <div class="logo-box">
+<header class="header">
 
-            <div class="logo">
+    <div class="logo-box">
+
+        <div class="logo">
+            🐻‍❄️
+        </div>
+
+        <div>
+
+            <div class="logo-text">
+                White Bear
+            </div>
+
+            <div class="logo-sub">
+                Drop
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div
+        class="header-balance"
+        id="headerBalance"
+    >
+        0 ⭐
+    </div>
+
+</header>
+
+
+<!-- =====================================================
+     PROFILE
+===================================================== -->
+
+<section
+    class="page active"
+    id="profilePage"
+>
+
+    <div class="page-title">
+        Профиль
+    </div>
+
+    <div class="page-subtitle">
+        Твой аккаунт White Bear Drop
+    </div>
+
+
+    <div class="profile-card">
+
+        <div class="profile-top">
+
+            <div
+                class="avatar"
+                id="avatar"
+            >
                 🐻‍❄️
             </div>
 
+
             <div>
 
-                <div class="logo-text">
-                    White Bear
+                <div
+                    class="profile-name"
+                    id="profileName"
+                >
+                    Игрок
                 </div>
 
-                <div class="logo-sub">
-                    Drop
-                </div>
-
-            </div>
-
-        </div>
-
-        <div
-            class="header-balance"
-            id="headerBalance"
-        >
-            0 ⭐
-        </div>
-
-    </header>
-
-
-    <!-- =================================================
-         PROFILE
-    ================================================== -->
-
-    <section
-        class="page active"
-        id="profilePage"
-    >
-
-        <div class="page-title">
-            Профиль
-        </div>
-
-        <div class="page-subtitle">
-            Твой аккаунт White Bear Drop
-        </div>
-
-
-        <div class="profile-card">
-
-            <div class="profile-top">
 
                 <div
-                    class="avatar"
-                    id="avatar"
+                    class="profile-id"
+                    id="profileId"
                 >
-                    🐻‍❄️
-                </div>
-
-                <div>
-
-                    <div
-                        class="profile-name"
-                        id="profileName"
-                    >
-                        Игрок
-                    </div>
-
-                    <div
-                        class="profile-id"
-                        id="profileId"
-                    >
-                        ID: загрузка...
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="balance-block">
-
-                <div class="balance-label">
-                    Текущий баланс
-                </div>
-
-                <div
-                    class="balance-value"
-                    id="balance"
-                >
-                    0 <span>⭐</span>
-                </div>
-
-            </div>
-
-
-            <button
-                class="primary-button"
-                onclick="openDepositBot()"
-            >
-                ⭐ Пополнить баланс
-            </button>
-
-
-            <button
-                class="secondary-button"
-                onclick="showPromo()"
-            >
-                🎟 Промокод
-            </button>
-
-        </div>
-
-
-        <div class="deposit-card">
-
-            <div class="deposit-icon">
-                ⭐
-            </div>
-
-            <div class="deposit-title">
-                Пополнение баланса в боте!
-            </div>
-
-            <div class="deposit-text">
-                Оплата производится через Telegram Stars
-                непосредственно в боте. После оплаты
-                баланс автоматически обновится здесь.
-            </div>
-
-            <button
-                class="primary-button"
-                onclick="openDepositBot()"
-            >
-                💰 Перейти к пополнению
-            </button>
-
-        </div>
-
-
-        <div class="info-card">
-
-            <div class="info-title">
-                📊 Информация
-            </div>
-
-            <div class="info-row">
-
-                <div class="info-left">
-                    Telegram ID
-                </div>
-
-                <div
-                    class="info-right"
-                    id="infoId"
-                >
-                    —
-                </div>
-
-            </div>
-
-            <div class="info-row">
-
-                <div class="info-left">
-                    Баланс
-                </div>
-
-                <div
-                    class="info-right"
-                    id="infoBalance"
-                >
-                    0 ⭐
-                </div>
-
-            </div>
-
-            <div class="info-row">
-
-                <div class="info-left">
-                    Статус
-                </div>
-
-                <div
-                    class="info-right"
-                    id="connectionStatus"
-                >
-                    Синхронизация
+                    ID: загрузка...
                 </div>
 
             </div>
@@ -949,275 +1049,18 @@ button {
         </div>
 
 
-        <div
-            class="promo-card"
-            id="promoCard"
-            style="display:none;"
-        >
+        <div class="balance-block">
 
-            <div class="promo-title">
-                🎟 Промокод
-            </div>
-
-            <div class="promo-text">
-                Введи промокод для получения награды.
-            </div>
-
-            <input
-                class="promo-input"
-                id="promoInput"
-                placeholder="Введите промокод"
-                autocomplete="off"
-            >
-
-            <button
-                class="primary-button"
-                onclick="activatePromo()"
-            >
-                Активировать
-            </button>
-
-        </div>
-
-    </section>
-
-
-    <!-- =================================================
-         MENU
-    ================================================== -->
-
-    <section
-        class="page"
-        id="menuPage"
-    >
-
-        <div class="page-title">
-            Меню
-        </div>
-
-        <div class="page-subtitle">
-            Выбери нужный раздел
-        </div>
-
-
-        <div class="menu-grid">
-
-            <div
-                class="menu-card"
-                onclick="showCases()"
-            >
-
-                <div class="menu-icon">
-                    🎁
-                </div>
-
-                <div>
-
-                    <div class="menu-name">
-                        Кейсы
-                    </div>
-
-                    <div class="menu-description">
-                        Открывай награды
-                    </div>
-
-                </div>
-
+            <div class="balance-label">
+                Текущий баланс
             </div>
 
 
             <div
-                class="menu-card"
-                onclick="showInventory()"
+                class="balance-value"
+                id="balance"
             >
-
-                <div class="menu-icon">
-                    🎒
-                </div>
-
-                <div>
-
-                    <div class="menu-name">
-                        Инвентарь
-                    </div>
-
-                    <div class="menu-description">
-                        Твои предметы
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div
-                class="menu-card"
-                onclick="openDepositBot()"
-            >
-
-                <div class="menu-icon">
-                    ⭐
-                </div>
-
-                <div>
-
-                    <div class="menu-name">
-                        Пополнение
-                    </div>
-
-                    <div class="menu-description">
-                        Telegram Stars
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div
-                class="menu-card"
-                onclick="showPromo()"
-            >
-
-                <div class="menu-icon">
-                    🎟
-                </div>
-
-                <div>
-
-                    <div class="menu-name">
-                        Промокод
-                    </div>
-
-                    <div class="menu-description">
-                        Получить награду
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- CASES -->
-
-        <div
-            id="casesBlock"
-            style="display:none; margin-top:20px;"
-        >
-
-            <div class="page-subtitle">
-                Доступные кейсы
-            </div>
-
-
-            <div class="case-card">
-
-                <div class="case-icon">
-                    🎁
-                </div>
-
-                <div class="case-title">
-                    Free Case
-                </div>
-
-                <div class="case-price">
-                    Бесплатный кейс
-                </div>
-
-                <button
-                    class="case-button"
-                    onclick="caseMessage('Free Case')"
-                >
-                    Открыть
-                </button>
-
-            </div>
-
-
-            <div class="case-card">
-
-                <div class="case-icon">
-                    🐸
-                </div>
-
-                <div class="case-title">
-                    PLS PEPE
-                </div>
-
-                <div class="case-price">
-                    50 ⭐
-                </div>
-
-                <button
-                    class="case-button"
-                    onclick="caseMessage('PLS PEPE')"
-                >
-                    Открыть
-                </button>
-
-            </div>
-
-
-            <div class="case-card">
-
-                <div class="case-icon">
-                    💎
-                </div>
-
-                <div class="case-title">
-                    Premium Case
-                </div>
-
-                <div class="case-price">
-                    250 ⭐
-                </div>
-
-                <button
-                    class="case-button"
-                    onclick="caseMessage('Premium Case')"
-                >
-                    Открыть
-                </button>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- =================================================
-         INVENTORY
-    ================================================== -->
-
-    <section
-        class="page"
-        id="inventoryPage"
-    >
-
-        <div class="page-title">
-            Инвентарь
-        </div>
-
-        <div class="page-subtitle">
-            Здесь будут находиться полученные предметы
-        </div>
-
-
-        <div class="inventory-card">
-
-            <div class="inventory-icon">
-                🎒
-            </div>
-
-            <div class="inventory-empty-title">
-                Инвентарь пока пуст
-            </div>
-
-            <div class="inventory-empty-text">
-                Открой кейс, чтобы получить предмет.
+                0 <span>⭐</span>
             </div>
 
         </div>
@@ -1225,21 +1068,417 @@ button {
 
         <button
             class="primary-button"
-            onclick="goToMenu()"
+            onclick="openDepositBot()"
         >
-            🎁 Открыть кейсы
+            ⭐ Пополнить баланс
         </button>
 
-    </section>
+
+        <button
+            class="secondary-button"
+            onclick="showPromo()"
+        >
+            🎟 Промокод
+        </button>
+
+    </div>
+
+
+    <div class="deposit-card">
+
+        <div class="deposit-icon">
+            ⭐
+        </div>
+
+
+        <div class="deposit-title">
+            Пополнение баланса в боте!
+        </div>
+
+
+        <div class="deposit-text">
+
+            Оплата производится через
+            Telegram Stars непосредственно
+            в боте. После успешной оплаты
+            баланс автоматически обновится
+            на сайте.
+
+        </div>
+
+
+        <button
+            class="primary-button"
+            onclick="openDepositBot()"
+        >
+            💰 Перейти к пополнению
+        </button>
+
+    </div>
+
+
+    <div class="info-card">
+
+        <div class="info-title">
+            📊 Информация
+        </div>
+
+
+        <div class="info-row">
+
+            <div class="info-left">
+                Telegram ID
+            </div>
+
+            <div
+                class="info-right"
+                id="infoId"
+            >
+                —
+            </div>
+
+        </div>
+
+
+        <div class="info-row">
+
+            <div class="info-left">
+                Баланс
+            </div>
+
+            <div
+                class="info-right"
+                id="infoBalance"
+            >
+                0 ⭐
+            </div>
+
+        </div>
+
+
+        <div class="info-row">
+
+            <div class="info-left">
+                Статус
+            </div>
+
+            <div
+                class="info-right"
+                id="connectionStatus"
+            >
+                Проверка...
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PROMO -->
+
+    <div
+        class="promo-card"
+        id="promoCard"
+        style="display:none;"
+    >
+
+        <div class="promo-title">
+            🎟 Промокод
+        </div>
+
+
+        <div class="promo-text">
+
+            Введи промокод для получения
+            награды.
+
+        </div>
+
+
+        <input
+            class="promo-input"
+            id="promoInput"
+            placeholder="Введите промокод"
+            autocomplete="off"
+        >
+
+
+        <button
+            class="primary-button"
+            onclick="activatePromo()"
+        >
+            Активировать
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     MENU
+===================================================== -->
+
+<section
+    class="page"
+    id="menuPage"
+>
+
+    <div class="page-title">
+        Меню
+    </div>
+
+
+    <div class="page-subtitle">
+        Выбери нужный раздел
+    </div>
+
+
+    <div class="menu-grid">
+
+
+        <div
+            class="menu-card"
+            onclick="showCases()"
+        >
+
+            <div class="menu-icon">
+                🎁
+            </div>
+
+            <div>
+
+                <div class="menu-name">
+                    Кейсы
+                </div>
+
+                <div class="menu-description">
+                    Открывай награды
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="menu-card"
+            onclick="showInventory()"
+        >
+
+            <div class="menu-icon">
+                🎒
+            </div>
+
+            <div>
+
+                <div class="menu-name">
+                    Инвентарь
+                </div>
+
+                <div class="menu-description">
+                    Твои предметы
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="menu-card"
+            onclick="openDepositBot()"
+        >
+
+            <div class="menu-icon">
+                ⭐
+            </div>
+
+            <div>
+
+                <div class="menu-name">
+                    Пополнение
+                </div>
+
+                <div class="menu-description">
+                    Telegram Stars
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="menu-card"
+            onclick="showPromo()"
+        >
+
+            <div class="menu-icon">
+                🎟
+            </div>
+
+            <div>
+
+                <div class="menu-name">
+                    Промокод
+                </div>
+
+                <div class="menu-description">
+                    Получить награду
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- CASES -->
+
+    <div
+        id="casesBlock"
+        style="display:none; margin-top:20px;"
+    >
+
+        <div class="page-subtitle">
+            Доступные кейсы
+        </div>
+
+
+        <div class="case-card">
+
+            <div class="case-icon">
+                🎁
+            </div>
+
+            <div class="case-title">
+                Free Case
+            </div>
+
+            <div class="case-price">
+                Бесплатный кейс
+            </div>
+
+            <button
+                class="case-button"
+                onclick="caseMessage('Free Case')"
+            >
+                Открыть
+            </button>
+
+        </div>
+
+
+        <div class="case-card">
+
+            <div class="case-icon">
+                🐸
+            </div>
+
+            <div class="case-title">
+                PLS PEPE
+            </div>
+
+            <div class="case-price">
+                50 ⭐
+            </div>
+
+            <button
+                class="case-button"
+                onclick="caseMessage('PLS PEPE')"
+            >
+                Открыть
+            </button>
+
+        </div>
+
+
+        <div class="case-card">
+
+            <div class="case-icon">
+                💎
+            </div>
+
+            <div class="case-title">
+                Premium Case
+            </div>
+
+            <div class="case-price">
+                250 ⭐
+            </div>
+
+            <button
+                class="case-button"
+                onclick="caseMessage('Premium Case')"
+            >
+                Открыть
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     INVENTORY
+===================================================== -->
+
+<section
+    class="page"
+    id="inventoryPage"
+>
+
+    <div class="page-title">
+        Инвентарь
+    </div>
+
+
+    <div class="page-subtitle">
+        Здесь будут находиться полученные предметы
+    </div>
+
+
+    <div class="inventory-card">
+
+        <div class="inventory-icon">
+            🎒
+        </div>
+
+
+        <div class="inventory-empty-title">
+            Инвентарь пока пуст
+        </div>
+
+
+        <div class="inventory-empty-text">
+            Открой кейс, чтобы получить предмет.
+        </div>
+
+    </div>
+
+
+    <button
+        class="primary-button"
+        onclick="goToMenu()"
+    >
+        🎁 Открыть кейсы
+    </button>
+
+</section>
 
 </div>
 
 
 <!-- =====================================================
-     BOTTOM NAV
+     BOTTOM NAVIGATION
 ===================================================== -->
 
 <nav class="bottom-nav">
+
 
     <button
         class="nav-button active"
@@ -1288,6 +1527,8 @@ button {
 </nav>
 
 
+<!-- STATUS -->
+
 <div
     class="sync-status"
     id="syncStatus"
@@ -1295,6 +1536,8 @@ button {
     🔄 Синхронизация
 </div>
 
+
+<!-- TOAST -->
 
 <div
     class="toast"
@@ -1306,13 +1549,20 @@ button {
 <script>
 
 /* =====================================================
-   TELEGRAM
+   TELEGRAM WEB APP
 ===================================================== */
 
 const tg = window.Telegram.WebApp;
 
 tg.ready();
+
 tg.expand();
+
+
+/*
+ * Telegram передаёт настоящие данные
+ * пользователя в initData.
+ */
 
 const telegramUser =
     tg.initDataUnsafe &&
@@ -1320,26 +1570,32 @@ const telegramUser =
         ? tg.initDataUnsafe.user
         : null;
 
-const initData = tg.initData;
+
+const initData =
+    tg.initData;
 
 
 /* =====================================================
-   USER
+   SHOW TELEGRAM USER
 ===================================================== */
 
 if (telegramUser) {
 
-    const id = telegramUser.id;
+    const id =
+        telegramUser.id;
+
 
     document.getElementById(
         "profileId"
     ).textContent =
         "ID: " + id;
 
+
     document.getElementById(
         "infoId"
     ).textContent =
         id;
+
 
     if (telegramUser.first_name) {
 
@@ -1350,6 +1606,33 @@ if (telegramUser) {
 
     }
 
+
+    if (telegramUser.photo_url) {
+
+        document.getElementById(
+            "avatar"
+        ).style.backgroundImage =
+            "url('" +
+            telegramUser.photo_url +
+            "')";
+
+        document.getElementById(
+            "avatar"
+        ).style.backgroundSize =
+            "cover";
+
+        document.getElementById(
+            "avatar"
+        ).style.backgroundPosition =
+            "center";
+
+        document.getElementById(
+            "avatar"
+        ).textContent =
+            "";
+
+    }
+
 } else {
 
     document.getElementById(
@@ -1357,10 +1640,17 @@ if (telegramUser) {
     ).textContent =
         "Открой через Telegram";
 
+
     document.getElementById(
         "profileId"
     ).textContent =
         "ID не определён";
+
+
+    document.getElementById(
+        "connectionStatus"
+    ).textContent =
+        "🔴 Не Telegram";
 
 }
 
@@ -1370,6 +1660,7 @@ if (telegramUser) {
 ===================================================== */
 
 function switchPage(page) {
+
 
     document
         .querySelectorAll(".page")
@@ -1399,6 +1690,7 @@ function switchPage(page) {
             .getElementById("profilePage")
             .classList.add("active");
 
+
         document
             .getElementById("navProfile")
             .classList.add("active");
@@ -1411,6 +1703,7 @@ function switchPage(page) {
         document
             .getElementById("menuPage")
             .classList.add("active");
+
 
         document
             .getElementById("navMenu")
@@ -1425,6 +1718,7 @@ function switchPage(page) {
             .getElementById("inventoryPage")
             .classList.add("active");
 
+
         document
             .getElementById("navInventory")
             .classList.add("active");
@@ -1432,10 +1726,14 @@ function switchPage(page) {
     }
 
 
+    updateBackButton();
+
+
     window.scrollTo({
         top: 0,
         behavior: "smooth"
     });
+
 }
 
 
@@ -1447,35 +1745,51 @@ function goToMenu() {
 
 
 /* =====================================================
-   BALANCE SYNC
+   BALANCE SYNCHRONIZATION
 ===================================================== */
 
 let currentBalance = null;
 
+let syncInProgress = false;
+
+
+/*
+ * ВАЖНО:
+ *
+ * HTML и main.py находятся на одном сервере.
+ *
+ * Поэтому используем:
+ *
+ *      /api/balance
+ *
+ * Никакого API_URL здесь нет.
+ */
 
 async function syncBalance() {
+
 
     if (!initData) {
 
         document.getElementById(
             "connectionStatus"
         ).textContent =
-            "Открой через Telegram";
+            "🔴 Открой через Telegram";
 
         return;
 
     }
 
 
+    if (syncInProgress) {
+        return;
+    }
+
+
+    syncInProgress = true;
+
+
     try {
 
-        /*
-         * HTML находится на том же сервере,
-         * что и main.py.
-         *
-         * Поэтому никакого API_URL
-         * и никакого bothost.tech здесь нет.
-         */
 
         const response =
             await fetch(
@@ -1489,7 +1803,8 @@ async function syncBalance() {
                             initData
                     },
 
-                    cache: "no-store"
+                    cache:
+                        "no-store"
                 }
             );
 
@@ -1518,40 +1833,51 @@ async function syncBalance() {
         }
 
 
+        /*
+         * ID берём именно с сервера.
+         */
+
+        if (data.user_id) {
+
+            document.getElementById(
+                "profileId"
+            ).textContent =
+                "ID: " +
+                data.user_id;
+
+
+            document.getElementById(
+                "infoId"
+            ).textContent =
+                data.user_id;
+
+        }
+
+
+        /*
+         * Получаем актуальный баланс
+         * из users.db через main.py.
+         */
+
         const newBalance =
             Number(data.balance);
 
 
-        /*
-         * Telegram ID приходит именно
-         * с сервера после проверки initData.
-         */
-
-        document.getElementById(
-            "profileId"
-        ).textContent =
-            "ID: " + data.user_id;
-
-        document.getElementById(
-            "infoId"
-        ).textContent =
-            data.user_id;
-
-
-        /*
-         * Если баланс изменился,
-         * сразу обновляем интерфейс.
-         */
-
         if (
-            currentBalance === null ||
-            currentBalance !== newBalance
+            !Number.isFinite(
+                newBalance
+            )
         ) {
 
-            currentBalance =
-                newBalance;
+            throw new Error(
+                "Некорректный баланс"
+            );
 
         }
+
+
+        currentBalance =
+            newBalance;
 
 
         const formatted =
@@ -1568,13 +1894,15 @@ async function syncBalance() {
         document.getElementById(
             "infoBalance"
         ).textContent =
-            formatted + " ⭐";
+            formatted +
+            " ⭐";
 
 
         document.getElementById(
             "headerBalance"
         ).textContent =
-            formatted + " ⭐";
+            formatted +
+            " ⭐";
 
 
         document.getElementById(
@@ -1589,10 +1917,38 @@ async function syncBalance() {
             "🟢 Баланс обновлён";
 
 
+        /*
+         * Показываем статус ненадолго.
+         */
+
+        const status =
+            document.getElementById(
+                "syncStatus"
+            );
+
+
+        status.classList.add(
+            "show"
+        );
+
+
+        setTimeout(
+            function() {
+
+                status.classList.remove(
+                    "show"
+                );
+
+            },
+            1000
+        );
+
+
     } catch (error) {
 
+
         console.error(
-            "Balance synchronization:",
+            "Balance synchronization error:",
             error
         );
 
@@ -1606,7 +1962,36 @@ async function syncBalance() {
         document.getElementById(
             "syncStatus"
         ).textContent =
-            "🔴 Синхронизация недоступна";
+            "🔴 API недоступен";
+
+
+        const status =
+            document.getElementById(
+                "syncStatus"
+            );
+
+
+        status.classList.add(
+            "show"
+        );
+
+
+        setTimeout(
+            function() {
+
+                status.classList.remove(
+                    "show"
+                );
+
+            },
+            2000
+        );
+
+
+    } finally {
+
+        syncInProgress =
+            false;
 
     }
 
@@ -1621,7 +2006,7 @@ syncBalance();
 
 
 /* =====================================================
-   EVERY 2 SECONDS
+   SYNC EVERY 2 SECONDS
 ===================================================== */
 
 setInterval(
@@ -1631,23 +2016,26 @@ setInterval(
 
 
 /* =====================================================
-   OPEN BOT DEPOSIT
+   OPEN TELEGRAM BOT
 ===================================================== */
 
 function openDepositBot() {
 
-    /*
-     * Здесь НЕ используется сайт.
-     *
-     * Открывается Telegram-бот.
-     */
 
-    const username =
+    const botUsername =
         "White_Bear_ROBOT";
+
+
+    /*
+     * Открываем именно Telegram.
+     *
+     * Никакого стороннего сайта.
+     */
 
     const url =
         "https://t.me/" +
-        username;
+        botUsername;
+
 
     try {
 
@@ -1655,7 +2043,7 @@ function openDepositBot() {
             url
         );
 
-    } catch (e) {
+    } catch (error) {
 
         window.open(
             url,
@@ -1673,6 +2061,7 @@ function openDepositBot() {
 
 function showCases() {
 
+
     switchPage(
         "menu"
     );
@@ -1688,15 +2077,23 @@ function showCases() {
         "block";
 
 
-    block.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-    });
+    setTimeout(
+        function() {
+
+            block.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+        },
+        100
+    );
 
 }
 
 
 function caseMessage(name) {
+
 
     showToast(
         "🎁 " +
@@ -1726,6 +2123,7 @@ function showInventory() {
 
 function showPromo() {
 
+
     switchPage(
         "profile"
     );
@@ -1741,24 +2139,29 @@ function showPromo() {
         "block";
 
 
-    setTimeout(function() {
+    setTimeout(
+        function() {
 
-        card.scrollIntoView({
-            behavior: "smooth",
-            block: "center"
-        });
+            card.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
 
-    }, 100);
+        },
+        100
+    );
 
 }
 
 
 function activatePromo() {
 
+
     const input =
         document.getElementById(
             "promoInput"
         );
+
 
     const code =
         input.value
@@ -1777,17 +2180,20 @@ function activatePromo() {
     }
 
 
+    /*
+     * Здесь специально НЕ меняем баланс
+     * напрямую через HTML.
+     *
+     * Реальное начисление промокода
+     * должен выполнять main.py.
+     */
+
+
     if (code === "200") {
 
         showToast(
-            "🎉 Промокод найден: +200000"
+            "🎉 Промокод принят"
         );
-
-        /*
-         * Важно:
-         * реальное начисление должен
-         * делать main.py, а не HTML.
-         */
 
         return;
 
@@ -1797,7 +2203,7 @@ function activatePromo() {
     if (code === "met200") {
 
         showToast(
-            "🎉 Промокод найден: +200"
+            "🎉 Промокод принят"
         );
 
         return;
@@ -1820,6 +2226,7 @@ let toastTimer = null;
 
 
 function showToast(text) {
+
 
     const toast =
         document.getElementById(
@@ -1857,26 +2264,7 @@ function showToast(text) {
 
 
 /* =====================================================
-   TELEGRAM THEME
-===================================================== */
-
-try {
-
-    if (
-        tg.themeParams &&
-        tg.themeParams.bg_color
-    ) {
-
-        // Оставляем собственный дизайн,
-        // Telegram тему не переопределяем.
-
-    }
-
-} catch (e) {}
-
-
-/* =====================================================
-   BACK BUTTON
+   TELEGRAM BACK BUTTON
 ===================================================== */
 
 tg.BackButton.onClick(
@@ -1886,17 +2274,12 @@ tg.BackButton.onClick(
             "profile"
         );
 
-        tg.BackButton.hide();
-
     }
 );
 
 
-/* =====================================================
-   SHOW BACK BUTTON WHEN OPENING OTHER PAGE
-===================================================== */
-
 function updateBackButton() {
+
 
     const active =
         document.querySelector(
@@ -1920,25 +2303,8 @@ function updateBackButton() {
 }
 
 
-/* =====================================================
-   OBSERVE PAGE CHANGES
-===================================================== */
+updateBackButton();
 
-const originalSwitchPage =
-    switchPage;
-
-switchPage = function(page) {
-
-    originalSwitchPage(
-        page
-    );
-
-    setTimeout(
-        updateBackButton,
-        50
-    );
-
-};
 
 </script>
 
