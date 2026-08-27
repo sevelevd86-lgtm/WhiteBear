@@ -38,7 +38,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 # НЕ вставляй сюда токен, который уже публиковался в чате.
 # После перевыпуска токена через @BotFather вставь новый.
-BOT_TOKEN = os.getenv("BOT_TOKEN", "ВСТАВЬ_НОВЫЙ_ТОКЕН_БОТА")
+BOT_TOKEN = os.getenv("BOT_TOKEN", "8918284594:AAFLxOg1eEx4JS6z6V9wHr-t8T3Q9Qwiepg")
 
 BOT_USERNAME = "White_Bear_ROBOT"
 
