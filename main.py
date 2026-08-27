@@ -39,7 +39,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 # Вставь сюда НОВЫЙ токен бота после перевыпуска через BotFather.
 BOT_TOKEN = os.getenv(
     "BOT_TOKEN",
-    "PASTE_NEW_BOT_TOKEN_HERE"
+    "8918284594:AAFLxOg1eEx4JS6z6V9wHr-t8T3Q9Qwiepg"
 )
 
 BOT_USERNAME = "White_Bear_ROBOT"
