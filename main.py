@@ -26,7 +26,7 @@ from aiogram.client.default import DefaultBotProperties
 # КОНФИГУРАЦИЯ
 # =====================================================
 
-BOT_TOKEN = "ВСТАВЬ_СЮДА_НОВЫЙ_BOT_TOKEN"
+BOT_TOKEN = "8918284594:AAFLxOg1eEx4JS6z6V9wHr-t8T3Q9Qwiepg"
 
 BOT_USERNAME = "White_Bear_ROBOT"
 
