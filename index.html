@@ -2,15 +2,15 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
->
-
-<title>White Bear DROP</title>
-
+<meta name="viewport"
+      content="width=device-width,
+               initial-scale=1.0,
+               maximum-scale=1.0,
+               user-scalable=no">
+<meta name="theme-color" content="#0b0f19">
+<title>White Bear Drop</title>
+<!-- Telegram WebApp -->
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
 <style>
 * {
     box-sizing: border-box;
@@ -18,1917 +18,1599 @@
     padding: 0;
     -webkit-tap-highlight-color: transparent;
 }
-
 html,
 body {
     width: 100%;
     min-height: 100%;
-    font-family: Arial, sans-serif;
-    background:
-        radial-gradient(circle at top, #242b50 0%, #101322 45%, #080a12 100%);
-    color: white;
 }
-
 body {
-    min-height: 100vh;
+    background:
+        radial-gradient(
+            circle at 50% -10%,
+            #293b61 0%,
+            #121a2b 38%,
+            #090d16 75%,
+            #06080d 100%
+        );
+    color: #fff;
+    font-family: Arial, Helvetica, sans-serif;
     overflow-x: hidden;
 }
-
 button,
 input {
-    font-family: inherit;
+    font-family: Arial, Helvetica, sans-serif;
 }
-
 button {
+    border: none;
+    outline: none;
     cursor: pointer;
-    border: 0;
 }
-
+.hidden {
+    display: none !important;
+}
 /* =====================================================
    APP
 ===================================================== */
-
 #app {
     width: 100%;
-    max-width: 520px;
+    max-width: 600px;
     min-height: 100vh;
     margin: 0 auto;
-    padding-bottom: 90px;
+    padding-bottom: 100px;
 }
-
 /* =====================================================
    HEADER
 ===================================================== */
-
 .header {
-    position: sticky;
-    top: 0;
-    z-index: 50;
-
+    width: calc(100% - 28px);
+    margin: 14px auto 0;
+    min-height: 72px;
+    padding: 12px 15px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-
-    padding: 18px 18px 14px;
-
-    background: rgba(9, 11, 20, .88);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 22px;
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,.08),
+            rgba(255,255,255,.025)
+        );
+    box-shadow:
+        0 15px 45px rgba(0,0,0,.35),
+        inset 0 1px rgba(255,255,255,.05);
     backdrop-filter: blur(18px);
-    border-bottom: 1px solid rgba(255,255,255,.07);
 }
-
 .logo {
     display: flex;
     align-items: center;
     gap: 10px;
 }
-
 .logo-icon {
-    width: 42px;
-    height: 42px;
-
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
-
     border-radius: 14px;
-
     background:
-        linear-gradient(135deg, #ffffff, #b8c4ff);
-
-    font-size: 23px;
-
+        linear-gradient(
+            135deg,
+            #ffffff,
+            #dbe5ff
+        );
     box-shadow:
-        0 0 25px rgba(150,170,255,.25);
+        0 8px 25px rgba(255,255,255,.15);
+    font-size: 24px;
 }
-
+.logo-text {
+    display: flex;
+    flex-direction: column;
+}
 .logo-title {
-    font-size: 17px;
-    font-weight: 800;
-}
-
-.logo-subtitle {
-    margin-top: 2px;
-    color: #8991ad;
-    font-size: 11px;
-}
-
-.balance-box {
-    padding: 9px 13px;
-
-    border-radius: 13px;
-
-    background: rgba(255,255,255,.07);
-    border: 1px solid rgba(255,255,255,.08);
-
-    text-align: right;
-}
-
-.balance-label {
-    font-size: 10px;
-    color: #8991ad;
-}
-
-.balance-value {
-    margin-top: 2px;
-
     font-size: 16px;
-    font-weight: 800;
-
-    color: #ffffff;
-}
-
-/* =====================================================
-   PAGES
-===================================================== */
-
-.page {
-    padding: 22px 16px;
-}
-
-.hidden {
-    display: none !important;
-}
-
-.page-title {
-    font-size: 27px;
     font-weight: 900;
 }
-
-.page-subtitle {
-    margin-top: 6px;
-    color: #858da8;
-    font-size: 13px;
+.logo-subtitle {
+    margin-top: 2px;
+    font-size: 10px;
+    color: rgba(255,255,255,.45);
 }
-
+.header-balance {
+    min-width: 100px;
+    padding: 9px 12px;
+    border-radius: 13px;
+    background: rgba(255,255,255,.06);
+    text-align: center;
+}
+.header-balance-label {
+    font-size: 9px;
+    color: rgba(255,255,255,.45);
+    text-transform: uppercase;
+    letter-spacing: .7px;
+}
+#headerBalance {
+    margin-top: 2px;
+    font-size: 17px;
+    font-weight: 900;
+    color: #fff;
+}
 /* =====================================================
-   TELEGRAM USER CARD
+   MAIN
 ===================================================== */
-
-.telegram-card {
-    margin-top: 20px;
-    padding: 18px;
-
-    border-radius: 22px;
-
+.main {
+    padding: 18px 14px 0;
+}
+/* =====================================================
+   MENU PAGE
+===================================================== */
+.page-title {
+    margin-top: 5px;
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: -1px;
+}
+.page-description {
+    margin-top: 7px;
+    color: rgba(255,255,255,.5);
+    font-size: 13px;
+    line-height: 1.5;
+}
+/* =====================================================
+   PROFILE CARD
+===================================================== */
+.profile-card {
+    margin-top: 18px;
+    padding: 20px;
+    border-radius: 25px;
     background:
         linear-gradient(
             145deg,
-            rgba(110,125,255,.17),
-            rgba(255,255,255,.045)
+            rgba(255,255,255,.10),
+            rgba(255,255,255,.035)
         );
-
-    border: 1px solid rgba(150,160,255,.16);
-
+    border: 1px solid rgba(255,255,255,.08);
     box-shadow:
-        0 15px 50px rgba(0,0,0,.2);
+        0 20px 55px rgba(0,0,0,.3),
+        inset 0 1px rgba(255,255,255,.04);
+    backdrop-filter: blur(18px);
 }
-
-.user-row {
+.profile-top {
     display: flex;
     align-items: center;
     gap: 14px;
 }
-
 .avatar {
-    width: 54px;
-    height: 54px;
-
+    width: 62px;
+    height: 62px;
+    flex-shrink: 0;
+    border-radius: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-
-    border-radius: 18px;
-
-    background:
-        linear-gradient(135deg, #ffffff, #c8d0ff);
-
-    color: #171a2b;
-
-    font-size: 25px;
-    font-weight: 900;
-}
-
-.user-name {
-    font-size: 18px;
-    font-weight: 800;
-}
-
-.user-username {
-    margin-top: 3px;
-    color: #8991ad;
-    font-size: 12px;
-}
-
-.user-id {
-    margin-top: 4px;
-    color: #68718e;
-    font-size: 11px;
-}
-
-/* =====================================================
-   BALANCE CARD
-===================================================== */
-
-.balance-card {
-    margin-top: 15px;
-    padding: 22px;
-
-    border-radius: 22px;
-
     background:
         linear-gradient(
             135deg,
-            rgba(125,140,255,.18),
-            rgba(255,255,255,.045)
+            #ffffff,
+            #dce8ff
         );
-
-    border: 1px solid rgba(160,170,255,.15);
-}
-
-.balance-card-label {
-    color: #8b93ad;
-    font-size: 12px;
-}
-
-.balance-card-value {
-    margin-top: 7px;
-
-    font-size: 35px;
-    font-weight: 900;
-}
-
-.star {
-    font-size: 25px;
-}
-
-/* =====================================================
-   BUTTONS
-===================================================== */
-
-.primary-button {
-    width: 100%;
-    min-height: 52px;
-
-    margin-top: 15px;
-
-    border-radius: 16px;
-
-    background:
-        linear-gradient(135deg, #7284ff, #5368e9);
-
-    color: white;
-
-    font-size: 15px;
-    font-weight: 800;
-
+    color: #121827;
+    font-size: 31px;
     box-shadow:
-        0 12px 30px rgba(75,95,220,.28);
-
-    transition: transform .15s ease, opacity .15s ease;
+        0 10px 30px rgba(0,0,0,.3);
 }
-
-.primary-button:active {
-    transform: scale(.97);
-}
-
-.secondary-button {
-    width: 100%;
-    min-height: 50px;
-
-    margin-top: 10px;
-
-    border-radius: 16px;
-
-    background: rgba(255,255,255,.06);
-
-    border: 1px solid rgba(255,255,255,.08);
-
-    color: white;
-
-    font-size: 14px;
-    font-weight: 700;
-}
-
-/* =====================================================
-   PROFILE ITEMS
-===================================================== */
-
-.info-list {
-    margin-top: 18px;
-
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
-}
-
-.info-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    padding: 15px 16px;
-
-    border-radius: 15px;
-
-    background: rgba(255,255,255,.045);
-
-    border: 1px solid rgba(255,255,255,.055);
-}
-
-.info-label {
-    color: #858da8;
-    font-size: 13px;
-}
-
-.info-value {
-    max-width: 60%;
-
+.profile-name {
+    font-size: 20px;
+    font-weight: 900;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-
-    font-size: 13px;
-    font-weight: 700;
 }
-
-/* =====================================================
-   DEPOSIT
-===================================================== */
-
-.deposit-card {
-    margin-top: 18px;
-    padding: 18px;
-
-    border-radius: 20px;
-
-    background: rgba(255,255,255,.045);
-    border: 1px solid rgba(255,255,255,.07);
-}
-
-.deposit-title {
-    font-size: 16px;
-    font-weight: 800;
-}
-
-.deposit-description {
-    margin-top: 6px;
-
-    color: #7f87a2;
+.profile-username {
+    margin-top: 5px;
+    color: rgba(255,255,255,.45);
     font-size: 12px;
-    line-height: 1.4;
 }
-
-.deposit-input {
-    width: 100%;
-
-    margin-top: 15px;
-    padding: 15px;
-
-    border-radius: 14px;
-
-    outline: none;
-
-    background: rgba(0,0,0,.25);
-    border: 1px solid rgba(255,255,255,.08);
-
-    color: white;
-
-    font-size: 16px;
-    font-weight: 700;
+.profile-balance-box {
+    margin-top: 18px;
+    padding: 16px;
+    border-radius: 18px;
+    background: rgba(0,0,0,.18);
+    border: 1px solid rgba(255,255,255,.05);
 }
-
-/* =====================================================
-   PAYMENT AMOUNTS
-===================================================== */
-
-.amount-grid {
-    margin-top: 15px;
-
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
+.balance-caption {
+    font-size: 10px;
+    color: rgba(255,255,255,.45);
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
-
-.amount-button {
-    min-height: 45px;
-
-    border-radius: 13px;
-
-    background: rgba(255,255,255,.055);
-    border: 1px solid rgba(255,255,255,.07);
-
-    color: white;
-
-    font-size: 13px;
-    font-weight: 800;
-}
-
-.amount-button:active {
-    transform: scale(.96);
-}
-
-/* =====================================================
-   NAVIGATION
-===================================================== */
-
-.bottom-nav {
-    position: fixed;
-
-    left: 50%;
-    bottom: 0;
-
-    transform: translateX(-50%);
-
-    z-index: 100;
-
-    width: 100%;
-    max-width: 520px;
-
-    padding: 10px 12px 14px;
-
-    background: rgba(8,10,18,.92);
-    backdrop-filter: blur(20px);
-
-    border-top: 1px solid rgba(255,255,255,.07);
-
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-}
-
-.nav-button {
-    min-height: 52px;
-
-    border-radius: 15px;
-
-    background: transparent;
-
-    color: #727a96;
-
-    font-size: 11px;
-    font-weight: 700;
-}
-
-.nav-button span {
-    display: block;
-    margin-bottom: 3px;
-
-    font-size: 20px;
-}
-
-.nav-button.active {
-    color: white;
-
-    background: rgba(255,255,255,.065);
-}
-
-/* =====================================================
-   MODAL
-===================================================== */
-
-.modal-overlay {
-    position: fixed;
-    inset: 0;
-
-    z-index: 200;
-
-    display: none;
-    align-items: flex-end;
-    justify-content: center;
-
-    padding: 12px;
-
-    background: rgba(0,0,0,.65);
-}
-
-.modal-overlay.show {
-    display: flex;
-}
-
-.modal {
-    width: 100%;
-    max-width: 500px;
-
-    padding: 22px;
-
-    border-radius: 25px 25px 18px 18px;
-
-    background:
-        linear-gradient(
-            145deg,
-            #1c2138,
-            #111423
-        );
-
-    border: 1px solid rgba(255,255,255,.08);
-
-    box-shadow:
-        0 -15px 60px rgba(0,0,0,.35);
-}
-
-.modal-title {
-    font-size: 21px;
+#profileBalance {
+    margin-top: 4px;
+    font-size: 28px;
     font-weight: 900;
 }
-
-.modal-description {
-    margin-top: 7px;
-
-    color: #858da8;
-    font-size: 12px;
-    line-height: 1.45;
+/* =====================================================
+   TELEGRAM ID
+===================================================== */
+.info-row {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 15px;
+    border-radius: 16px;
+    background: rgba(255,255,255,.035);
+    border: 1px solid rgba(255,255,255,.05);
 }
-
-.modal-buttons {
+.info-label {
+    font-size: 12px;
+    color: rgba(255,255,255,.5);
+}
+.info-value {
+    font-size: 13px;
+    font-weight: 800;
+}
+/* =====================================================
+   BUTTONS
+===================================================== */
+.action-buttons {
+    margin-top: 16px;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 9px;
-
-    margin-top: 15px;
+    gap: 10px;
 }
-
-.modal-button {
-    min-height: 50px;
-
-    border-radius: 15px;
-
+.action-btn {
+    min-height: 52px;
+    border-radius: 16px;
     color: white;
-
-    font-weight: 800;
+    font-size: 13px;
+    font-weight: 900;
+    transition:
+        transform .15s ease,
+        opacity .15s ease;
 }
-
-.modal-cancel {
-    background: rgba(255,255,255,.06);
+.action-btn:active {
+    transform: scale(.97);
 }
-
-.modal-confirm {
-    background: linear-gradient(135deg, #7284ff, #5368e9);
-}
-
-/* =====================================================
-   OUTSIDE TELEGRAM
-===================================================== */
-
-#telegramWarning {
-    position: fixed;
-    inset: 0;
-
-    z-index: 999;
-
-    display: none;
-
-    align-items: center;
-    justify-content: center;
-
-    padding: 25px;
-
+.deposit-btn {
     background:
-        radial-gradient(
-            circle at top,
-            #252b4c,
-            #090b13
+        linear-gradient(
+            135deg,
+            #4e8cff,
+            #6c55ff
         );
+    box-shadow:
+        0 10px 28px rgba(79,115,255,.25);
 }
-
-.warning-card {
-    width: 100%;
-    max-width: 390px;
-
-    padding: 28px 22px;
-
-    text-align: center;
-
-    border-radius: 25px;
-
-    background: rgba(255,255,255,.055);
-
-    border: 1px solid rgba(255,255,255,.09);
+.withdraw-btn {
+    background:
+        linear-gradient(
+            135deg,
+            #242c3e,
+            #171d2b
+        );
+    border: 1px solid rgba(255,255,255,.08);
 }
-
-.warning-icon {
-    font-size: 55px;
-}
-
-.warning-title {
+/* =====================================================
+   ID STATUS
+===================================================== */
+.status-box {
     margin-top: 15px;
-
-    font-size: 22px;
+    padding: 13px 15px;
+    border-radius: 15px;
+    font-size: 12px;
+    line-height: 1.45;
+    display: none;
+}
+.status-box.show {
+    display: block;
+}
+.status-success {
+    background: rgba(48, 209, 88, .10);
+    border: 1px solid rgba(48, 209, 88, .2);
+    color: #8affaa;
+}
+.status-error {
+    background: rgba(255, 69, 58, .10);
+    border: 1px solid rgba(255, 69, 58, .2);
+    color: #ff9993;
+}
+.status-loading {
+    background: rgba(84, 125, 255, .10);
+    border: 1px solid rgba(84, 125, 255, .2);
+    color: #a9c0ff;
+}
+/* =====================================================
+   OTHER CARDS
+===================================================== */
+.section {
+    margin-top: 18px;
+}
+.section-title {
+    font-size: 17px;
     font-weight: 900;
 }
-
-.warning-text {
-    margin-top: 9px;
-
-    color: #8b93ad;
-    font-size: 13px;
-    line-height: 1.5;
+.section-subtitle {
+    margin-top: 4px;
+    font-size: 11px;
+    color: rgba(255,255,255,.4);
 }
-
-.loading {
-    opacity: .5;
-    pointer-events: none;
+.card {
+    margin-top: 10px;
+    padding: 17px;
+    border-radius: 20px;
+    background: rgba(255,255,255,.045);
+    border: 1px solid rgba(255,255,255,.06);
 }
-</style>
-</head>
-
-<body>
-
-<!-- =====================================================
-     TELEGRAM WARNING
-===================================================== -->
-
-<div id="telegramWarning">
-
-    <div class="warning-card">
-
-        <div class="warning-icon">🐻‍❄️</div>
-
-        <div class="warning-title">
-            Откройте через Telegram
-        </div>
-
-        <div class="warning-text">
-            Это приложение работает внутри Telegram.
-            Откройте White Bear DROP через кнопку
-            «Играть» в боте.
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- =====================================================
-     APP
-===================================================== -->
-
-<div id="app">
-
-    <!-- HEADER -->
-
-    <header class="header">
-
-        <div class="logo">
-
-            <div class="logo-icon">
-                🐻‍❄️
-            </div>
-
-            <div>
-
-                <div class="logo-title">
-                    White Bear
-                </div>
-
-                <div class="logo-subtitle">
-                    DROP
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div class="balance-box">
-
-            <div class="balance-label">
-                Баланс
-            </div>
-
-            <div
-                class="balance-value"
-                id="headerBalance"
-            >
-                0.00 ⭐
-            </div>
-
-        </div>
-
-    </header>
-
-
-    <!-- =================================================
-         MENU
-    ================================================= -->
-
-    <main
-        id="menuPage"
-        class="page"
-    >
-
-        <div class="page-title">
-            Главная
-        </div>
-
-        <div class="page-subtitle">
-            Добро пожаловать в White Bear DROP
-        </div>
-
-
-        <div class="telegram-card">
-
-            <div class="user-row">
-
-                <div
-                    class="avatar"
-                    id="menuAvatar"
-                >
-                    🐻
-                </div>
-
-                <div>
-
-                    <div
-                        class="user-name"
-                        id="menuUserName"
-                    >
-                        Загрузка...
-                    </div>
-
-                    <div
-                        class="user-username"
-                        id="menuUsername"
-                    >
-                        @username
-                    </div>
-
-                    <div
-                        class="user-id"
-                        id="menuUserId"
-                    >
-                        ID: —
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div class="balance-card">
-
-            <div class="balance-card-label">
-                Ваш баланс
-            </div>
-
-            <div
-                class="balance-card-value"
-                id="menuBalance"
-            >
-                0.00
-                <span class="star">⭐</span>
-            </div>
-
-            <button
-                class="primary-button"
-                id="menuDepositButton"
-            >
-                ⭐ Пополнить баланс
-            </button>
-
-        </div>
-
-    </main>
-
-
-    <!-- =================================================
-         INVENTORY
-    ================================================= -->
-
-    <main
-        id="inventoryPage"
-        class="page hidden"
-    >
-
-        <div class="page-title">
-            Инвентарь
-        </div>
-
-        <div class="page-subtitle">
-            Здесь будут ваши предметы
-        </div>
-
-        <div
-            style="
-                margin-top:25px;
-                padding:30px 20px;
-                text-align:center;
-                border-radius:20px;
-                background:rgba(255,255,255,.045);
-                color:#7f87a2;
-            "
-        >
-            📦<br><br>
-            Игры пока отключены
-        </div>
-
-    </main>
-
-
-    <!-- =================================================
-         PROFILE
-    ================================================= -->
-
-    <main
-        id="profilePage"
-        class="page hidden"
-    >
-
-        <div class="page-title">
-            Профиль
-        </div>
-
-        <div class="page-subtitle">
-            Данные вашего Telegram аккаунта
-        </div>
-
-
-        <div class="telegram-card">
-
-            <div class="user-row">
-
-                <div
-                    class="avatar"
-                    id="profileAvatar"
-                >
-                    🐻
-                </div>
-
-                <div>
-
-                    <div
-                        class="user-name"
-                        id="profileUserName"
-                    >
-                        Загрузка...
-                    </div>
-
-                    <div
-                        class="user-username"
-                        id="profileUsername"
-                    >
-                        @username
-                    </div>
-
-                    <div
-                        class="user-id"
-                        id="profileTelegramId"
-                    >
-                        Telegram ID: —
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div class="info-list">
-
-            <div class="info-item">
-
-                <div class="info-label">
-                    Telegram ID
-                </div>
-
-                <div
-                    class="info-value"
-                    id="profileId"
-                >
-                    —
-                </div>
-
-            </div>
-
-
-            <div class="info-item">
-
-                <div class="info-label">
-                    Username
-                </div>
-
-                <div
-                    class="info-value"
-                    id="profileUsernameValue"
-                >
-                    —
-                </div>
-
-            </div>
-
-
-            <div class="info-item">
-
-                <div class="info-label">
-                    Баланс
-                </div>
-
-                <div
-                    class="info-value"
-                    id="profileBalance"
-                >
-                    0.00 ⭐
-                </div>
-
-            </div>
-
-
-            <div class="info-item">
-
-                <div class="info-label">
-                    Рефералов
-                </div>
-
-                <div
-                    class="info-value"
-                    id="profileReferrals"
-                >
-                    0
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div class="deposit-card">
-
-            <div class="deposit-title">
-                ⭐ Пополнение
-            </div>
-
-            <div class="deposit-description">
-                Выберите количество Telegram Stars,
-                которое хотите добавить на игровой баланс.
-            </div>
-
-
-            <div class="amount-grid">
-
-                <button
-                    class="amount-button"
-                    data-amount="50"
-                >
-                    50 ⭐
-                </button>
-
-                <button
-                    class="amount-button"
-                    data-amount="100"
-                >
-                    100 ⭐
-                </button>
-
-                <button
-                    class="amount-button"
-                    data-amount="250"
-                >
-                    250 ⭐
-                </button>
-
-                <button
-                    class="amount-button"
-                    data-amount="500"
-                >
-                    500 ⭐
-                </button>
-
-                <button
-                    class="amount-button"
-                    data-amount="1000"
-                >
-                    1000 ⭐
-                </button>
-
-                <button
-                    class="amount-button"
-                    data-amount="2000"
-                >
-                    2000 ⭐
-                </button>
-
-            </div>
-
-
-            <input
-                id="depositInput"
-                class="deposit-input"
-                type="number"
-                min="1"
-                max="100000"
-                placeholder="Введите сумму"
-            >
-
-
-            <button
-                class="primary-button"
-                id="depositButton"
-            >
-                ⭐ Оплатить
-            </button>
-
-        </div>
-
-    </main>
-
-</div>
-
-
-<!-- =====================================================
-     DEPOSIT MODAL
-===================================================== -->
-
-<div
-    id="depositModal"
-    class="modal-overlay"
->
-
-    <div class="modal">
-
-        <div class="modal-title">
-            Пополнение баланса
-        </div>
-
-        <div class="modal-description">
-            Укажите количество Telegram Stars.
-            После подтверждения Telegram откроет
-            окно оплаты.
-        </div>
-
-        <input
-            id="modalDepositInput"
-            class="deposit-input"
-            type="number"
-            min="1"
-            max="100000"
-            value="100"
-        >
-
-        <div class="modal-buttons">
-
-            <button
-                id="depositCancel"
-                class="modal-button modal-cancel"
-            >
-                Отмена
-            </button>
-
-            <button
-                id="depositConfirm"
-                class="modal-button modal-confirm"
-            >
-                Оплатить ⭐
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- =====================================================
-     NAVIGATION
-===================================================== -->
-
-<nav class="bottom-nav">
-
-    <button
-        class="nav-button active"
-        data-page="menuPage"
-    >
-        <span>🏠</span>
-        Главная
-    </button>
-
-    <button
-        class="nav-button"
-        data-page="inventoryPage"
-    >
-        <span>📦</span>
-        Инвентарь
-    </button>
-
-    <button
-        class="nav-button"
-        data-page="profilePage"
-    >
-        <span>👤</span>
-        Профиль
-    </button>
-
-</nav>
-
-
-<script>
-/* =====================================================
-   TELEGRAM WEB APP
-===================================================== */
-
-const tg = window.Telegram?.WebApp;
-
-
-/*
-    Telegram WebApp обязательно должен быть доступен.
-*/
-
-if (!tg) {
-
-    document.getElementById(
-        "telegramWarning"
-    ).style.display = "flex";
-
-} else {
-
-    tg.ready();
-    tg.expand();
-
-    /*
-        Убираем вертикальные ограничения Telegram
-    */
-
-    try {
-        tg.disableVerticalSwipes();
-    } catch (e) {}
-
+.card-row {
+    display: flex;
+    align-items: center;
+    gap: 13px;
 }
-
-
-/* =====================================================
-   USER DATA
-===================================================== */
-
-let telegramUser = null;
-
-let currentBalance = 0;
-
-
-/*
-    Получаем пользователя именно из Telegram.
-*/
-
-function getTelegramUser() {
-
-    if (!tg) {
-        return null;
-    }
-
-    if (
-        tg.initDataUnsafe &&
-        tg.initDataUnsafe.user
-    ) {
-
-        return tg.initDataUnsafe.user;
-
-    }
-
-    return null;
+.card-icon {
+    width: 43px;
+    height: 43px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: rgba(255,255,255,.07);
+    font-size: 21px;
 }
-
-
-/* =====================================================
-   INITIALIZE USER
-===================================================== */
-
-function initializeTelegramUser() {
-
-    telegramUser = getTelegramUser();
-
-
-    /*
-        Если пользователя нет —
-        приложение открыто не через Telegram Mini App.
-    */
-
-    if (!telegramUser) {
-
-        document.getElementById(
-            "telegramWarning"
-        ).style.display = "flex";
-
-        return false;
-    }
-
-
-    /*
-        Настраиваем Telegram UI
-    */
-
-    try {
-
-        tg.setHeaderColor("#090b14");
-        tg.setBackgroundColor("#090b14");
-
-    } catch (e) {}
-
-
-    updateUserUI();
-
-    return true;
+.card-title {
+    font-size: 14px;
+    font-weight: 800;
 }
-
-
-/* =====================================================
-   UPDATE USER UI
-===================================================== */
-
-function updateUserUI() {
-
-    if (!telegramUser) {
-        return;
-    }
-
-
-    const firstName =
-        telegramUser.first_name || "Пользователь";
-
-    const lastName =
-        telegramUser.last_name || "";
-
-    const fullName =
-        `${firstName} ${lastName}`.trim();
-
-
-    const username =
-        telegramUser.username
-            ? "@" + telegramUser.username
-            : "Username отсутствует";
-
-
-    const id =
-        String(telegramUser.id);
-
-
-    /*
-        Avatar
-    */
-
-    const avatarText =
-        firstName.charAt(0).toUpperCase();
-
-
-    const avatars = [
-        document.getElementById("menuAvatar"),
-        document.getElementById("profileAvatar")
-    ];
-
-
-    avatars.forEach(el => {
-
-        if (el) {
-            el.textContent = avatarText;
-        }
-
-    });
-
-
-    /*
-        Main
-    */
-
-    setText(
-        "menuUserName",
-        fullName
-    );
-
-    setText(
-        "menuUsername",
-        username
-    );
-
-    setText(
-        "menuUserId",
-        "ID: " + id
-    );
-
-
-    /*
-        Profile
-    */
-
-    setText(
-        "profileUserName",
-        fullName
-    );
-
-    setText(
-        "profileUsername",
-        username
-    );
-
-    setText(
-        "profileTelegramId",
-        "Telegram ID: " + id
-    );
-
-    setText(
-        "profileId",
-        id
-    );
-
-    setText(
-        "profileUsernameValue",
-        username
-    );
+.card-text {
+    margin-top: 4px;
+    font-size: 11px;
+    line-height: 1.4;
+    color: rgba(255,255,255,.4);
 }
-
-
-/* =====================================================
-   HELPER
-===================================================== */
-
-function setText(
-    id,
-    value
-) {
-
-    const element =
-        document.getElementById(id);
-
-    if (element) {
-        element.textContent = value;
-    }
-}
-
-
-/* =====================================================
-   BALANCE
-===================================================== */
-
-function updateBalanceUI() {
-
-    const value =
-        Number(currentBalance || 0)
-            .toFixed(2);
-
-
-    setText(
-        "headerBalance",
-        value + " ⭐"
-    );
-
-    setText(
-        "menuBalance",
-        value
-    );
-
-    setText(
-        "profileBalance",
-        value + " ⭐"
-    );
-}
-
-
-/*
-    ВАЖНО:
-
-    Здесь HTML НЕ придумывает Telegram ID.
-
-    ID всегда:
-        Telegram.WebApp.initDataUnsafe.user.id
-*/
-
-
-/* =====================================================
-   NAVIGATION
-===================================================== */
-
-const navButtons =
-    document.querySelectorAll(
-        ".nav-button"
-    );
-
-
-const pages = {
-
-    menuPage:
-        document.getElementById(
-            "menuPage"
-        ),
-
-    inventoryPage:
-        document.getElementById(
-            "inventoryPage"
-        ),
-
-    profilePage:
-        document.getElementById(
-            "profilePage"
-        )
-
-};
-
-
-navButtons.forEach(button => {
-
-    button.addEventListener(
-        "click",
-        () => {
-
-            const pageId =
-                button.dataset.page;
-
-
-            Object.values(pages)
-                .forEach(page => {
-
-                    if (page) {
-                        page.classList.add(
-                            "hidden"
-                        );
-                    }
-
-                });
-
-
-            if (pages[pageId]) {
-
-                pages[pageId]
-                    .classList.remove(
-                        "hidden"
-                    );
-
-            }
-
-
-            navButtons.forEach(btn => {
-
-                btn.classList.remove(
-                    "active"
-                );
-
-            });
-
-
-            button.classList.add(
-                "active"
-            );
-
-
-            /*
-                Haptic feedback
-            */
-
-            try {
-
-                tg?.HapticFeedback
-                    ?.impactOccurred(
-                        "light"
-                    );
-
-            } catch (e) {}
-
-        }
-    );
-
-});
-
-
 /* =====================================================
    DEPOSIT MODAL
 ===================================================== */
-
-const depositModal =
-    document.getElementById(
-        "depositModal"
-    );
-
-const modalDepositInput =
-    document.getElementById(
-        "modalDepositInput"
-    );
-
-
-function openDepositModal() {
-
-    modalDepositInput.value = 100;
-
-    depositModal.classList.add(
-        "show"
-    );
-
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 12px;
+    background: rgba(0,0,0,.62);
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+        opacity .2s ease,
+        visibility .2s ease;
 }
-
-
-function closeDepositModal() {
-
+.modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+.modal {
+    width: 100%;
+    max-width: 560px;
+    padding: 22px;
+    border-radius: 27px 27px 20px 20px;
+    background:
+        linear-gradient(
+            145deg,
+            #1a2234,
+            #101624
+        );
+    border: 1px solid rgba(255,255,255,.08);
+    box-shadow:
+        0 -15px 60px rgba(0,0,0,.5);
+    transform: translateY(30px);
+    transition: transform .25s ease;
+}
+.modal-overlay.show .modal {
+    transform: translateY(0);
+}
+.modal-title {
+    font-size: 22px;
+    font-weight: 900;
+}
+.modal-description {
+    margin-top: 7px;
+    color: rgba(255,255,255,.45);
+    font-size: 12px;
+    line-height: 1.45;
+}
+.modal-label {
+    display: block;
+    margin-top: 18px;
+    margin-bottom: 7px;
+    font-size: 11px;
+    color: rgba(255,255,255,.5);
+}
+.modal-input {
+    width: 100%;
+    height: 54px;
+    padding: 0 16px;
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 15px;
+    outline: none;
+    background: rgba(0,0,0,.2);
+    color: white;
+    font-size: 17px;
+    font-weight: 800;
+}
+.modal-input:focus {
+    border-color: rgba(105,137,255,.7);
+}
+.modal-error {
+    min-height: 18px;
+    margin-top: 7px;
+    color: #ff7474;
+    font-size: 11px;
+}
+.modal-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 10px;
+}
+.modal-btn {
+    height: 52px;
+    border-radius: 15px;
+    font-size: 13px;
+    font-weight: 900;
+}
+.modal-cancel {
+    background: rgba(255,255,255,.06);
+    color: rgba(255,255,255,.7);
+}
+.modal-confirm {
+    color: white;
+    background:
+        linear-gradient(
+            135deg,
+            #4d8fff,
+            #6857ff
+        );
+}
+/* =====================================================
+   NAVIGATION
+===================================================== */
+.bottom-nav {
+    position: fixed;
+    z-index: 500;
+    left: 50%;
+    bottom: 10px;
+    transform: translateX(-50%);
+    width: calc(100% - 20px);
+    max-width: 580px;
+    height: 68px;
+    padding: 6px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    border-radius: 22px;
+    background:
+        rgba(18,24,38,.92);
+    border: 1px solid rgba(255,255,255,.08);
+    box-shadow:
+        0 12px 45px rgba(0,0,0,.45);
+    backdrop-filter: blur(20px);
+}
+.nav-button {
+    border-radius: 17px;
+    background: transparent;
+    color: rgba(255,255,255,.4);
+    font-size: 10px;
+    font-weight: 800;
+    transition: .2s ease;
+}
+.nav-icon {
+    display: block;
+    margin-bottom: 3px;
+    font-size: 20px;
+}
+.nav-button.active {
+    background: rgba(255,255,255,.08);
+    color: white;
+}
+/* =====================================================
+   LOADING
+===================================================== */
+#loadingScreen {
+    position: fixed;
+    inset: 0;
+    z-index: 5000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+        radial-gradient(
+            circle at center,
+            #1c2944,
+            #080c14 70%
+        );
+    transition: opacity .3s ease;
+}
+.loading-content {
+    text-align: center;
+}
+.loading-bear {
+    font-size: 65px;
+    animation:
+        loadingFloat 1.3s ease-in-out infinite;
+}
+.loading-text {
+    margin-top: 14px;
+    color: rgba(255,255,255,.55);
+    font-size: 12px;
+}
+@keyframes loadingFloat {
+    0%,100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-8px);
+    }
+}
+/* =====================================================
+   NOT TELEGRAM
+===================================================== */
+.telegram-warning {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 20px;
+    background: rgba(255,69,58,.08);
+    border: 1px solid rgba(255,69,58,.2);
+    color: #ffaaa5;
+    font-size: 13px;
+    line-height: 1.55;
+    text-align: center;
+}
+.telegram-warning strong {
+    display: block;
+    margin-bottom: 7px;
+    color: #fff;
+    font-size: 16px;
+}
+</style>
+</head>
+<body>
+<!-- =====================================================
+     LOADING
+===================================================== -->
+<div id="loadingScreen">
+    <div class="loading-content">
+        <div class="loading-bear">🐻‍❄️</div>
+        <div class="loading-text">Подключение к White Bear...</div>
+    </div>
+</div>
+<!-- =====================================================
+     APP
+===================================================== -->
+<div id="app">
+    <!-- HEADER -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">
+                🐻‍❄️
+            </div>
+            <div class="logo-text">
+                <div class="logo-title">
+                    White Bear
+                </div>
+                <div class="logo-subtitle">
+                    DROP
+                </div>
+            </div>
+        </div>
+        <div class="header-balance">
+            <div class="header-balance-label">
+                Баланс
+            </div>
+            <div id="headerBalance">
+                0.00 ⭐
+            </div>
+        </div>
+    </header>
+    <!-- MAIN -->
+    <main class="main">
+        <!-- =================================================
+             MENU PAGE
+        ================================================= -->
+        <section id="menuPage">
+            <div class="page-title">
+                White Bear
+            </div>
+            <div class="page-description">
+                Добро пожаловать в White Bear Drop.
+                Управляйте балансом прямо внутри Telegram.
+            </div>
+            <div class="section">
+                <div class="section-title">
+                    Быстрый доступ
+                </div>
+                <div class="section-subtitle">
+                    Ваш аккаунт синхронизирован с Telegram
+                </div>
+                <div class="card">
+                    <div class="card-row">
+                        <div class="card-icon">
+                            🎁
+                        </div>
+                        <div>
+                            <div class="card-title">
+                                Игры
+                            </div>
+                            <div class="card-text">
+                                Игровые разделы будут доступны позже.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- =================================================
+             INVENTORY PAGE
+        ================================================= -->
+        <section id="inventoryPage" class="hidden">
+            <div class="page-title">
+                Инвентарь
+            </div>
+            <div class="page-description">
+                Здесь будут находиться предметы из кейсов.
+            </div>
+            <div id="inventoryContainer">
+                <div class="card">
+                    <div class="card-row">
+                        <div class="card-icon">
+                            📦
+                        </div>
+                        <div>
+                            <div class="card-title">
+                                Инвентарь пуст
+                            </div>
+                            <div class="card-text">
+                                Предметы появятся здесь после открытия кейсов.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- =================================================
+             PROFILE PAGE
+        ================================================= -->
+        <section id="profilePage" class="hidden">
+            <div class="page-title">
+                Профиль
+            </div>
+            <div class="page-description">
+                Ваш Telegram аккаунт и баланс.
+            </div>
+            <div class="profile-card">
+                <div class="profile-top">
+                    <div class="avatar" id="profileAvatar">
+                        🐻‍❄️
+                    </div>
+                    <div style="min-width:0">
+                        <div class="profile-name"
+                             id="profileName">
+                            Загрузка...
+                        </div>
+                        <div class="profile-username"
+                             id="profileUsername">
+                            @username
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-balance-box">
+                    <div class="balance-caption">
+                        Ваш баланс
+                    </div>
+                    <div id="profileBalance">
+                        0.00 ⭐
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">
+                        Telegram ID
+                    </div>
+                    <div class="info-value"
+                         id="telegramId">
+                        —
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button
+                        class="action-btn deposit-btn"
+                        id="depositBtn">
+                        ⭐ Пополнить
+                    </button>
+                    <button
+                        class="action-btn withdraw-btn"
+                        id="withdrawBtn">
+                        💸 Вывести
+                    </button>
+                </div>
+                <div id="connectionStatus"
+                     class="status-box">
+                </div>
+            </div>
+            <div class="section">
+                <div class="section-title">
+                    Аккаунт
+                </div>
+                <div class="section-subtitle">
+                    Данные берутся непосредственно из Telegram
+                </div>
+                <div class="card">
+                    <div class="card-row">
+                        <div class="card-icon">
+                            🔐
+                        </div>
+                        <div>
+                            <div class="card-title">
+                                Безопасная авторизация
+                            </div>
+                            <div class="card-text">
+                                Telegram ID определяется автоматически.
+                                Вводить его вручную не требуется.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="telegram-warning hidden"
+                 id="telegramWarning">
+                <strong>
+                    ⚠️ Откройте игру через Telegram
+                </strong>
+                Этот сайт должен быть открыт через кнопку
+                «Играть» внутри вашего Telegram-бота.
+                Только в этом случае Telegram передаст сайту
+                ваш настоящий Telegram ID.
+            </div>
+        </section>
+    </main>
+</div>
+<!-- =====================================================
+     BOTTOM NAV
+===================================================== -->
+<nav class="bottom-nav">
+    <button
+        class="nav-button active"
+        data-page="menuPage">
+        <span class="nav-icon">🏠</span>
+        Главная
+    </button>
+    <button
+        class="nav-button"
+        data-page="inventoryPage">
+        <span class="nav-icon">📦</span>
+        Инвентарь
+    </button>
+    <button
+        class="nav-button"
+        data-page="profilePage">
+        <span class="nav-icon">👤</span>
+        Профиль
+    </button>
+</nav>
+<!-- =====================================================
+     DEPOSIT MODAL
+===================================================== -->
+<div
+    class="modal-overlay"
+    id="depositModal">
+    <div class="modal">
+        <div class="modal-title">
+            ⭐ Пополнение
+        </div>
+        <div class="modal-description">
+            Оплата производится через официальную систему
+            Telegram Stars.
+        </div>
+        <label class="modal-label">
+            Количество Stars
+        </label>
+        <input
+            id="depositInput"
+            class="modal-input"
+            type="number"
+            min="1"
+            max="10000"
+            value="100"
+            inputmode="numeric"
+            placeholder="Например: 100">
+        <div
+            id="depositError"
+            class="modal-error">
+        </div>
+        <div class="modal-buttons">
+            <button
+                class="modal-btn modal-cancel"
+                id="depositCancel">
+                Отмена
+            </button>
+            <button
+                class="modal-btn modal-confirm"
+                id="depositConfirm">
+                ⭐ Оплатить
+            </button>
+        </div>
+    </div>
+</div>
+<!-- =====================================================
+     WITHDRAW MODAL
+===================================================== -->
+<div
+    class="modal-overlay"
+    id="withdrawModal">
+    <div class="modal">
+        <div class="modal-title">
+            💸 Вывод
+        </div>
+        <div class="modal-description">
+            Укажите количество звёзд для вывода.
+        </div>
+        <label class="modal-label">
+            Количество Stars
+        </label>
+        <input
+            id="withdrawInput"
+            class="modal-input"
+            type="number"
+            min="1"
+            max="500"
+            value="100"
+            inputmode="numeric"
+            placeholder="Например: 100">
+        <div
+            id="withdrawError"
+            class="modal-error">
+        </div>
+        <div class="modal-buttons">
+            <button
+                class="modal-btn modal-cancel"
+                id="withdrawCancel">
+                Отмена
+            </button>
+            <button
+                class="modal-btn modal-confirm"
+                id="withdrawConfirm">
+                💸 Вывести
+            </button>
+        </div>
+    </div>
+</div>
+<script>
+/* =====================================================
+   CONFIG
+===================================================== */
+const SERVER_URL =
+    "https://bot_1787862010_6746_jix44.bothost.tech";
+/*
+    API endpoints.
+    Они должны существовать в main.py:
+    GET/POST /api/user
+    GET/POST /api/balance
+    POST     /api/create-invoice
+    HTML отправляет Telegram initData
+    на сервер для проверки пользователя.
+*/
+/* =====================================================
+   TELEGRAM
+===================================================== */
+const tg = window.Telegram
+    ? window.Telegram.WebApp
+    : null;
+let telegramUser = null;
+let currentBalance = 0;
+/* =====================================================
+   ELEMENTS
+===================================================== */
+const loadingScreen =
+    document.getElementById("loadingScreen");
+const headerBalance =
+    document.getElementById("headerBalance");
+const profileBalance =
+    document.getElementById("profileBalance");
+const profileName =
+    document.getElementById("profileName");
+const profileUsername =
+    document.getElementById("profileUsername");
+const telegramId =
+    document.getElementById("telegramId");
+const profileAvatar =
+    document.getElementById("profileAvatar");
+const connectionStatus =
+    document.getElementById("connectionStatus");
+const telegramWarning =
+    document.getElementById("telegramWarning");
+const depositModal =
+    document.getElementById("depositModal");
+const withdrawModal =
+    document.getElementById("withdrawModal");
+const depositInput =
+    document.getElementById("depositInput");
+const withdrawInput =
+    document.getElementById("withdrawInput");
+const depositError =
+    document.getElementById("depositError");
+const withdrawError =
+    document.getElementById("withdrawError");
+/* =====================================================
+   TELEGRAM INITIALIZATION
+===================================================== */
+function initTelegram() {
+    if (!tg) {
+        showTelegramError();
+        return false;
+    }
+    try {
+        tg.ready();
+        tg.expand();
+        if (tg.setHeaderColor) {
+            tg.setHeaderColor("#0b0f19");
+        }
+        if (tg.setBackgroundColor) {
+            tg.setBackgroundColor("#0b0f19");
+        }
+        telegramUser = tg.initDataUnsafe
+            ? tg.initDataUnsafe.user
+            : null;
+        if (!telegramUser) {
+            showTelegramError();
+            return false;
+        }
+        fillTelegramUser();
+        return true;
+    } catch (error) {
+        console.error(
+            "Telegram initialization error:",
+            error
+        );
+        showTelegramError();
+        return false;
+    }
+}
+/* =====================================================
+   USER DATA
+===================================================== */
+function fillTelegramUser() {
+    if (!telegramUser) {
+        return;
+    }
+    const firstName =
+        telegramUser.first_name || "";
+    const lastName =
+        telegramUser.last_name || "";
+    const fullName =
+        `${firstName} ${lastName}`.trim();
+    profileName.textContent =
+        fullName || "Пользователь Telegram";
+    if (telegramUser.username) {
+        profileUsername.textContent =
+            "@" + telegramUser.username;
+    } else {
+        profileUsername.textContent =
+            "Telegram пользователь";
+    }
+    telegramId.textContent =
+        String(telegramUser.id);
+    if (telegramUser.photo_url) {
+        profileAvatar.innerHTML = `
+            <img
+                src="${escapeHtml(telegramUser.photo_url)}"
+                style="
+                    width:100%;
+                    height:100%;
+                    object-fit:cover;
+                    border-radius:20px;
+                "
+                alt=""
+            >
+        `;
+    } else {
+        profileAvatar.textContent = "🐻‍❄️";
+    }
+}
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+function escapeHtml(value) {
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+/* =====================================================
+   STATUS
+===================================================== */
+function showStatus(
+    text,
+    type = "loading"
+) {
+    connectionStatus.textContent = text;
+    connectionStatus.className =
+        "status-box show status-" + type;
+}
+function hideStatus() {
+    connectionStatus.className =
+        "status-box";
+}
+/* =====================================================
+   TELEGRAM ERROR
+===================================================== */
+function showTelegramError() {
+    profileName.textContent =
+        "Не авторизован";
+    profileUsername.textContent =
+        "Откройте через Telegram";
+    telegramId.textContent =
+        "—";
+    telegramWarning.classList.remove(
+        "hidden"
+    );
+    showStatus(
+        "Сайт открыт не внутри Telegram WebApp.",
+        "error"
+    );
+}
+/* =====================================================
+   BALANCE UI
+===================================================== */
+function updateBalanceUI(balance) {
+    currentBalance =
+        Number(balance) || 0;
+    const formatted =
+        currentBalance.toFixed(2);
+    headerBalance.textContent =
+        formatted + " ⭐";
+    profileBalance.textContent =
+        formatted + " ⭐";
+}
+/* =====================================================
+   SERVER REQUEST
+===================================================== */
+async function apiRequest(
+    endpoint,
+    options = {}
+) {
+    if (!tg || !tg.initData) {
+        throw new Error(
+            "Telegram WebApp initData отсутствует."
+        );
+    }
+    const method =
+        options.method || "GET";
+    const headers = {
+        "Content-Type":
+            "application/json",
+        "X-Telegram-Init-Data":
+            tg.initData
+    };
+    const requestOptions = {
+        method,
+        headers
+    };
+    if (options.body) {
+        requestOptions.body =
+            JSON.stringify(options.body);
+    }
+    const response =
+        await fetch(
+            SERVER_URL + endpoint,
+            requestOptions
+        );
+    let data;
+    try {
+        data =
+            await response.json();
+    } catch {
+        throw new Error(
+            "Сервер вернул некорректный ответ."
+        );
+    }
+    if (!response.ok) {
+        throw new Error(
+            data.error ||
+            data.message ||
+            `Ошибка сервера: ${response.status}`
+        );
+    }
+    return data;
+}
+/* =====================================================
+   LOAD USER FROM SERVER
+===================================================== */
+async function loadUser() {
+    if (!telegramUser) {
+        return;
+    }
+    try {
+        showStatus(
+            "Подключение к серверу...",
+            "loading"
+        );
+        /*
+            Сервер должен проверить initData
+            и вернуть:
+            {
+                "ok": true,
+                "user_id": 123456789,
+                "balance": 100
+            }
+        */
+        const data =
+            await apiRequest(
+                "/api/user"
+            );
+        if (
+            data.user_id !== undefined &&
+            Number(data.user_id) !==
+            Number(telegramUser.id)
+        ) {
+            throw new Error(
+                "Telegram ID не совпадает с сервером."
+            );
+        }
+        updateBalanceUI(
+            data.balance || 0
+        );
+        hideStatus();
+    } catch (error) {
+        console.error(error);
+        /*
+            Если endpoint /api/user
+            ещё не добавлен, пробуем
+            получить баланс отдельно.
+        */
+        try {
+            const data =
+                await apiRequest(
+                    "/api/balance"
+                );
+            if (
+                data.user_id !== undefined &&
+                Number(data.user_id) !==
+                Number(telegramUser.id)
+            ) {
+                throw new Error(
+                    "Telegram ID не совпадает."
+                );
+            }
+            updateBalanceUI(
+                data.balance || 0
+            );
+            hideStatus();
+        } catch (secondError) {
+            console.error(
+                secondError
+            );
+            showStatus(
+                "Не удалось подключиться к серверу. Проверьте, что main.py запущен и API подключено.",
+                "error"
+            );
+        }
+    }
+}
+/* =====================================================
+   DEPOSIT MODAL
+===================================================== */
+function openDeposit() {
+    depositInput.value = 100;
+    depositError.textContent = "";
+    depositModal.classList.add("show");
+}
+function closeDeposit() {
     depositModal.classList.remove(
         "show"
     );
-
 }
-
-
+/* =====================================================
+   WITHDRAW MODAL
+===================================================== */
+function openWithdraw() {
+    withdrawInput.value = 100;
+    withdrawError.textContent = "";
+    withdrawModal.classList.add(
+        "show"
+    );
+}
+function closeWithdraw() {
+    withdrawModal.classList.remove(
+        "show"
+    );
+}
+/* =====================================================
+   CREATE TELEGRAM STARS PAYMENT
+===================================================== */
+async function createStarsPayment(
+    amount
+) {
+    if (!telegramUser) {
+        throw new Error(
+            "Пользователь Telegram не найден."
+        );
+    }
+    /*
+        Сервер должен создать Telegram invoice
+        с currency="XTR".
+        Пример ответа:
+        {
+            "ok": true,
+            "invoice_link":
+              "https://t.me/$..."
+        }
+    */
+    const data =
+        await apiRequest(
+            "/api/create-invoice",
+            {
+                method: "POST",
+                body: {
+                    amount: amount
+                }
+            }
+        );
+    if (!data.ok) {
+        throw new Error(
+            data.error ||
+            "Не удалось создать счёт."
+        );
+    }
+    if (!data.invoice_link) {
+        throw new Error(
+            "Сервер не вернул ссылку на оплату."
+        );
+    }
+    return data.invoice_link;
+}
+/* =====================================================
+   TELEGRAM PAYMENT
+===================================================== */
+async function payWithStars(
+    amount
+) {
+    if (!tg) {
+        throw new Error(
+            "Telegram WebApp недоступен."
+        );
+    }
+    showStatus(
+        "Создаём счёт на оплату...",
+        "loading"
+    );
+    const invoiceLink =
+        await createStarsPayment(
+            amount
+        );
+    /*
+        Telegram открывает
+        официальное окно оплаты Stars.
+    */
+    if (
+        typeof tg.openInvoice ===
+        "function"
+    ) {
+        await new Promise(
+            (resolve, reject) => {
+                tg.openInvoice(
+                    invoiceLink,
+                    function(status) {
+                        console.log(
+                            "Telegram invoice status:",
+                            status
+                        );
+                        if (
+                            status === "paid"
+                        ) {
+                            resolve();
+                        } else if (
+                            status === "cancelled"
+                        ) {
+                            reject(
+                                new Error(
+                                    "Оплата отменена."
+                                )
+                            );
+                        } else if (
+                            status === "failed"
+                        ) {
+                            reject(
+                                new Error(
+                                    "Оплата не прошла."
+                                )
+                            );
+                        } else {
+                            resolve();
+                        }
+                    }
+                );
+            }
+        );
+    } else {
+        window.open(
+            invoiceLink,
+            "_blank"
+        );
+    }
+}
+/* =====================================================
+   DEPOSIT
+===================================================== */
 document
-    .getElementById(
-        "menuDepositButton"
-    )
+    .getElementById("depositBtn")
     .addEventListener(
         "click",
-        openDepositModal
+        openDeposit
     );
-
-
 document
-    .getElementById(
-        "depositCancel"
-    )
+    .getElementById("depositCancel")
     .addEventListener(
         "click",
-        closeDepositModal
+        closeDeposit
     );
-
-
+document
+    .getElementById("depositConfirm")
+    .addEventListener(
+        "click",
+        async function() {
+            const amount =
+                Number(
+                    depositInput.value
+                );
+            depositError.textContent = "";
+            if (
+                !Number.isInteger(amount) ||
+                amount < 1
+            ) {
+                depositError.textContent =
+                    "Введите целое количество Stars.";
+                return;
+            }
+            if (amount > 10000) {
+                depositError.textContent =
+                    "Максимум 10000 ⭐ за один платёж.";
+                return;
+            }
+            const button =
+                document.getElementById(
+                    "depositConfirm"
+                );
+            button.disabled = true;
+            button.textContent =
+                "⏳ Создание...";
+            try {
+                await payWithStars(
+                    amount
+                );
+                closeDeposit();
+                showStatus(
+                    "✅ Платёж обработан. Проверяем баланс...",
+                    "success"
+                );
+                /*
+                    Даём серверу время
+                    обработать successful_payment.
+                */
+                await new Promise(
+                    resolve =>
+                        setTimeout(
+                            resolve,
+                            2000
+                        )
+                );
+                await loadUser();
+            } catch (error) {
+                console.error(error);
+                depositError.textContent =
+                    error.message ||
+                    "Ошибка оплаты.";
+                showStatus(
+                    error.message ||
+                    "Ошибка оплаты.",
+                    "error"
+                );
+            } finally {
+                button.disabled = false;
+                button.textContent =
+                    "⭐ Оплатить";
+            }
+        }
+    );
+/* =====================================================
+   WITHDRAW
+===================================================== */
+document
+    .getElementById("withdrawBtn")
+    .addEventListener(
+        "click",
+        openWithdraw
+    );
+document
+    .getElementById("withdrawCancel")
+    .addEventListener(
+        "click",
+        closeWithdraw
+    );
+document
+    .getElementById("withdrawConfirm")
+    .addEventListener(
+        "click",
+        async function() {
+            const amount =
+                Number(
+                    withdrawInput.value
+                );
+            withdrawError.textContent = "";
+            if (
+                !Number.isInteger(amount) ||
+                amount <= 0
+            ) {
+                withdrawError.textContent =
+                    "Введите корректную сумму.";
+                return;
+            }
+            if (amount > 500) {
+                withdrawError.textContent =
+                    "Максимум 500 ⭐.";
+                return;
+            }
+            if (
+                amount >
+                currentBalance
+            ) {
+                withdrawError.textContent =
+                    "Недостаточно Stars.";
+                return;
+            }
+            /*
+                Здесь пока только интерфейс.
+                Реальный вывод должен быть
+                реализован отдельно на сервере.
+            */
+            withdrawError.textContent =
+                "Вывод будет подключён через сервер.";
+        }
+    );
+/* =====================================================
+   CLOSE MODALS OUTSIDE
+===================================================== */
 depositModal.addEventListener(
     "click",
-    event => {
-
+    function(event) {
         if (
             event.target ===
             depositModal
         ) {
-
-            closeDepositModal();
-
+            closeDeposit();
         }
-
     }
 );
-
-
+withdrawModal.addEventListener(
+    "click",
+    function(event) {
+        if (
+            event.target ===
+            withdrawModal
+        ) {
+            closeWithdraw();
+        }
+    }
+);
 /* =====================================================
-   QUICK AMOUNTS
+   NAVIGATION
 ===================================================== */
-
-document
-    .querySelectorAll(
-        ".amount-button"
-    )
-    .forEach(button => {
-
+const navButtons =
+    document.querySelectorAll(
+        ".nav-button"
+    );
+const pages = {
+    menuPage:
+        document.getElementById(
+            "menuPage"
+        ),
+    inventoryPage:
+        document.getElementById(
+            "inventoryPage"
+        ),
+    profilePage:
+        document.getElementById(
+            "profilePage"
+        )
+};
+navButtons.forEach(
+    button => {
         button.addEventListener(
             "click",
-            () => {
-
-                const amount =
-                    button.dataset.amount;
-
-                document.getElementById(
-                    "depositInput"
-                ).value = amount;
-
-
-                openPayment(
-                    Number(amount)
-                );
-
-            }
-        );
-
-    });
-
-
-/* =====================================================
-   DEPOSIT BUTTON
-===================================================== */
-
-document
-    .getElementById(
-        "depositButton"
-    )
-    .addEventListener(
-        "click",
-        () => {
-
-            const amount =
-                Number(
-                    document.getElementById(
-                        "depositInput"
-                    ).value
-                );
-
-
-            openPayment(amount);
-
-        }
-    );
-
-
-/* =====================================================
-   MODAL PAYMENT
-===================================================== */
-
-document
-    .getElementById(
-        "depositConfirm"
-    )
-    .addEventListener(
-        "click",
-        () => {
-
-            const amount =
-                Number(
-                    modalDepositInput.value
-                );
-
-
-            closeDepositModal();
-
-            openPayment(amount);
-
-        }
-    );
-
-
-/* =====================================================
-   OPEN PAYMENT
-===================================================== */
-
-async function openPayment(
-    amount
-) {
-
-    amount =
-        Math.floor(amount);
-
-
-    if (
-        !Number.isFinite(amount) ||
-        amount < 1
-    ) {
-
-        alert(
-            "Введите корректную сумму ⭐"
-        );
-
-        return;
-    }
-
-
-    if (amount > 100000) {
-
-        alert(
-            "Максимум 100000 ⭐"
-        );
-
-        return;
-    }
-
-
-    if (!telegramUser) {
-
-        alert(
-            "Откройте приложение через Telegram."
-        );
-
-        return;
-    }
-
-
-    /*
-        На этом этапе отправляем запрос
-        на сервер.
-
-        Сервер должен создать Telegram invoice.
-    */
-
-    try {
-
-        const response =
-            await fetch(
-                "/api/create-payment",
-                {
-
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-
-                        telegram_id:
-                            telegramUser.id,
-
-                        stars:
-                            amount,
-
-                        init_data:
-                            tg.initData
-
-                    })
-
-                }
-            );
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                "Server error"
-            );
-
-        }
-
-
-        const result =
-            await response.json();
-
-
-        if (
-            result.success &&
-            result.invoice_link
-        ) {
-
-            /*
-                Открываем Telegram invoice
-            */
-
-            tg.openInvoice(
-                result.invoice_link,
-                status => {
-
-                    console.log(
-                        "Payment status:",
-                        status
+            function() {
+                const pageId =
+                    this.dataset.page;
+                Object.values(pages)
+                    .forEach(
+                        page => {
+                            page.classList.add(
+                                "hidden"
+                            );
+                        }
                     );
-
-
-                    if (
-                        status ===
-                        "paid"
-                    ) {
-
-                        /*
-                            После оплаты
-                            заново получаем баланс.
-                        */
-
-                        setTimeout(
-                            loadProfile,
-                            1000
+                if (pages[pageId]) {
+                    pages[pageId]
+                        .classList.remove(
+                            "hidden"
                         );
-
-                    }
-
                 }
-            );
-
-        } else {
-
-            alert(
-                result.error ||
-                "Не удалось создать платеж."
-            );
-
-        }
-
-    } catch (error) {
-
-        console.error(
-            error
+                navButtons.forEach(
+                    btn => {
+                        btn.classList.remove(
+                            "active"
+                        );
+                    }
+                );
+                this.classList.add(
+                    "active"
+                );
+                /*
+                    При открытии профиля
+                    обновляем баланс.
+                */
+                if (
+                    pageId ===
+                    "profilePage"
+                ) {
+                    loadUser();
+                }
+            }
         );
-
-        alert(
-            "Сервер оплаты пока не подключен."
-        );
-
     }
-
-}
-
-
+);
 /* =====================================================
-   LOAD PROFILE
+   INITIALIZATION
 ===================================================== */
-
-async function loadProfile() {
-
-    if (!telegramUser) {
+async function startApp() {
+    const telegramReady =
+        initTelegram();
+    if (!telegramReady) {
+        loadingScreen.style.opacity =
+            "0";
+        setTimeout(
+            () => {
+                loadingScreen.style.display =
+                    "none";
+            },
+            300
+        );
         return;
     }
-
-
     /*
-        Запрашиваем профиль у сервера.
-
-        Важно:
-        сервер должен проверить tg.initData.
+        Telegram ID уже получен.
+        Теперь синхронизируемся
+        с сервером.
     */
-
-    try {
-
-        const response =
-            await fetch(
-                "/api/profile",
-                {
-
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-
-                        init_data:
-                            tg.initData
-
-                    })
-
-                }
-            );
-
-
-        if (!response.ok) {
-            throw new Error(
-                "Profile request failed"
-            );
-        }
-
-
-        const data =
-            await response.json();
-
-
-        if (data.success) {
-
-            currentBalance =
-                Number(
-                    data.balance || 0
-                );
-
-
-            updateBalanceUI();
-
-
-            if (
-                data.referrals !==
-                undefined
-            ) {
-
-                setText(
-                    "profileReferrals",
-                    data.referrals
-                );
-
-            }
-
-        }
-
-    } catch (error) {
-
-        /*
-            Не показываем пользователю
-            ошибку, если endpoint пока
-            отсутствует.
-
-            ID всё равно будет работать
-            напрямую из Telegram.
-        */
-
-        console.log(
-            "Profile API:",
-            error
-        );
-
-    }
-
+    await loadUser();
+    loadingScreen.style.opacity =
+        "0";
+    setTimeout(
+        () => {
+            loadingScreen.style.display =
+                "none";
+        },
+        300
+    );
 }
-
-
 /* =====================================================
    START
 ===================================================== */
-
-(function startApp() {
-
-    const valid =
-        initializeTelegramUser();
-
-
-    if (!valid) {
-        return;
-    }
-
-
-    /*
-        Сначала показываем Telegram данные,
-        затем пробуем получить баланс
-        с сервера.
-    */
-
-    updateBalanceUI();
-
-    loadProfile();
-
-})();
-
+document.addEventListener(
+    "DOMContentLoaded",
+    startApp
+);
 </script>
-
 </body>
 </html>
