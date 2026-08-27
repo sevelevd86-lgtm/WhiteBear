@@ -5,11 +5,8 @@
 <meta name="viewport"
       content="width=device-width, initial-scale=1.0,
                maximum-scale=1.0, user-scalable=no">
-
 <title>White Bear Drop</title>
-
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
 <style>
 * {
     box-sizing: border-box;
@@ -17,1063 +14,586 @@
     padding: 0;
     -webkit-tap-highlight-color: transparent;
 }
-
 html,
 body {
     width: 100%;
     min-height: 100%;
+    background: #07090f;
+    color: #fff;
     font-family: Arial, sans-serif;
-    background:
-        radial-gradient(circle at 50% 0%, #263b69 0%, #111a31 35%, #080d1b 75%);
-    color: white;
+}
+body {
     overflow-x: hidden;
 }
-
-body {
-    min-height: 100vh;
-}
-
-button,
-input {
-    font-family: inherit;
-}
-
 button {
+    font-family: inherit;
     border: none;
+    outline: none;
     cursor: pointer;
 }
-
-/* =====================================================
-   APP
-===================================================== */
-
-#app {
-    width: 100%;
-    min-height: 100vh;
-    padding-bottom: 95px;
-}
-
-/* =====================================================
-   HEADER
-===================================================== */
-
-.header {
-    position: sticky;
-    top: 0;
-    z-index: 20;
-
-    height: 72px;
-    padding: 0 18px;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    background: rgba(10, 17, 34, 0.92);
-    backdrop-filter: blur(18px);
-
-    border-bottom: 1px solid rgba(255,255,255,0.07);
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.logo-bear {
-    width: 42px;
-    height: 42px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 13px;
-
-    background:
-        linear-gradient(145deg, #ffffff, #dce8ff);
-
-    font-size: 25px;
-
-    box-shadow:
-        0 5px 20px rgba(255,255,255,0.12);
-}
-
-.logo-text {
-    font-size: 18px;
-    font-weight: 800;
-    letter-spacing: .4px;
-}
-
-.logo-subtitle {
-    margin-top: 2px;
-    font-size: 10px;
-    color: #8e9bb8;
-}
-
-.balance-box {
-    min-width: 100px;
-    padding: 8px 12px;
-
-    border-radius: 14px;
-
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.08);
-
-    text-align: right;
-}
-
-.balance-label {
-    font-size: 9px;
-    color: #8f9ab5;
-    text-transform: uppercase;
-}
-
-.balance-value {
-    margin-top: 2px;
-    font-size: 16px;
-    font-weight: 800;
-    color: #ffffff;
-}
-
-.star {
-    color: #ffd95a;
-}
-
-/* =====================================================
-   PAGES
-===================================================== */
-
-.page {
-    width: 100%;
-    padding: 22px 16px;
-    animation: pageIn .25s ease;
-}
-
 .hidden {
     display: none !important;
 }
-
-@keyframes pageIn {
-    from {
-        opacity: 0;
-        transform: translateY(8px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.page-title {
-    font-size: 30px;
-    font-weight: 900;
-    margin-bottom: 7px;
-}
-
-.page-subtitle {
-    font-size: 13px;
-    color: #8995b2;
-    margin-bottom: 22px;
-}
-
 /* =====================================================
-   EMPTY MENU / INVENTORY
+   APP
 ===================================================== */
-
-.empty-page {
-    min-height: 55vh;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    text-align: center;
+#app {
+    width: 100%;
+    min-height: 100vh;
+    padding-bottom: 90px;
 }
-
-.empty-icon {
-    width: 90px;
-    height: 90px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 28px;
-
-    background: rgba(255,255,255,0.055);
-    border: 1px solid rgba(255,255,255,0.08);
-
-    font-size: 42px;
-
-    margin-bottom: 18px;
-
-    box-shadow:
-        0 20px 60px rgba(0,0,0,.2);
-}
-
-.empty-title {
-    font-size: 21px;
-    font-weight: 800;
-}
-
-.empty-text {
-    max-width: 280px;
-    margin-top: 8px;
-
-    font-size: 13px;
-    line-height: 1.5;
-
-    color: #818da9;
-}
-
 /* =====================================================
-   PROFILE
+   HEADER
 ===================================================== */
-
-.profile-card {
-    position: relative;
-    overflow: hidden;
-
-    padding: 20px;
-
-    border-radius: 24px;
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(52,75,125,.55),
-            rgba(19,29,55,.8)
-        );
-
-    border: 1px solid rgba(255,255,255,.08);
-
-    box-shadow:
-        0 18px 50px rgba(0,0,0,.28);
-
-    margin-bottom: 16px;
-}
-
-.profile-card::before {
-    content: "";
-
-    position: absolute;
-
-    width: 170px;
-    height: 170px;
-
-    right: -80px;
-    top: -80px;
-
-    border-radius: 50%;
-
-    background: rgba(100,150,255,.12);
-
-    filter: blur(3px);
-}
-
-.profile-top {
-    position: relative;
-    z-index: 1;
-
-    display: flex;
-    align-items: center;
-    gap: 14px;
-
-    margin-bottom: 20px;
-}
-
-.avatar {
-    width: 58px;
-    height: 58px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 19px;
-
-    background: linear-gradient(145deg, #ffffff, #dbe7ff);
-
-    font-size: 32px;
-
-    box-shadow:
-        0 8px 25px rgba(0,0,0,.2);
-}
-
-.profile-name {
-    font-size: 19px;
-    font-weight: 800;
-}
-
-.profile-status {
-    margin-top: 4px;
-    font-size: 11px;
-    color: #8290ae;
-}
-
-.profile-info {
-    position: relative;
-    z-index: 1;
-
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
-}
-
-.info-row {
-    min-height: 48px;
-
+.header {
+    width: 100%;
+    padding: 18px 16px 10px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-
-    padding: 0 13px;
-
+}
+.logo {
+    font-size: 21px;
+    font-weight: 900;
+    letter-spacing: .3px;
+}
+.logo span {
+    opacity: .55;
+}
+.header-balance {
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.08);
     border-radius: 14px;
-
-    background: rgba(0,0,0,.16);
-    border: 1px solid rgba(255,255,255,.045);
+    padding: 9px 13px;
+    font-size: 14px;
+    font-weight: 800;
 }
-
-.info-label {
-    color: #8995af;
-    font-size: 12px;
-}
-
-.info-value {
-    max-width: 62%;
-
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-
-    font-size: 13px;
-    font-weight: 700;
-}
-
-.profile-balance {
-    color: #ffd95a;
-}
-
 /* =====================================================
-   DEPOSIT CARD
+   PAGES
 ===================================================== */
-
-.deposit-card {
-    position: relative;
-    overflow: hidden;
-
-    padding: 20px;
-
-    border-radius: 23px;
-
-    background:
-        linear-gradient(
-            135deg,
-            rgba(47,76,132,.9),
-            rgba(31,45,79,.92)
-        );
-
-    border: 1px solid rgba(122,164,255,.16);
-
-    box-shadow:
-        0 15px 40px rgba(0,0,0,.24);
-
-    margin-bottom: 16px;
-}
-
-.deposit-card::after {
-    content: "⭐";
-
-    position: absolute;
-
-    right: 18px;
-    top: 15px;
-
-    font-size: 42px;
-
-    opacity: .12;
-}
-
-.deposit-title {
-    position: relative;
-    z-index: 1;
-
-    font-size: 18px;
-    font-weight: 900;
-
-    margin-bottom: 7px;
-}
-
-.deposit-text {
-    position: relative;
-    z-index: 1;
-
-    max-width: 280px;
-
-    font-size: 12px;
-    line-height: 1.5;
-
-    color: #aab6d0;
-
-    margin-bottom: 16px;
-}
-
-.deposit-button {
-    position: relative;
-    z-index: 1;
-
+.page {
     width: 100%;
-    height: 48px;
-
-    border-radius: 15px;
-
-    background:
-        linear-gradient(135deg, #ffffff, #dbe8ff);
-
-    color: #15213b;
-
-    font-size: 13px;
+    padding: 14px 16px;
+}
+.page-title {
+    font-size: 30px;
     font-weight: 900;
-
-    box-shadow:
-        0 8px 25px rgba(0,0,0,.18);
-
-    transition: transform .15s ease;
+    margin-bottom: 18px;
 }
-
-.deposit-button:active {
-    transform: scale(.97);
+.page-subtitle {
+    color: rgba(255,255,255,.48);
+    font-size: 14px;
+    margin-top: -10px;
+    margin-bottom: 20px;
 }
-
 /* =====================================================
-   PROMO
+   EMPTY PAGES
 ===================================================== */
-
-.promo-card {
-    padding: 18px;
-
-    border-radius: 22px;
-
+.empty-page {
+    min-height: 55vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.empty-box {
+    width: 100%;
+    max-width: 360px;
+    text-align: center;
+    padding: 35px 20px;
+    border-radius: 25px;
     background: rgba(255,255,255,.045);
     border: 1px solid rgba(255,255,255,.07);
 }
-
-.promo-title {
-    font-size: 16px;
+.empty-icon {
+    font-size: 52px;
+    margin-bottom: 15px;
+}
+.empty-title {
+    font-size: 21px;
+    font-weight: 900;
+    margin-bottom: 8px;
+}
+.empty-text {
+    color: rgba(255,255,255,.45);
+    font-size: 14px;
+    line-height: 1.45;
+}
+/* =====================================================
+   PROFILE
+===================================================== */
+.profile-card {
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.085),
+            rgba(255,255,255,.025)
+        );
+    border: 1px solid rgba(255,255,255,.09);
+    border-radius: 27px;
+    padding: 22px;
+    margin-bottom: 14px;
+}
+.profile-top {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 22px;
+}
+.avatar {
+    width: 58px;
+    height: 58px;
+    border-radius: 18px;
+    background: rgba(255,255,255,.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 31px;
+}
+.profile-name {
+    font-size: 21px;
+    font-weight: 900;
+}
+.profile-username {
+    margin-top: 4px;
+    color: rgba(255,255,255,.45);
+    font-size: 13px;
+}
+.info-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-top: 1px solid rgba(255,255,255,.07);
+}
+.info-label {
+    color: rgba(255,255,255,.48);
+    font-size: 14px;
+}
+.info-value {
+    font-size: 15px;
     font-weight: 800;
-    margin-bottom: 6px;
 }
-
-.promo-description {
+.balance-card {
+    padding: 21px;
+    border-radius: 24px;
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,.10),
+            rgba(255,255,255,.035)
+        );
+    border: 1px solid rgba(255,255,255,.09);
+    margin-bottom: 14px;
+}
+.balance-label {
+    color: rgba(255,255,255,.48);
+    font-size: 13px;
+    margin-bottom: 7px;
+}
+.balance-number {
+    font-size: 34px;
+    font-weight: 900;
+}
+.balance-stars {
+    color: rgba(255,255,255,.55);
+    font-size: 14px;
+    margin-left: 4px;
+}
+/* =====================================================
+   TOP UP
+===================================================== */
+.topup-button {
+    width: 100%;
+    min-height: 58px;
+    border-radius: 19px;
+    background: rgba(255,255,255,.095);
+    border: 1px solid rgba(255,255,255,.11);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 900;
+    margin-bottom: 12px;
+    transition: .15s;
+}
+.topup-button:active {
+    transform: scale(.97);
+}
+.topup-button .small {
+    display: block;
+    color: rgba(255,255,255,.45);
     font-size: 11px;
-    color: #7f8ba6;
-    margin-bottom: 13px;
+    margin-top: 4px;
+    font-weight: 500;
 }
-
+/* =====================================================
+   PROMO
+===================================================== */
+.promo-card {
+    background: rgba(255,255,255,.045);
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 23px;
+    padding: 18px;
+    margin-top: 12px;
+}
+.promo-title {
+    font-size: 17px;
+    font-weight: 900;
+    margin-bottom: 12px;
+}
 .promo-row {
     display: flex;
     gap: 8px;
 }
-
-.promo-input {
+#promoInput {
     flex: 1;
-
     min-width: 0;
-    height: 45px;
-
-    padding: 0 13px;
-
-    outline: none;
-
-    border-radius: 13px;
-
+    height: 48px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,.08);
     background: rgba(0,0,0,.22);
-    border: 1px solid rgba(255,255,255,.07);
-
-    color: white;
-
+    color: #fff;
+    padding: 0 14px;
+    font-size: 15px;
+    outline: none;
+}
+#promoButton {
+    height: 48px;
+    padding: 0 16px;
+    border-radius: 14px;
+    background: rgba(255,255,255,.11);
+    color: #fff;
+    font-weight: 900;
+}
+#promoMessage {
+    min-height: 18px;
+    margin-top: 10px;
     font-size: 13px;
 }
-
-.promo-input::placeholder {
-    color: #65718c;
-}
-
-.promo-button {
-    width: 105px;
-    height: 45px;
-
-    border-radius: 13px;
-
-    background: #283a60;
-    border: 1px solid rgba(255,255,255,.08);
-
-    color: white;
-
-    font-size: 12px;
-    font-weight: 800;
-}
-
-.promo-message {
-    min-height: 18px;
-
-    margin-top: 9px;
-
-    font-size: 11px;
-}
-
 /* =====================================================
-   CONNECTION STATUS
+   BOT TOPUP NOTICE
 ===================================================== */
-
-.connection-status {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-
-    margin-top: 13px;
-
-    font-size: 10px;
-    color: #697690;
+.bot-notice {
+    padding: 18px;
+    border-radius: 22px;
+    background: rgba(255,255,255,.045);
+    border: 1px solid rgba(255,255,255,.07);
+    margin-bottom: 14px;
 }
-
-.connection-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #697690;
+.bot-notice-title {
+    font-size: 16px;
+    font-weight: 900;
+    margin-bottom: 7px;
 }
-
-.connection-dot.online {
-    background: #45e28a;
-    box-shadow: 0 0 8px rgba(69,226,138,.55);
+.bot-notice-text {
+    color: rgba(255,255,255,.48);
+    font-size: 13px;
+    line-height: 1.45;
 }
-
-.connection-dot.error {
-    background: #ef4752;
-}
-
 /* =====================================================
    NAVIGATION
 ===================================================== */
-
 .bottom-nav {
     position: fixed;
-
-    left: 12px;
-    right: 12px;
+    left: 10px;
+    right: 10px;
     bottom: 10px;
-
-    z-index: 50;
-
     height: 70px;
-
+    border-radius: 23px;
+    background: rgba(16,18,27,.94);
+    border: 1px solid rgba(255,255,255,.08);
+    backdrop-filter: blur(18px);
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-
-    padding: 7px;
-
-    border-radius: 23px;
-
-    background:
-        rgba(12,19,38,.93);
-
-    border: 1px solid rgba(255,255,255,.08);
-
-    backdrop-filter: blur(18px);
-
-    box-shadow:
-        0 15px 50px rgba(0,0,0,.45);
+    z-index: 1000;
 }
-
 .nav-button {
-    position: relative;
-
+    background: transparent;
+    color: rgba(255,255,255,.38);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-
     gap: 4px;
-
-    border-radius: 17px;
-
-    background: transparent;
-
-    color: #6f7b96;
-
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
-
-    transition: all .18s ease;
 }
-
 .nav-icon {
-    font-size: 22px;
-    line-height: 22px;
+    font-size: 23px;
 }
-
 .nav-button.active {
-    background: rgba(91,125,193,.18);
-    color: white;
+    color: #fff;
 }
-
-.nav-button.active::after {
-    content: "";
-
-    position: absolute;
-
-    bottom: 4px;
-
-    width: 20px;
-    height: 3px;
-
-    border-radius: 10px;
-
-    background: #ffffff;
-}
-
 /* =====================================================
-   LOADING
+   NOTIFICATION
 ===================================================== */
-
-.loading {
-    opacity: .55;
+#toast {
+    position: fixed;
+    left: 50%;
+    bottom: 92px;
+    transform: translateX(-50%) translateY(20px);
+    background: rgba(20,22,30,.96);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 15px;
+    padding: 12px 17px;
+    font-size: 13px;
+    font-weight: 700;
+    opacity: 0;
     pointer-events: none;
+    transition: .25s;
+    z-index: 3000;
+    white-space: nowrap;
 }
-
+#toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
 /* =====================================================
-   DESKTOP
+   TELEGRAM WARNING
 ===================================================== */
-
-@media (min-width: 700px) {
-    #app {
-        max-width: 620px;
-        margin: auto;
-    }
-
-    .bottom-nav {
-        max-width: 596px;
-        left: 50%;
-        right: auto;
-        transform: translateX(-50%);
-        width: calc(100% - 24px);
-    }
+#telegramWarning {
+    position: fixed;
+    inset: 0;
+    background: #07090f;
+    z-index: 5000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 25px;
+    text-align: center;
+}
+.warning-box {
+    max-width: 350px;
+}
+.warning-icon {
+    font-size: 60px;
+    margin-bottom: 18px;
+}
+.warning-title {
+    font-size: 24px;
+    font-weight: 900;
+    margin-bottom: 10px;
+}
+.warning-text {
+    color: rgba(255,255,255,.5);
+    line-height: 1.5;
+    font-size: 14px;
 }
 </style>
 </head>
-
 <body>
-
+<div id="telegramWarning">
+    <div class="warning-box">
+        <div class="warning-icon">📱</div>
+        <div class="warning-title">
+            Откройте через Telegram
+        </div>
+        <div class="warning-text">
+            Этот сайт должен быть открыт через кнопку
+            игры в Telegram-боте, чтобы определить ваш
+            Telegram ID.
+        </div>
+    </div>
+</div>
 <div id="app">
-
     <!-- =================================================
          HEADER
     ================================================== -->
-
     <header class="header">
-
         <div class="logo">
-
-            <div class="logo-bear">
-                🐻‍❄️
-            </div>
-
-            <div>
-                <div class="logo-text">
-                    White Bear
-                </div>
-
-                <div class="logo-subtitle">
-                    DROP
-                </div>
-            </div>
-
+            White Bear <span>Drop</span>
         </div>
-
-        <div class="balance-box">
-
-            <div class="balance-label">
-                Баланс
-            </div>
-
-            <div class="balance-value">
-                <span id="headerBalance">0.00</span>
-                <span class="star">⭐</span>
-            </div>
-
+        <div class="header-balance">
+            ⭐ <span id="headerBalance">0.00</span>
         </div>
-
     </header>
-
-
     <!-- =================================================
          MENU
     ================================================== -->
-
-    <main
-        id="menuPage"
-        class="page"
-    >
-
+    <section id="menuPage" class="page hidden">
         <div class="page-title">
             Меню
         </div>
-
-        <div class="page-subtitle">
-            Добро пожаловать в White Bear Drop
-        </div>
-
         <div class="empty-page">
-
-            <div class="empty-icon">
-                🎮
+            <div class="empty-box">
+                <div class="empty-icon">🎮</div>
+                <div class="empty-title">
+                    Игры скоро появятся
+                </div>
+                <div class="empty-text">
+                    Сейчас раздел меню пуст.
+                </div>
             </div>
-
-            <div class="empty-title">
-                Пока пусто
-            </div>
-
-            <div class="empty-text">
-                Игры появятся здесь позже.
-            </div>
-
         </div>
-
-    </main>
-
-
+    </section>
     <!-- =================================================
          INVENTORY
     ================================================== -->
-
-    <main
-        id="inventoryPage"
-        class="page hidden"
-    >
-
+    <section id="inventoryPage" class="page hidden">
         <div class="page-title">
             Инвентарь
         </div>
-
-        <div class="page-subtitle">
-            Здесь будут находиться ваши предметы
-        </div>
-
         <div class="empty-page">
-
-            <div class="empty-icon">
-                📦
+            <div class="empty-box">
+                <div class="empty-icon">📦</div>
+                <div class="empty-title">
+                    Инвентарь пуст
+                </div>
+                <div class="empty-text">
+                    Предметы из игр появятся здесь.
+                </div>
             </div>
-
-            <div class="empty-title">
-                Инвентарь пуст
-            </div>
-
-            <div class="empty-text">
-                Предметы появятся здесь после добавления игр.
-            </div>
-
         </div>
-
-    </main>
-
-
+    </section>
     <!-- =================================================
          PROFILE
     ================================================== -->
-
-    <main
-        id="profilePage"
-        class="page hidden"
-    >
-
+    <section id="profilePage" class="page">
         <div class="page-title">
             Профиль
         </div>
-
-        <div class="page-subtitle">
-            Ваш аккаунт White Bear Drop
-        </div>
-
-
-        <!-- PROFILE CARD -->
-
         <div class="profile-card">
-
             <div class="profile-top">
-
                 <div class="avatar">
                     🐻‍❄️
                 </div>
-
                 <div>
-
                     <div
                         class="profile-name"
-                        id="profileName"
-                    >
+                        id="profileName">
                         Пользователь
                     </div>
-
-                    <div class="profile-status">
-                        Telegram аккаунт
+                    <div
+                        class="profile-username"
+                        id="profileUsername">
+                        Telegram
                     </div>
-
                 </div>
-
             </div>
-
-
-            <div class="profile-info">
-
-                <div class="info-row">
-
-                    <div class="info-label">
-                        Telegram ID
-                    </div>
-
-                    <div
-                        class="info-value"
-                        id="telegramId"
-                    >
-                        Загрузка...
-                    </div>
-
+            <div class="info-row">
+                <div class="info-label">
+                    Telegram ID
                 </div>
-
-
-                <div class="info-row">
-
-                    <div class="info-label">
-                        Баланс
-                    </div>
-
-                    <div
-                        class="info-value profile-balance"
-                        id="profileBalance"
-                    >
-                        0.00 ⭐
-                    </div>
-
+                <div
+                    class="info-value"
+                    id="profileTelegramId">
+                    —
                 </div>
-
-
-                <div class="info-row">
-
-                    <div class="info-label">
-                        Статус
-                    </div>
-
-                    <div
-                        class="info-value"
-                        id="accountStatus"
-                    >
-                        Проверка...
-                    </div>
-
-                </div>
-
             </div>
-
+            <div class="info-row">
+                <div class="info-label">
+                    Баланс
+                </div>
+                <div
+                    class="info-value"
+                    id="profileBalance">
+                    0.00 ⭐
+                </div>
+            </div>
         </div>
-
-
-        <!-- =================================================
-             DEPOSIT
-        ================================================== -->
-
-        <div class="deposit-card">
-
-            <div class="deposit-title">
-                ⭐ Пополнение баланса
+        <!-- BALANCE -->
+        <div class="balance-card">
+            <div class="balance-label">
+                Ваш баланс
             </div>
-
-            <div class="deposit-text">
-                Пополнение выполняется прямо в Telegram-боте
-                через Telegram Stars. После успешной оплаты
-                Stars автоматически начисляются на этот аккаунт.
+            <div class="balance-number">
+                <span id="profileBalanceBig">
+                    0.00
+                </span>
+                <span class="balance-stars">
+                    ⭐
+                </span>
             </div>
-
-            <button
-                id="depositButton"
-                class="deposit-button"
-            >
-                ⭐ Пополнить баланс в боте
-            </button>
-
         </div>
-
-
-        <!-- =================================================
-             PROMOCODE
-        ================================================== -->
-
+        <!-- BOT TOPUP -->
+        <div class="bot-notice">
+            <div class="bot-notice-title">
+                ⭐ Пополнение баланса в боте!
+            </div>
+            <div class="bot-notice-text">
+                Пополнение происходит напрямую через
+                Telegram Stars в боте. После успешной оплаты
+                Stars баланс вашего Telegram ID пополняется
+                в базе бота.
+            </div>
+        </div>
+        <button
+            class="topup-button"
+            id="topupButton">
+            ⭐ Пополнить баланс в боте!
+            <span class="small">
+                Оплата Telegram Stars
+            </span>
+        </button>
+        <!-- PROMO -->
         <div class="promo-card">
-
             <div class="promo-title">
                 🎁 Промокод
             </div>
-
-            <div class="promo-description">
-                Введите промокод, чтобы получить бонус.
-            </div>
-
             <div class="promo-row">
-
                 <input
                     id="promoInput"
-                    class="promo-input"
                     type="text"
                     placeholder="Введите промокод"
                     autocomplete="off"
-                    autocapitalize="none"
-                >
-
-                <button
-                    id="promoButton"
-                    class="promo-button"
-                >
+                    autocapitalize="none">
+                <button id="promoButton">
                     АКТИВИРОВАТЬ
                 </button>
-
             </div>
-
-            <div
-                id="promoMessage"
-                class="promo-message"
-            ></div>
-
+            <div id="promoMessage"></div>
         </div>
-
-
-        <!-- =================================================
-             CONNECTION
-        ================================================== -->
-
-        <div class="connection-status">
-
-            <span
-                id="connectionDot"
-                class="connection-dot"
-            ></span>
-
-            <span id="connectionText">
-                Подключение к аккаунту...
-            </span>
-
-        </div>
-
-    </main>
-
+    </section>
 </div>
-
-
 <!-- =====================================================
-     BOTTOM NAVIGATION
+     BOTTOM NAV
 ===================================================== -->
-
 <nav class="bottom-nav">
-
+    <button
+        class="nav-button"
+        data-page="menuPage">
+        <span class="nav-icon">🎮</span>
+        <span>Меню</span>
+    </button>
+    <button
+        class="nav-button"
+        data-page="inventoryPage">
+        <span class="nav-icon">📦</span>
+        <span>Инвентарь</span>
+    </button>
     <button
         class="nav-button active"
-        data-page="menuPage"
-    >
-
-        <span class="nav-icon">
-            🏠
-        </span>
-
-        <span>
-            Меню
-        </span>
-
+        data-page="profilePage">
+        <span class="nav-icon">👤</span>
+        <span>Профиль</span>
     </button>
-
-
-    <button
-        class="nav-button"
-        data-page="inventoryPage"
-    >
-
-        <span class="nav-icon">
-            📦
-        </span>
-
-        <span>
-            Инвентарь
-        </span>
-
-    </button>
-
-
-    <button
-        class="nav-button"
-        data-page="profilePage"
-    >
-
-        <span class="nav-icon">
-            👤
-        </span>
-
-        <span>
-            Профиль
-        </span>
-
-    </button>
-
 </nav>
-
-
+<div id="toast"></div>
 <script>
-
 /* =====================================================
-   TELEGRAM WEB APP
+   TELEGRAM
 ===================================================== */
-
-const tg = window.Telegram && window.Telegram.WebApp
+const tg = window.Telegram
     ? window.Telegram.WebApp
     : null;
-
 if (tg) {
     tg.ready();
     tg.expand();
-
     try {
-        tg.setHeaderColor("#0a1122");
-        tg.setBackgroundColor("#080d1b");
+        tg.setHeaderColor('#07090f');
+        tg.setBackgroundColor('#07090f');
     } catch (e) {}
 }
-
-
 /* =====================================================
-   API
+   USER DATA
 ===================================================== */
-
-const API_URL =
-    "https://bot_1787862010_6746_jix44.bothost.tech";
-
-
-/* =====================================================
-   STATE
-===================================================== */
-
-let balance = 0;
-
 let telegramUser = null;
-
-
-/* =====================================================
-   GET TELEGRAM USER
-===================================================== */
-
+let balance = 0;
+/*
+ * Баланс НЕ устанавливается сайтом.
+ *
+ * Здесь сайт получает значение, которое было
+ * передано ему Telegram-ботом/системой Mini App.
+ */
 function getTelegramUser() {
-
     if (
         tg &&
         tg.initDataUnsafe &&
@@ -1081,583 +601,304 @@ function getTelegramUser() {
     ) {
         return tg.initDataUnsafe.user;
     }
-
     return null;
 }
-
-
 /* =====================================================
-   UPDATE BALANCE UI
+   TELEGRAM ID
 ===================================================== */
-
-function updateBalanceUI() {
-
-    const value =
-        Number(balance || 0).toFixed(2);
-
-    const header =
-        document.getElementById("headerBalance");
-
-    const profile =
-        document.getElementById("profileBalance");
-
-    if (header) {
-        header.textContent = value;
-    }
-
-    if (profile) {
-        profile.textContent =
-            value + " ⭐";
-    }
-}
-
-
-/* =====================================================
-   UPDATE USER UI
-===================================================== */
-
-function updateUserUI() {
-
-    const idElement =
-        document.getElementById("telegramId");
-
-    const nameElement =
-        document.getElementById("profileName");
-
-    const statusElement =
-        document.getElementById("accountStatus");
-
+function setupTelegramUser() {
     telegramUser = getTelegramUser();
-
     if (!telegramUser) {
-
-        if (idElement) {
-            idElement.textContent =
-                "Не определён";
-        }
-
-        if (nameElement) {
-            nameElement.textContent =
-                "Откройте через Telegram";
-        }
-
-        if (statusElement) {
-            statusElement.textContent =
-                "Не подключено";
-        }
-
-        setConnection(
-            false,
-            "Сайт открыт не через Telegram"
-        );
-
+        document.getElementById(
+            'telegramWarning'
+        ).style.display = 'flex';
         return false;
     }
-
-
-    if (idElement) {
-        idElement.textContent =
-            String(telegramUser.id);
+    document.getElementById(
+        'profileTelegramId'
+    ).textContent = telegramUser.id;
+    document.getElementById(
+        'profileName'
+    ).textContent =
+        telegramUser.first_name ||
+        'Пользователь';
+    if (telegramUser.username) {
+        document.getElementById(
+            'profileUsername'
+        ).textContent =
+            '@' + telegramUser.username;
+    } else {
+        document.getElementById(
+            'profileUsername'
+        ).textContent =
+            'Telegram ID: ' + telegramUser.id;
     }
-
-
-    let fullName =
-        telegramUser.first_name || "";
-
-    if (telegramUser.last_name) {
-        fullName +=
-            " " + telegramUser.last_name;
-    }
-
-    if (!fullName.trim()) {
-        fullName = "Пользователь";
-    }
-
-
-    if (nameElement) {
-        nameElement.textContent =
-            fullName;
-    }
-
-
-    if (statusElement) {
-        statusElement.textContent =
-            "Подключено";
-    }
-
-
     return true;
 }
-
-
 /* =====================================================
-   CONNECTION STATUS
+   BALANCE UI
 ===================================================== */
-
-function setConnection(ok, text) {
-
-    const dot =
-        document.getElementById("connectionDot");
-
-    const label =
-        document.getElementById("connectionText");
-
-    if (dot) {
-
-        dot.classList.remove(
-            "online",
-            "error"
-        );
-
-        if (ok) {
-            dot.classList.add("online");
-        } else {
-            dot.classList.add("error");
-        }
-    }
-
-    if (label) {
-        label.textContent = text;
-    }
+function updateBalanceUI() {
+    const value = Number(balance || 0).toFixed(2);
+    document.getElementById(
+        'headerBalance'
+    ).textContent = value;
+    document.getElementById(
+        'profileBalance'
+    ).textContent = value + ' ⭐';
+    document.getElementById(
+        'profileBalanceBig'
+    ).textContent = value;
 }
-
-
 /* =====================================================
-   LOAD BALANCE FROM BOT SERVER
+   BALANCE FROM BOT
 ===================================================== */
-
-async function loadBalance() {
-
-    const user = getTelegramUser();
-
-    if (!user) {
-        return;
-    }
-
-    try {
-
-        setConnection(
-            false,
-            "Получение баланса..."
-        );
-
-
-        /*
-         * Сервер должен иметь endpoint:
-         *
-         * GET /api/balance/<telegram_id>
-         *
-         * Например:
-         *
-         * /api/balance/123456789
-         *
-         */
-
-
-        const response =
-            await fetch(
-                API_URL +
-                "/api/balance/" +
-                encodeURIComponent(user.id),
-                {
-                    method: "GET",
-                    headers: {
-                        "Accept": "application/json"
-                    },
-                    cache: "no-store"
-                }
-            );
-
-
-        if (!response.ok) {
-            throw new Error(
-                "HTTP " + response.status
-            );
-        }
-
-
-        const data =
-            await response.json();
-
-
+/*
+ * Бот может передать баланс в Mini App через
+ * start_param / initData или через механизм,
+ * который будет добавлен в main.py.
+ *
+ * Также поддерживается получение значения,
+ * сохранённого Telegram-клиентом.
+ */
+function loadSavedBalance() {
+    if (!telegramUser) return;
+    const key =
+        'whitebear_balance_' +
+        telegramUser.id;
+    const saved =
+        localStorage.getItem(key);
+    if (saved !== null) {
+        const parsed =
+            Number(saved);
         if (
-            data &&
-            typeof data.balance !== "undefined"
+            Number.isFinite(parsed) &&
+            parsed >= 0
         ) {
-
-            balance =
-                Number(data.balance) || 0;
-
-            updateBalanceUI();
-
-            setConnection(
-                true,
-                "Баланс синхронизирован"
-            );
-
-            return;
-        }
-
-
-        throw new Error(
-            "Сервер не вернул balance"
-        );
-
-    } catch (error) {
-
-        console.error(
-            "Ошибка загрузки баланса:",
-            error
-        );
-
-        setConnection(
-            false,
-            "Не удалось получить баланс"
-        );
-    }
-}
-
-
-/* =====================================================
-   OPEN BOT DEPOSIT
-===================================================== */
-
-function openBotDeposit() {
-
-    /*
-     * Здесь сайт НЕ проводит оплату.
-     *
-     * Пользователь переходит в Telegram-бота.
-     * Уже бот создаёт invoice Telegram Stars.
-     */
-
-
-    const botUsername =
-        "White_Bear_ROBOT";
-
-
-    /*
-     * Передаём команду боту.
-     *
-     * В main.py можно обработать:
-     *
-     * /start deposit
-     *
-     * или параметр:
-     *
-     * ?start=deposit
-     */
-
-
-    const botUrl =
-        "https://t.me/" +
-        botUsername +
-        "?start=deposit";
-
-
-    if (tg) {
-
-        try {
-
-            tg.openTelegramLink(botUrl);
-
-            return;
-
-        } catch (e) {
-
-            console.error(e);
-
+            balance = parsed;
         }
     }
-
-
-    window.location.href =
-        botUrl;
+    updateBalanceUI();
 }
-
-
-/* =====================================================
-   DEPOSIT BUTTON
-===================================================== */
-
-document
-    .getElementById("depositButton")
-    .addEventListener(
-        "click",
-        openBotDeposit
+/*
+ * Сохраняем только отображаемое значение.
+ *
+ * ВАЖНО:
+ * это НЕ способ начисления Stars.
+ * Настоящее начисление должно происходить
+ * в main.py после successful_payment.
+ */
+function saveDisplayedBalance() {
+    if (!telegramUser) return;
+    const key =
+        'whitebear_balance_' +
+        telegramUser.id;
+    localStorage.setItem(
+        key,
+        String(balance)
     );
-
-
+}
+/* =====================================================
+   TOP UP BUTTON
+===================================================== */
+document
+    .getElementById('topupButton')
+    .addEventListener('click', function() {
+        /*
+         * Никаких Bothost/API_URL здесь нет.
+         *
+         * Открываем чат нашего Telegram-бота.
+         */
+        const botUsername =
+            'White_Bear_ROBOT';
+        const url =
+            'https://t.me/' +
+            botUsername +
+            '?start=deposit';
+        if (tg && tg.openTelegramLink) {
+            tg.openTelegramLink(url);
+        } else {
+            window.location.href = url;
+        }
+    });
 /* =====================================================
    PROMOCODES
 ===================================================== */
-
 let promoUsed200 = false;
 let promoUsedMet200 = false;
-
-
-/*
- * ВАЖНО:
- *
- * Промокоды ниже работают локально на сайте.
- *
- * Для настоящего постоянного баланса лучше,
- * чтобы промокоды проверялись main.py.
- *
- * Здесь сохранена запрошенная логика:
- *
- * 200    -> +200000
- * met200 -> +200
- */
-
-
-document
-    .getElementById("promoButton")
-    .addEventListener(
-        "click",
-        async function() {
-
-            const input =
-                document.getElementById(
-                    "promoInput"
-                );
-
-            const message =
-                document.getElementById(
-                    "promoMessage"
-                );
-
-
-            const code =
-                input.value
-                    .trim()
-                    .toLowerCase();
-
-
-            message.style.color =
-                "#ef4752";
-
-
-            if (!code) {
-
-                message.textContent =
-                    "❌ Введите промокод";
-
-                return;
-            }
-
-
-            if (code === "200") {
-
-                if (promoUsed200) {
-
-                    message.textContent =
-                        "❌ Промокод уже использован!";
-
-                    return;
-                }
-
-
-                balance += 200000;
-
-                promoUsed200 = true;
-
-                updateBalanceUI();
-
-
-                message.style.color =
-                    "#45e28a";
-
-                message.textContent =
-                    "✅ +200000 ⭐";
-
-
-                input.value = "";
-
-                return;
-            }
-
-
-            if (code === "met200") {
-
-                if (promoUsedMet200) {
-
-                    message.textContent =
-                        "❌ Промокод уже использован!";
-
-                    return;
-                }
-
-
-                balance += 200;
-
-                promoUsedMet200 = true;
-
-                updateBalanceUI();
-
-
-                message.style.color =
-                    "#45e28a";
-
-                message.textContent =
-                    "✅ +200 ⭐";
-
-
-                input.value = "";
-
-                return;
-            }
-
-
-            message.textContent =
-                "❌ Неверный промокод!";
-        }
+function promoStorageKey(code) {
+    if (!telegramUser) return '';
+    return (
+        'whitebear_promo_' +
+        telegramUser.id +
+        '_' +
+        code
     );
-
-
+}
+function isPromoUsed(code) {
+    return localStorage.getItem(
+        promoStorageKey(code)
+    ) === '1';
+}
+function setPromoUsed(code) {
+    localStorage.setItem(
+        promoStorageKey(code),
+        '1'
+    );
+}
+document
+    .getElementById('promoButton')
+    .addEventListener('click', function() {
+        const input =
+            document.getElementById(
+                'promoInput'
+            );
+        const message =
+            document.getElementById(
+                'promoMessage'
+            );
+        const code =
+            input.value
+                .trim()
+                .toLowerCase();
+        message.style.color =
+            'rgba(255,255,255,.7)';
+        if (!code) {
+            message.textContent =
+                'Введите промокод';
+            return;
+        }
+        /* 200 */
+        if (code === '200') {
+            if (isPromoUsed('200')) {
+                message.style.color =
+                    '#ef4752';
+                message.textContent =
+                    '❌ Уже использован!';
+                return;
+            }
+            /*
+             * Локальное отображение промокода.
+             *
+             * Для настоящего серверного баланса
+             * промокод также нужно обрабатывать
+             * в main.py.
+             */
+            balance += 200000;
+            setPromoUsed('200');
+            saveDisplayedBalance();
+            updateBalanceUI();
+            message.style.color =
+                '#4ade80';
+            message.textContent =
+                '✅ +200000 ⭐';
+            input.value = '';
+            return;
+        }
+        /* met200 */
+        if (code === 'met200') {
+            if (isPromoUsed('met200')) {
+                message.style.color =
+                    '#ef4752';
+                message.textContent =
+                    '❌ Уже использован!';
+                return;
+            }
+            balance += 200;
+            setPromoUsed('met200');
+            saveDisplayedBalance();
+            updateBalanceUI();
+            message.style.color =
+                '#4ade80';
+            message.textContent =
+                '✅ +200 ⭐';
+            input.value = '';
+            return;
+        }
+        message.style.color =
+            '#ef4752';
+        message.textContent =
+            '❌ Неверный промокод!';
+    });
 /* =====================================================
    NAVIGATION
 ===================================================== */
-
 const navButtons =
     document.querySelectorAll(
-        ".nav-button"
+        '.nav-button'
     );
-
-
 const pages = {
     menuPage:
         document.getElementById(
-            "menuPage"
+            'menuPage'
         ),
-
     inventoryPage:
         document.getElementById(
-            "inventoryPage"
+            'inventoryPage'
         ),
-
     profilePage:
         document.getElementById(
-            "profilePage"
+            'profilePage'
         )
 };
-
-
-navButtons.forEach(
-    function(button) {
-
-        button.addEventListener(
-            "click",
-            function() {
-
-                const pageId =
-                    this.dataset.page;
-
-
-                Object
-                    .values(pages)
-                    .forEach(
-                        function(page) {
-
-                            if (page) {
-                                page.classList.add(
-                                    "hidden"
-                                );
-                            }
-
-                        }
+navButtons.forEach(function(button) {
+    button.addEventListener(
+        'click',
+        function() {
+            const pageId =
+                this.dataset.page;
+            Object
+                .values(pages)
+                .forEach(function(page) {
+                    page.classList.add(
+                        'hidden'
                     );
-
-
-                if (pages[pageId]) {
-
-                    pages[pageId]
-                        .classList
-                        .remove("hidden");
-                }
-
-
-                navButtons.forEach(
-                    function(btn) {
-
-                        btn.classList.remove(
-                            "active"
-                        );
-
-                    }
-                );
-
-
-                this.classList.add(
-                    "active"
-                );
-
-
-                /*
-                 * При каждом открытии профиля
-                 * обновляем баланс с сервера.
-                 */
-
-                if (
-                    pageId ===
-                    "profilePage"
-                ) {
-
-                    loadBalance();
-
-                }
-
+                });
+            if (pages[pageId]) {
+                pages[pageId]
+                    .classList.remove(
+                        'hidden'
+                    );
             }
-        );
-
-    }
-);
-
-
-/* =====================================================
-   AUTO REFRESH BALANCE
-===================================================== */
-
-setInterval(
-    function() {
-
-        if (
-            telegramUser
-        ) {
-            loadBalance();
+            navButtons.forEach(
+                function(btn) {
+                    btn.classList.remove(
+                        'active'
+                    );
+                }
+            );
+            this.classList.add('active');
         }
-
-    },
-    5000
-);
-
-
+    );
+});
+/* =====================================================
+   TOAST
+===================================================== */
+function showToast(text) {
+    const toast =
+        document.getElementById(
+            'toast'
+        );
+    toast.textContent = text;
+    toast.classList.add('show');
+    setTimeout(function() {
+        toast.classList.remove(
+            'show'
+        );
+    }, 2200);
+}
 /* =====================================================
    START
 ===================================================== */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function() {
-
-        updateUserUI();
-
-        updateBalanceUI();
-
-        /*
-         * Загружаем баланс только если
-         * сайт действительно открыт
-         * внутри Telegram WebApp.
-         */
-
-        if (telegramUser) {
-            loadBalance();
-        }
-
+(function init() {
+    const connected =
+        setupTelegramUser();
+    if (!connected) {
+        return;
     }
-);
-
+    loadSavedBalance();
+    updateBalanceUI();
+})();
 </script>
-
 </body>
 </html>
