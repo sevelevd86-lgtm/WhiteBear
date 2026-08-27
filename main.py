@@ -25,6 +25,7 @@ from aiogram.types import (
     LabeledPrice,
     MenuButtonWebApp,
     Message,
+    PreCheckoutQuery,
     WebAppInfo,
 )
 from aiogram.utils.keyboard import InlineKeyboardBuilder
@@ -44,22 +45,13 @@ DB_NAME = "users.db"
 
 BASE_DIR = Path(__file__).resolve().parent
 
-HTML_FILE = BASE_DIR / "index.html"
+# GitHub Pages с игрой
+WEBAPP_URL = os.getenv(
+    "WEBAPP_URL",
+    "https://sevelevd86-lgtm.github.io/WhiteBear/"
+).strip()
 
-# ============================================================
-# WEB APP
-# ============================================================
-# ВАЖНО:
-# Это именно адрес твоего GitHub Pages.
-# НЕ меняй его на /health и НЕ ставь пустую строку.
-
-WEBAPP_URL = "https://sevelevd86-lgtm.github.io/WhiteBear/"
-
-
-# ============================================================
-# TELEGRAM INIT DATA
-# ============================================================
-
+# initData Telegram
 INIT_DATA_MAX_AGE = 86400
 
 
@@ -77,7 +69,7 @@ logger = logging.getLogger("white_bear")
 
 
 # ============================================================
-# ПРОВЕРКА BOT TOKEN
+# ПРОВЕРКА НАСТРОЕК
 # ============================================================
 
 if not BOT_TOKEN:
@@ -85,6 +77,16 @@ if not BOT_TOKEN:
         "BOT_TOKEN не установлен. "
         "Добавь BOT_TOKEN в переменные окружения."
     )
+
+if not WEBAPP_URL:
+    raise RuntimeError(
+        "WEBAPP_URL не установлен."
+    )
+
+
+logger.info(
+    f"🌐 WebApp URL: {WEBAPP_URL}"
+)
 
 
 # ============================================================
@@ -103,7 +105,6 @@ def db():
 
 
 def init_db():
-
     conn = db()
     cur = conn.cursor()
 
@@ -153,7 +154,6 @@ def init_db():
 # ============================================================
 
 def get_user(user_id: int):
-
     conn = db()
     cur = conn.cursor()
 
@@ -175,7 +175,6 @@ def create_user(
     first_name=None,
     invited_by=None
 ):
-
     conn = db()
     cur = conn.cursor()
 
@@ -187,7 +186,6 @@ def create_user(
     exists = cur.fetchone()
 
     if exists:
-
         cur.execute("""
             UPDATE users
             SET username = ?,
@@ -205,7 +203,6 @@ def create_user(
         return
 
     while True:
-
         ref_code = secrets.token_hex(8)
 
         cur.execute(
@@ -243,7 +240,6 @@ def create_user(
 
 
 def get_balance(user_id: int) -> float:
-
     conn = db()
     cur = conn.cursor()
 
@@ -266,7 +262,6 @@ def add_balance(
     user_id: int,
     amount: float
 ):
-
     conn = db()
     cur = conn.cursor()
 
@@ -298,7 +293,6 @@ def add_balance(
 # ============================================================
 
 def get_referrals_count(user_id: int):
-
     conn = db()
     cur = conn.cursor()
 
@@ -318,7 +312,6 @@ def get_referrals_count(user_id: int):
 
 
 def get_referral_link(user_id: int):
-
     return (
         f"https://t.me/"
         f"{BOT_USERNAME}"
@@ -327,7 +320,6 @@ def get_referral_link(user_id: int):
 
 
 def get_user_by_ref_code(ref_code: str):
-
     conn = db()
     cur = conn.cursor()
 
@@ -350,7 +342,6 @@ def add_referral(
     referrer_id: int,
     referred_id: int
 ):
-
     if referrer_id == referred_id:
         return False
 
@@ -368,9 +359,7 @@ def add_referral(
     ))
 
     if cur.fetchone():
-
         conn.close()
-
         return False
 
     cur.execute("""
@@ -537,10 +526,6 @@ def main_keyboard():
     return builder.as_markup()
 
 
-# ============================================================
-# DEPOSIT KEYBOARD
-# ============================================================
-
 def deposit_keyboard():
 
     return InlineKeyboardMarkup(
@@ -599,7 +584,7 @@ async def start(message: Message):
             and args[1].startswith("ref_")
         ):
 
-            ref_code = args[1][5:]
+            ref_code = args[1][4:]
 
             invited_by = get_user_by_ref_code(
                 ref_code
@@ -653,31 +638,6 @@ async def start(message: Message):
 
 
 # ============================================================
-# GAME
-# ============================================================
-
-@dp.message(Command("game"))
-async def game_command(message: Message):
-
-    await message.answer(
-        "🎮 <b>White Bear</b>\n\n"
-        "Нажми кнопку ниже, чтобы открыть игру.",
-        reply_markup=InlineKeyboardMarkup(
-            inline_keyboard=[
-                [
-                    InlineKeyboardButton(
-                        text="🎮 Открыть игру",
-                        web_app=WebAppInfo(
-                            url=WEBAPP_URL
-                        )
-                    )
-                ]
-            ]
-        )
-    )
-
-
-# ============================================================
 # BALANCE COMMAND
 # ============================================================
 
@@ -717,14 +677,6 @@ async def profile_command(message: Message):
                     InlineKeyboardButton(
                         text="⭐ Пополнить баланс",
                         callback_data="deposit"
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        text="🎮 Открыть игру",
-                        web_app=WebAppInfo(
-                            url=WEBAPP_URL
-                        )
                     )
                 ]
             ]
@@ -773,7 +725,8 @@ async def create_invoice(
         ),
 
         payload=(
-            f"deposit:{user_id}:"
+            f"deposit:"
+            f"{user_id}:"
             f"{amount}:"
             f"{secrets.token_hex(8)}"
         ),
@@ -790,10 +743,6 @@ async def create_invoice(
         provider_token=""
     )
 
-
-# ============================================================
-# BUY STARS
-# ============================================================
 
 @dp.callback_query(
     F.data.startswith("buy_")
@@ -839,7 +788,7 @@ async def buy_stars(
 
 @dp.pre_checkout_query()
 async def pre_checkout(
-    query: types.PreCheckoutQuery
+    query: PreCheckoutQuery
 ):
 
     if query.currency != "XTR":
@@ -891,6 +840,12 @@ async def successful_payment(
     )
 
     if payment.currency != "XTR":
+
+        logger.warning(
+            f"⚠️ Неизвестная валюта "
+            f"от пользователя {user_id}"
+        )
+
         return
 
     conn = db()
@@ -919,7 +874,7 @@ async def successful_payment(
         return
 
     # --------------------------------------------------------
-    # ПРОВЕРЯЕМ ПОЛЬЗОВАТЕЛЯ
+    # ПРОВЕРКА ПОЛЬЗОВАТЕЛЯ
     # --------------------------------------------------------
 
     cur.execute("""
@@ -937,7 +892,8 @@ async def successful_payment(
             ref_code = secrets.token_hex(8)
 
             cur.execute(
-                "SELECT user_id FROM users "
+                "SELECT user_id "
+                "FROM users "
                 "WHERE ref_code = ?",
                 (ref_code,)
             )
@@ -962,7 +918,9 @@ async def successful_payment(
         ))
 
     # --------------------------------------------------------
-    # НАЧИСЛЯЕМ РОВНО СУММУ ОПЛАТЫ
+    # НАЧИСЛЕНИЕ
+    #
+    # РОВНО СТОЛЬКО STARS, СКОЛЬКО ОПЛАЧЕНО
     # --------------------------------------------------------
 
     cur.execute("""
@@ -975,7 +933,7 @@ async def successful_payment(
     ))
 
     # --------------------------------------------------------
-    # СОХРАНЯЕМ ПЛАТЕЖ
+    # СОХРАНЕНИЕ ПЛАТЕЖА
     # --------------------------------------------------------
 
     cur.execute("""
@@ -1014,6 +972,7 @@ async def successful_payment(
     )
 
     conn.commit()
+
     conn.close()
 
     logger.info(
@@ -1048,6 +1007,7 @@ async def balance_callback(
     await callback.message.edit_text(
         f"💰 <b>Ваш баланс</b>\n\n"
         f"<b>{balance:.2f} ⭐</b>",
+
         reply_markup=InlineKeyboardMarkup(
             inline_keyboard=[
                 [
@@ -1088,20 +1048,13 @@ async def profile_callback(
         f"<code>{user_id}</code>\n"
         f"💰 Баланс: "
         f"<b>{balance:.2f} ⭐</b>",
+
         reply_markup=InlineKeyboardMarkup(
             inline_keyboard=[
                 [
                     InlineKeyboardButton(
                         text="⭐ Пополнить баланс",
                         callback_data="deposit"
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        text="🎮 Открыть игру",
-                        web_app=WebAppInfo(
-                            url=WEBAPP_URL
-                        )
                     )
                 ],
                 [
@@ -1118,7 +1071,7 @@ async def profile_callback(
 
 
 # ============================================================
-# CALLBACK REFERRAL
+# REFERRAL
 # ============================================================
 
 @dp.callback_query(F.data == "referral")
@@ -1137,6 +1090,7 @@ async def referral_callback(
         f"<code>{link}</code>\n\n"
         f"👥 Приглашено: <b>{count}</b>\n"
         f"💰 Награда: <b>10 ⭐</b>",
+
         reply_markup=InlineKeyboardMarkup(
             inline_keyboard=[
                 [
@@ -1153,7 +1107,7 @@ async def referral_callback(
 
 
 # ============================================================
-# CALLBACK BACK
+# BACK
 # ============================================================
 
 @dp.callback_query(F.data == "back")
@@ -1170,6 +1124,7 @@ async def back_callback(
         f"🆔 ID: <code>{user_id}</code>\n"
         f"💰 Баланс: "
         f"<b>{balance:.2f} ⭐</b>",
+
         reply_markup=main_keyboard()
     )
 
@@ -1177,25 +1132,20 @@ async def back_callback(
 
 
 # ============================================================
-# WEB SERVER
+# WEB API
 # ============================================================
 
-async def index(request):
+async def health(request):
 
-    if not HTML_FILE.exists():
-
-        return web.Response(
-            text="index.html not found",
-            status=500
-        )
-
-    return web.FileResponse(
-        HTML_FILE
-    )
+    return web.json_response({
+        "ok": True,
+        "status": "running",
+        "service": "White Bear Bot"
+    })
 
 
 # ============================================================
-# API BALANCE
+# BALANCE API
 # ============================================================
 
 async def api_balance(request):
@@ -1211,7 +1161,7 @@ async def api_balance(request):
 
     if not user:
 
-        response = web.json_response(
+        return web.json_response(
             {
                 "ok": False,
                 "error": "invalid_telegram_init_data"
@@ -1219,9 +1169,68 @@ async def api_balance(request):
             status=401
         )
 
-        response.headers["Access-Control-Allow-Origin"] = "*"
+    try:
 
-        return response
+        user_id = int(
+            user["id"]
+        )
+
+    except Exception:
+
+        return web.json_response(
+            {
+                "ok": False,
+                "error": "invalid_user_id"
+            },
+            status=400
+        )
+
+    create_user(
+        user_id,
+        user.get("username"),
+        user.get("first_name")
+    )
+
+    balance = get_balance(
+        user_id
+    )
+
+    return web.json_response(
+        {
+            "ok": True,
+            "user_id": user_id,
+            "balance": balance
+        },
+        headers={
+            "Cache-Control": "no-store"
+        }
+    )
+
+
+# ============================================================
+# USER API
+# ============================================================
+
+async def api_user(request):
+
+    init_data = request.headers.get(
+        "X-Telegram-Init-Data",
+        ""
+    )
+
+    user = validate_init_data(
+        init_data
+    )
+
+    if not user:
+
+        return web.json_response(
+            {
+                "ok": False,
+                "error": "invalid_telegram_init_data"
+            },
+            status=401
+        )
 
     user_id = int(
         user["id"]
@@ -1237,36 +1246,24 @@ async def api_balance(request):
         user_id
     )
 
-    response = web.json_response(
-        {
-            "ok": True,
-            "user_id": user_id,
-            "balance": balance
-        }
+    referrals = get_referrals_count(
+        user_id
     )
 
-    # Разрешаем GitHub Pages обращаться к API
-    response.headers["Access-Control-Allow-Origin"] = "*"
-
-    response.headers[
-        "Access-Control-Allow-Headers"
-    ] = "X-Telegram-Init-Data, Content-Type"
-
-    response.headers[
-        "Access-Control-Allow-Methods"
-    ] = "GET, OPTIONS"
-
-    return response
-
-
-# ============================================================
-# HEALTH
-# ============================================================
-
-async def health(request):
-
-    return web.Response(
-        text="OK"
+    return web.json_response(
+        {
+            "ok": True,
+            "user": {
+                "id": user_id,
+                "username": user.get("username"),
+                "first_name": user.get("first_name"),
+                "balance": balance,
+                "referrals": referrals
+            }
+        },
+        headers={
+            "Cache-Control": "no-store"
+        }
     )
 
 
@@ -1280,64 +1277,90 @@ async def options(request):
         status=204
     )
 
-    response.headers[
-        "Access-Control-Allow-Origin"
-    ] = "*"
+    response.headers["Access-Control-Allow-Origin"] = "*"
 
-    response.headers[
-        "Access-Control-Allow-Headers"
-    ] = "X-Telegram-Init-Data, Content-Type"
-    
-    response.headers[
-        "Access-Control-Allow-Methods"
-    ] = "GET, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = (
+        "X-Telegram-Init-Data, Content-Type"
+    )
+
+    response.headers["Access-Control-Allow-Methods"] = (
+        "GET, OPTIONS"
+    )
 
     return response
 
 
 # ============================================================
-# WEB SERVER START
+# CORS MIDDLEWARE
+# ============================================================
+
+@web.middleware
+async def cors_middleware(request, handler):
+
+    try:
+
+        response = await handler(request)
+
+    except web.HTTPException as exc:
+
+        response = exc
+
+    response.headers["Access-Control-Allow-Origin"] = "*"
+
+    response.headers["Access-Control-Allow-Headers"] = (
+        "X-Telegram-Init-Data, Content-Type"
+    )
+
+    response.headers["Access-Control-Allow-Methods"] = (
+        "GET, OPTIONS"
+    )
+
+    response.headers["Cache-Control"] = "no-store"
+
+    return response
+
+
+# ============================================================
+# WEB SERVER
 # ============================================================
 
 async def start_web_server():
 
-    app = web.Application()
-
-    # --------------------------------------------------------
-    # Сам HTML
-    # --------------------------------------------------------
-
-    app.router.add_get(
-        "/",
-        index
+    app = web.Application(
+        middlewares=[
+            cors_middleware
+        ]
     )
 
-    # --------------------------------------------------------
-    # API баланса
-    # --------------------------------------------------------
+    # Health
+    app.router.add_get(
+        "/health",
+        health
+    )
 
+    # Balance
     app.router.add_get(
         "/api/balance",
         api_balance
     )
 
-    # --------------------------------------------------------
-    # CORS OPTIONS
-    # --------------------------------------------------------
+    # User
+    app.router.add_get(
+        "/api/user",
+        api_user
+    )
 
+    # OPTIONS
     app.router.add_route(
         "OPTIONS",
         "/api/balance",
         options
     )
 
-    # --------------------------------------------------------
-    # Health
-    # --------------------------------------------------------
-
-    app.router.add_get(
-        "/health",
-        health
+    app.router.add_route(
+        "OPTIONS",
+        "/api/user",
+        options
     )
 
     runner = web.AppRunner(
@@ -1355,11 +1378,12 @@ async def start_web_server():
     await site.start()
 
     logger.info(
-        f"🌐 Web API запущен на порту {PORT}"
+        f"🌐 Web API запущен "
+        f"на порту {PORT}"
     )
 
     logger.info(
-        f"🎮 Web App URL: {WEBAPP_URL}"
+        "❤️ Health: /health"
     )
 
     logger.info(
@@ -1367,18 +1391,14 @@ async def start_web_server():
     )
 
     logger.info(
-        "❤️ Health: /health"
+        "👤 API: /api/user"
     )
 
-    try:
+    while True:
 
-        while True:
-
-            await asyncio.sleep(3600)
-
-    finally:
-
-        await runner.cleanup()
+        await asyncio.sleep(
+            3600
+        )
 
 
 # ============================================================
@@ -1417,24 +1437,12 @@ async def setup_bot():
     )
 
     # ========================================================
-    # ГЛАВНАЯ КНОПКА TELEGRAM
+    # МЕНЮ TELEGRAM
     # ========================================================
-    # РАНЬШЕ ЗДЕСЬ БЫЛО:
-    #
-    # os.getenv("WEBAPP_URL", "")
-    #
-    # Из-за этого URL был пустым и Telegram выдавал:
-    #
-    # Web App URL '' is invalid
-    #
-    # Теперь используется постоянный HTTPS URL GitHub Pages.
 
     await bot.set_chat_menu_button(
-
         menu_button=MenuButtonWebApp(
-
             text="🎮 Играть",
-
             web_app=WebAppInfo(
                 url=WEBAPP_URL
             )
@@ -1442,11 +1450,7 @@ async def setup_bot():
     )
 
     logger.info(
-        f"✅ Web App кнопка установлена: {WEBAPP_URL}"
-    )
-
-    logger.info(
-        "✅ Команды Telegram установлены"
+        "✅ Команды и WebApp-кнопка установлены"
     )
 
 
@@ -1462,6 +1466,9 @@ async def main():
 
     init_db()
 
+    # Удаляем старый webhook,
+    # чтобы polling работал нормально.
+
     await bot.delete_webhook(
         drop_pending_updates=False
     )
@@ -1472,26 +1479,17 @@ async def main():
         "🤖 Telegram polling запускается..."
     )
 
-    try:
+    await asyncio.gather(
 
-        await asyncio.gather(
+        dp.start_polling(
+            bot,
+            allowed_updates=
+                dp.resolve_used_update_types()
+        ),
 
-            dp.start_polling(
-                bot,
-                allowed_updates=dp.resolve_used_update_types()
-            ),
+        start_web_server()
 
-            start_web_server()
-
-        )
-
-    finally:
-
-        await bot.session.close()
-
-        logger.info(
-            "👋 Telegram bot session закрыта"
-        )
+    )
 
 
 # ============================================================
