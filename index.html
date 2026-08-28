@@ -19,87 +19,150 @@
         }
         .container {
             background: #142a4a;
-            padding: 40px 30px;
-            border-radius: 24px;
+            padding: 30px;
+            border-radius: 20px;
             width: 100%;
-            max-width: 380px;
+            max-width: 360px;
             text-align: center;
             box-shadow: 0 20px 60px rgba(0,0,0,0.5);
         }
-        h1 {
-            font-size: 24px;
-            color: #6ab0ff;
-            margin-bottom: 10px;
-        }
+        h1 { color: #6ab0ff; margin-bottom: 10px; }
         .balance {
-            font-size: 48px;
+            font-size: 40px;
             font-weight: 900;
             color: #ffd84d;
-            margin: 25px 0;
+            margin: 20px 0;
         }
-        .hint {
-            color: #8ab4d8;
-            font-size: 13px;
-            line-height: 1.5;
+        input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid #2a7ad8;
+            background: #0a1628;
+            color: #fff;
+            font-size: 18px;
+            text-align: center;
+            outline: none;
         }
-        .refresh-btn {
-            margin-top: 20px;
-            padding: 12px 30px;
+        input:focus { border-color: #6ab0ff; }
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 18px;
+        }
+        .btn {
+            flex: 1;
+            padding: 14px;
             border: none;
             border-radius: 12px;
-            background: #2a7ad8;
-            color: #fff;
             font-size: 16px;
             font-weight: 800;
             cursor: pointer;
+            transition: 0.2s;
+            color: #fff;
         }
-        .refresh-btn:active { transform: scale(0.96); }
-        .footer {
-            margin-top: 25px;
-            color: #5a8aaa;
+        .btn:active { transform: scale(0.96); }
+        .btn-primary { background: linear-gradient(135deg, #2a7ad8, #1a5ab8); }
+        .btn-danger  { background: linear-gradient(135deg, #c04060, #a03050); }
+        .btn-secondary { background: #1a3a6a; }
+        .hint {
+            margin-top: 20px;
+            color: #8ab4d8;
             font-size: 12px;
+        }
+        .error {
+            color: #ef4752;
+            margin-top: 10px;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>💰 Мой баланс</h1>
-        <div class="balance" id="balanceDisplay">0 ⭐</div>
-        <p class="hint">Пополнить баланс можно в чате с ботом</p>
-        <button class="refresh-btn" id="refreshBtn">🔄 Обновить</button>
-        <div class="footer">Данные синхронизируются с ботом</div>
+        <h1>💰 Кошелёк</h1>
+        <div class="balance" id="balanceDisplay">Загрузка...</div>
+        <input type="number" id="amountInput" placeholder="Сумма" value="100" min="1">
+        <div class="btn-group">
+            <button class="btn btn-primary" id="depositBtn">Пополнить</button>
+            <button class="btn btn-danger" id="withdrawBtn">Вывести</button>
+        </div>
+        <button class="btn btn-secondary" id="refreshBtn" style="margin-top:10px; width:100%;">🔄 Обновить баланс</button>
+        <div class="hint">Баланс синхронизируется с ботом</div>
+        <div id="errorMessage" class="error"></div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
+        // Получаем ID пользователя из Telegram
+        const userId = tg.initDataUnsafe?.user?.id;
+
         const balanceDisplay = document.getElementById('balanceDisplay');
+        const amountInput = document.getElementById('amountInput');
+        const depositBtn = document.getElementById('depositBtn');
+        const withdrawBtn = document.getElementById('withdrawBtn');
         const refreshBtn = document.getElementById('refreshBtn');
+        const errorMessage = document.getElementById('errorMessage');
 
-        // Получаем user_id из Telegram
-        const user_id = tg.initDataUnsafe?.user?.id;
+        // ⚠️ ВАЖНО: замените на ДОМЕН ВАШЕГО БОТА на Bothost
+        const API_BASE = 'https://whitebear.bothost.tech';
 
+        // === Функция загрузки баланса с сервера ===
         async function fetchBalance() {
-            if (!user_id) {
+            if (!userId) {
                 balanceDisplay.textContent = '❌ Ошибка';
+                errorMessage.textContent = 'Не удалось определить пользователя';
                 return;
             }
+
             try {
-                const response = await fetch(`https://whitebear.bothost.tech/api/balance/${user_id}`);
+                const response = await fetch(`${API_BASE}/api/balance/${userId}`);
+                if (!response.ok) throw new Error('Сервер вернул ошибку');
                 const data = await response.json();
                 balanceDisplay.textContent = `${data.balance} ⭐`;
+                errorMessage.textContent = '';
             } catch (error) {
-                balanceDisplay.textContent = '⚠️ Ошибка загрузки';
-                console.error(error);
+                console.error('Ошибка загрузки баланса:', error);
+                balanceDisplay.textContent = '⚠️ Ошибка';
+                errorMessage.textContent = 'Не удалось загрузить баланс. Проверьте подключение.';
             }
         }
 
-        // Загружаем при открытии
-        fetchBalance();
+        // === Отправка действия в бот (пополнение / вывод) ===
+        function sendAction(action, amount) {
+            tg.sendData(JSON.stringify({ action, amount }));
+            // Не закрываем сразу, чтобы пользователь видел сайт
+            // tg.close(); // закомментировано
+            // Показываем уведомление
+            tg.showAlert(`✅ Запрос на ${action === 'deposit' ? 'пополнение' : 'вывод'} ${amount} ⭐ отправлен!`);
+            // Обновляем баланс через 2 секунды
+            setTimeout(fetchBalance, 2000);
+        }
 
-        // По кнопке обновить
+        // === Обработчики кнопок ===
+        depositBtn.addEventListener('click', () => {
+            const amount = parseInt(amountInput.value);
+            if (amount > 0) {
+                sendAction('deposit', amount);
+            } else {
+                tg.showAlert('Введите сумму больше 0');
+            }
+        });
+
+        withdrawBtn.addEventListener('click', () => {
+            const amount = parseInt(amountInput.value);
+            if (amount > 0) {
+                sendAction('withdraw', amount);
+            } else {
+                tg.showAlert('Введите сумму больше 0');
+            }
+        });
+
         refreshBtn.addEventListener('click', fetchBalance);
+
+        // === Загружаем баланс при открытии ===
+        fetchBalance();
     </script>
 </body>
 </html>
