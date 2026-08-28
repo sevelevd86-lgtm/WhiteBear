@@ -7,14 +7,17 @@ import os
 import secrets
 import sqlite3
 import sys
+import time
 from pathlib import Path
 from urllib.parse import parse_qsl
 
 from aiohttp import web
+
 from aiogram import Bot, Dispatcher, F, types
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.filters import Command
+
 from aiogram.types import (
     BotCommand,
     BotCommandScopeDefault,
@@ -26,6 +29,7 @@ from aiogram.types import (
     PreCheckoutQuery,
     WebAppInfo,
 )
+
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 
@@ -33,7 +37,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 # НАСТРОЙКИ
 # ============================================================
 
-BOT_TOKEN = os.getenv("BOT_TOKEN", "8918284594:AAFLxOg1eEx4JS6z6V9wHr-t8T3Q9Qwiepg").strip()
+BOT_TOKEN = os.getenv("BOT_TOKEN", "").strip()
 
 BOT_USERNAME = "White_Bear_ROBOT"
 
@@ -103,7 +107,6 @@ def db():
 def init_db():
 
     conn = db()
-
     cur = conn.cursor()
 
     cur.execute("""
@@ -141,8 +144,26 @@ def init_db():
         )
     """)
 
-    conn.commit()
+    # --------------------------------------------------------
+    # ТРАНЗАКЦИИ ИГР
+    #
+    # operation_id используется для защиты от повторного
+    # списания/начисления одной и той же операции.
+    # --------------------------------------------------------
 
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS game_transactions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            operation_id TEXT UNIQUE NOT NULL,
+            user_id INTEGER NOT NULL,
+            operation_type TEXT NOT NULL,
+            amount REAL NOT NULL,
+            game TEXT,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    conn.commit()
     conn.close()
 
     logger.info(
@@ -157,7 +178,6 @@ def init_db():
 def get_user(user_id: int):
 
     conn = db()
-
     cur = conn.cursor()
 
     cur.execute(
@@ -184,7 +204,6 @@ def create_user(
 ):
 
     conn = db()
-
     cur = conn.cursor()
 
     cur.execute(
@@ -215,7 +234,6 @@ def create_user(
         )
 
         conn.commit()
-
         conn.close()
 
         return
@@ -258,7 +276,6 @@ def create_user(
     )
 
     conn.commit()
-
     conn.close()
 
     logger.info(
@@ -269,7 +286,6 @@ def create_user(
 def get_balance(user_id: int) -> float:
 
     conn = db()
-
     cur = conn.cursor()
 
     cur.execute(
@@ -296,8 +312,12 @@ def add_balance(
     amount: float
 ):
 
-    conn = db()
+    amount = round(float(amount), 2)
 
+    if amount <= 0:
+        return None
+
+    conn = db()
     cur = conn.cursor()
 
     cur.execute(
@@ -330,7 +350,307 @@ def add_balance(
     if row:
         return float(row["balance"])
 
-    return 0.0
+    return None
+
+
+def deduct_balance(
+    user_id: int,
+    amount: float
+):
+
+    amount = round(float(amount), 2)
+
+    if amount <= 0:
+        return None
+
+    conn = db()
+    cur = conn.cursor()
+
+    # --------------------------------------------------------
+    # ВАЖНО:
+    # Списываем только если баланс достаточный.
+    # --------------------------------------------------------
+
+    cur.execute(
+        """
+        UPDATE users
+        SET balance = balance - ?
+        WHERE user_id = ?
+          AND balance >= ?
+        """,
+        (
+            amount,
+            user_id,
+            amount
+        )
+    )
+
+    if cur.rowcount == 0:
+
+        conn.rollback()
+        conn.close()
+
+        return None
+
+    cur.execute(
+        """
+        SELECT balance
+        FROM users
+        WHERE user_id = ?
+        """,
+        (user_id,)
+    )
+
+    row = cur.fetchone()
+
+    conn.commit()
+    conn.close()
+
+    if row:
+        return float(row["balance"])
+
+    return None
+
+
+# ============================================================
+# GAME TRANSACTION
+# ============================================================
+
+def process_game_transaction(
+    user_id: int,
+    operation_id: str,
+    operation_type: str,
+    amount: float,
+    game: str = ""
+):
+
+    amount = round(float(amount), 2)
+
+    if amount <= 0:
+        return {
+            "ok": False,
+            "error": "invalid_amount"
+        }
+
+    if operation_type not in (
+        "deduct",
+        "add"
+    ):
+        return {
+            "ok": False,
+            "error": "invalid_operation"
+        }
+
+    conn = db()
+    cur = conn.cursor()
+
+    try:
+
+        # ----------------------------------------------------
+        # Проверяем повтор операции
+        # ----------------------------------------------------
+
+        cur.execute(
+            """
+            SELECT *
+            FROM game_transactions
+            WHERE operation_id = ?
+            """,
+            (operation_id,)
+        )
+
+        existing = cur.fetchone()
+
+        if existing:
+
+            cur.execute(
+                """
+                SELECT balance
+                FROM users
+                WHERE user_id = ?
+                """,
+                (user_id,)
+            )
+
+            row = cur.fetchone()
+
+            conn.close()
+
+            if not row:
+                return {
+                    "ok": False,
+                    "error": "user_not_found"
+                }
+
+            return {
+                "ok": True,
+                "duplicate": True,
+                "balance": float(row["balance"]),
+                "operation_id": operation_id
+            }
+
+        # ----------------------------------------------------
+        # Пользователь должен существовать
+        # ----------------------------------------------------
+
+        cur.execute(
+            """
+            SELECT balance
+            FROM users
+            WHERE user_id = ?
+            """,
+            (user_id,)
+        )
+
+        user = cur.fetchone()
+
+        if not user:
+
+            conn.close()
+
+            return {
+                "ok": False,
+                "error": "user_not_found"
+            }
+
+        current_balance = float(
+            user["balance"]
+        )
+
+        # ----------------------------------------------------
+        # СПИСАНИЕ
+        # ----------------------------------------------------
+
+        if operation_type == "deduct":
+
+            if current_balance < amount:
+
+                conn.close()
+
+                return {
+                    "ok": False,
+                    "error": "insufficient_balance",
+                    "balance": current_balance
+                }
+
+            new_balance = round(
+                current_balance - amount,
+                2
+            )
+
+        # ----------------------------------------------------
+        # НАЧИСЛЕНИЕ
+        # ----------------------------------------------------
+
+        else:
+
+            new_balance = round(
+                current_balance + amount,
+                2
+            )
+
+        # ----------------------------------------------------
+        # Обновляем баланс
+        # ----------------------------------------------------
+
+        cur.execute(
+            """
+            UPDATE users
+            SET balance = ?
+            WHERE user_id = ?
+            """,
+            (
+                new_balance,
+                user_id
+            )
+        )
+
+        # ----------------------------------------------------
+        # Сохраняем операцию
+        # ----------------------------------------------------
+
+        cur.execute(
+            """
+            INSERT INTO game_transactions (
+                operation_id,
+                user_id,
+                operation_type,
+                amount,
+                game
+            )
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (
+                operation_id,
+                user_id,
+                operation_type,
+                amount,
+                game
+            )
+        )
+
+        conn.commit()
+        conn.close()
+
+        logger.info(
+            f"🎮 GAME TRANSACTION: "
+            f"user={user_id}, "
+            f"game={game}, "
+            f"type={operation_type}, "
+            f"amount={amount}, "
+            f"balance={new_balance}, "
+            f"operation={operation_id}"
+        )
+
+        return {
+            "ok": True,
+            "duplicate": False,
+            "balance": new_balance,
+            "amount": amount,
+            "operation_id": operation_id
+        }
+
+    except sqlite3.IntegrityError:
+
+        conn.rollback()
+
+        cur.execute(
+            """
+            SELECT balance
+            FROM users
+            WHERE user_id = ?
+            """,
+            (user_id,)
+        )
+
+        row = cur.fetchone()
+
+        conn.close()
+
+        return {
+            "ok": True,
+            "duplicate": True,
+            "balance": (
+                float(row["balance"])
+                if row
+                else 0.0
+            ),
+            "operation_id": operation_id
+        }
+
+    except Exception:
+
+        conn.rollback()
+        conn.close()
+
+        logger.exception(
+            "❌ Ошибка game transaction"
+        )
+
+        return {
+            "ok": False,
+            "error": "transaction_error"
+        }
 
 
 # ============================================================
@@ -340,7 +660,6 @@ def add_balance(
 def get_referrals_count(user_id: int):
 
     conn = db()
-
     cur = conn.cursor()
 
     cur.execute(
@@ -371,7 +690,6 @@ def get_referral_link(user_id: int):
 def get_user_by_ref_code(ref_code: str):
 
     conn = db()
-
     cur = conn.cursor()
 
     cur.execute(
@@ -399,7 +717,6 @@ def add_referral(
         return False
 
     conn = db()
-
     cur = conn.cursor()
 
     cur.execute(
@@ -449,7 +766,6 @@ def add_referral(
     )
 
     conn.commit()
-
     conn.close()
 
     return True
@@ -491,8 +807,6 @@ def validate_init_data(init_data: str):
         auth_timestamp = int(
             auth_date
         )
-
-        import time
 
         now = int(
             time.time()
@@ -542,6 +856,25 @@ def validate_init_data(init_data: str):
         )
 
         return None
+
+
+# ============================================================
+# WEBAPP AUTH
+# ============================================================
+
+def get_webapp_user(request):
+
+    init_data = request.headers.get(
+        "X-Telegram-Init-Data",
+        ""
+    ).strip()
+
+    if not init_data:
+        return None
+
+    return validate_init_data(
+        init_data
+    )
 
 
 # ============================================================
@@ -975,11 +1308,10 @@ async def successful_payment(
         return
 
     conn = db()
-
     cur = conn.cursor()
 
     # --------------------------------------------------------
-    # Проверяем, не был ли платёж уже обработан
+    # Проверяем повторный платеж
     # --------------------------------------------------------
 
     cur.execute(
@@ -1002,7 +1334,7 @@ async def successful_payment(
         return
 
     # --------------------------------------------------------
-    # Создаём пользователя, если его нет
+    # Создаем пользователя
     # --------------------------------------------------------
 
     cur.execute(
@@ -1052,7 +1384,7 @@ async def successful_payment(
         )
 
     # --------------------------------------------------------
-    # НАЧИСЛЯЕМ STARS
+    # Начисляем
     # --------------------------------------------------------
 
     cur.execute(
@@ -1068,7 +1400,7 @@ async def successful_payment(
     )
 
     # --------------------------------------------------------
-    # СОХРАНЯЕМ ПЛАТЁЖ
+    # Сохраняем платеж
     # --------------------------------------------------------
 
     cur.execute(
@@ -1092,7 +1424,7 @@ async def successful_payment(
     )
 
     # --------------------------------------------------------
-    # Получаем новый баланс
+    # Новый баланс
     # --------------------------------------------------------
 
     cur.execute(
@@ -1111,7 +1443,6 @@ async def successful_payment(
     )
 
     conn.commit()
-
     conn.close()
 
     logger.info(
@@ -1317,7 +1648,7 @@ def cors_headers():
     return {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods":
-            "GET, OPTIONS",
+            "GET, POST, OPTIONS",
         "Access-Control-Allow-Headers":
             "Content-Type, X-Telegram-Init-Data",
         "Cache-Control":
@@ -1361,11 +1692,6 @@ async def index(request):
 
 async def health(request):
 
-    logger.info(
-        f"❤️ GET /health from "
-        f"{request.remote}"
-    )
-
     return web.json_response(
         {
             "ok": True,
@@ -1380,19 +1706,13 @@ async def health(request):
 # ============================================================
 # API BALANCE
 #
-# GET:
-# /api/balance/123456789
+# GET /api/balance/123456789
 # ============================================================
 
 async def api_balance_by_id(request):
 
     raw_user_id = request.match_info.get(
         "user_id"
-    )
-
-    logger.info(
-        f"💰 GET /api/balance/{raw_user_id} "
-        f"from={request.remote}"
     )
 
     try:
@@ -1421,19 +1741,12 @@ async def api_balance_by_id(request):
 
     if not user:
 
-        # Создаём пользователя автоматически.
         create_user(
             user_id
         )
 
     balance = get_balance(
         user_id
-    )
-
-    logger.info(
-        f"💰 API BALANCE: "
-        f"user={user_id}, "
-        f"balance={balance}"
     )
 
     return web.json_response(
@@ -1449,19 +1762,13 @@ async def api_balance_by_id(request):
 # ============================================================
 # API USER
 #
-# GET:
-# /api/user/123456789
+# GET /api/user/123456789
 # ============================================================
 
 async def api_user_by_id(request):
 
     raw_user_id = request.match_info.get(
         "user_id"
-    )
-
-    logger.info(
-        f"👤 GET /api/user/{raw_user_id} "
-        f"from={request.remote}"
     )
 
     try:
@@ -1516,6 +1823,487 @@ async def api_user_by_id(request):
 
 
 # ============================================================
+# API DEDUCT
+#
+# POST /api/balance/deduct
+#
+# JSON:
+#
+# {
+#     "user_id": 123456789,
+#     "amount": 50,
+#     "operation_id": "...",
+#     "game": "cases"
+# }
+# ============================================================
+
+async def api_balance_deduct(request):
+
+    # --------------------------------------------------------
+    # Проверяем Telegram initData
+    # --------------------------------------------------------
+
+    telegram_user = get_webapp_user(
+        request
+    )
+
+    if not telegram_user:
+
+        return web.json_response(
+            {
+                "ok": False,
+                "error": "invalid_telegram_init_data"
+            },
+            status=401,
+            headers=cors_headers()
+        )
+
+    authenticated_user_id = int(
+        telegram_user["id"]
+    )
+
+    # --------------------------------------------------------
+    # JSON
+    # --------------------------------------------------------
+
+    try:
+
+        data = await request.json()
+
+    except Exception:
+
+        return web.json_response(
+            {
+                "ok": False,
+                "error": "invalid_json"
+            },
+            status=400,
+            headers=cors_headers()
+        )
+
+    try:
+
+        requested_user_id = int(
+            data.get("user_id")
+        )
+
+        amount = float(
+            data.get("amount")
+        )
+
+        operation_id = str(
+            data.get("operation_id", "")
+        ).strip()
+
+        game = str(
+            data.get("game", "")
+        ).strip()
+
+    except Exception:
+
+        return web.json_response(
+            {
+                "ok": False,
+                "error": "invalid_data"
+            },
+            status=400,
+            headers=cors_headers()
+        )
+
+    # --------------------------------------------------------
+    # Нельзя менять баланс другого пользователя
+    # --------------------------------------------------------
+
+    if requested_user_id != authenticated_user_id:
+
+        return web.json_response(
+            {
+                "ok": False,
+                "error": "user_mismatch"
+            },
+            status=403,
+            headers=cors_headers()
+        )
+
+    if not operation_id:
+
+        return web.json_response(
+            {
+                "ok": False,
+                "error": "operation_id_required"
+            },
+            status=400,
+            headers=cors_headers()
+        )
+
+    if amount <= 0 or amount > 1000000:
+
+        return web.json_response(
+            {
+                "ok": False,
+                "error": "invalid_amount"
+            },
+            status=400,
+            headers=cors_headers()
+        )
+
+    # --------------------------------------------------------
+    # Пользователь
+    # --------------------------------------------------------
+
+    create_user(
+        authenticated_user_id,
+        telegram_user.get("username"),
+        telegram_user.get("first_name")
+    )
+
+    result = process_game_transaction(
+        user_id=authenticated_user_id,
+        operation_id=operation_id,
+        operation_type="deduct",
+        amount=amount,
+        game=game
+    )
+
+    if not result["ok"]:
+
+        status = 400
+
+        if result["error"] == "insufficient_balance":
+            status = 402
+
+        return web.json_response(
+            result,
+            status=status,
+            headers=cors_headers()
+        )
+
+    return web.json_response(
+        result,
+        headers=cors_headers()
+    )
+
+
+# ============================================================
+# API ADD
+#
+# POST /api/balance/add
+#
+# JSON:
+#
+# {
+#     "user_id": 123456789,
+#     "amount": 100,
+#     "operation_id": "...",
+#     "game": "ball"
+# }
+# ============================================================
+
+async def api_balance_add(request):
+
+    # --------------------------------------------------------
+    # Проверяем Telegram initData
+    # --------------------------------------------------------
+
+    telegram_user = get_webapp_user(
+        request
+    )
+
+    if not telegram_user:
+
+        return web.json_response(
+            {
+                "ok": False,
+                "error": "invalid_telegram_init_data"
+            },
+            status=401,
+            headers=cors_headers()
+        )
+
+    authenticated_user_id = int(
+        telegram_user["id"]
+    )
+
+    # --------------------------------------------------------
+    # JSON
+    # --------------------------------------------------------
+
+    try:
+
+        data = await request.json()
+
+    except Exception:
+
+        return web.json_response(
+            {
+                "ok": False,
+                "error": "invalid_json"
+            },
+            status=400,
+            headers=cors_headers()
+        )
+
+    try:
+
+        requested_user_id = int(
+            data.get("user_id")
+        )
+
+        amount = float(
+            data.get("amount")
+        )
+
+        operation_id = str(
+            data.get("operation_id", "")
+        ).strip()
+
+        game = str(
+            data.get("game", "")
+        ).strip()
+
+    except Exception:
+
+        return web.json_response(
+            {
+                "ok": False,
+                "error": "invalid_data"
+            },
+            status=400,
+            headers=cors_headers()
+        )
+
+    # --------------------------------------------------------
+    # Проверяем владельца
+    # --------------------------------------------------------
+
+    if requested_user_id != authenticated_user_id:
+
+        return web.json_response(
+            {
+                "ok": False,
+                "error": "user_mismatch"
+            },
+            status=403,
+            headers=cors_headers()
+        )
+
+    if not operation_id:
+
+        return web.json_response(
+            {
+                "ok": False,
+                "error": "operation_id_required"
+            },
+            status=400,
+            headers=cors_headers()
+        )
+
+    if amount <= 0 or amount > 1000000:
+
+        return web.json_response(
+            {
+                "ok": False,
+                "error": "invalid_amount"
+            },
+            status=400,
+            headers=cors_headers()
+        )
+
+    create_user(
+        authenticated_user_id,
+        telegram_user.get("username"),
+        telegram_user.get("first_name")
+    )
+
+    # --------------------------------------------------------
+    # Начисление
+    # --------------------------------------------------------
+
+    result = process_game_transaction(
+        user_id=authenticated_user_id,
+        operation_id=operation_id,
+        operation_type="add",
+        amount=amount,
+        game=game
+    )
+
+    if not result["ok"]:
+
+        return web.json_response(
+            result,
+            status=400,
+            headers=cors_headers()
+        )
+
+    return web.json_response(
+        result,
+        headers=cors_headers()
+    )
+
+
+# ============================================================
+# API GAME TRANSACTION
+#
+# Универсальный endpoint.
+#
+# POST /api/game/transaction
+#
+# {
+#   "user_id": 123,
+#   "operation_id": "unique",
+#   "type": "deduct",
+#   "amount": 50,
+#   "game": "cases"
+# }
+# ============================================================
+
+async def api_game_transaction(request):
+
+    telegram_user = get_webapp_user(
+        request
+    )
+
+    if not telegram_user:
+
+        return web.json_response(
+            {
+                "ok": False,
+                "error": "invalid_telegram_init_data"
+            },
+            status=401,
+            headers=cors_headers()
+        )
+
+    authenticated_user_id = int(
+        telegram_user["id"]
+    )
+
+    try:
+
+        data = await request.json()
+
+    except Exception:
+
+        return web.json_response(
+            {
+                "ok": False,
+                "error": "invalid_json"
+            },
+            status=400,
+            headers=cors_headers()
+        )
+
+    try:
+
+        requested_user_id = int(
+            data.get("user_id")
+        )
+
+        amount = float(
+            data.get("amount")
+        )
+
+        operation_id = str(
+            data.get("operation_id", "")
+        ).strip()
+
+        operation_type = str(
+            data.get("type", "")
+        ).strip().lower()
+
+        game = str(
+            data.get("game", "")
+        ).strip()
+
+    except Exception:
+
+        return web.json_response(
+            {
+                "ok": False,
+                "error": "invalid_data"
+            },
+            status=400,
+            headers=cors_headers()
+        )
+
+    if requested_user_id != authenticated_user_id:
+
+        return web.json_response(
+            {
+                "ok": False,
+                "error": "user_mismatch"
+            },
+            status=403,
+            headers=cors_headers()
+        )
+
+    if operation_type not in (
+        "deduct",
+        "add"
+    ):
+
+        return web.json_response(
+            {
+                "ok": False,
+                "error": "invalid_operation"
+            },
+            status=400,
+            headers=cors_headers()
+        )
+
+    if not operation_id:
+
+        return web.json_response(
+            {
+                "ok": False,
+                "error": "operation_id_required"
+            },
+            status=400,
+            headers=cors_headers()
+        )
+
+    if amount <= 0 or amount > 1000000:
+
+        return web.json_response(
+            {
+                "ok": False,
+                "error": "invalid_amount"
+            },
+            status=400,
+            headers=cors_headers()
+        )
+
+    create_user(
+        authenticated_user_id,
+        telegram_user.get("username"),
+        telegram_user.get("first_name")
+    )
+
+    result = process_game_transaction(
+        user_id=authenticated_user_id,
+        operation_id=operation_id,
+        operation_type=operation_type,
+        amount=amount,
+        game=game
+    )
+
+    status = 200
+
+    if not result["ok"]:
+
+        status = 400
+
+        if result["error"] == "insufficient_balance":
+            status = 402
+
+    return web.json_response(
+        result,
+        status=status,
+        headers=cors_headers()
+    )
+
+
+# ============================================================
 # OPTIONS
 # ============================================================
 
@@ -1545,8 +2333,7 @@ async def webhook(request):
     except Exception:
 
         logger.warning(
-            "⚠️ Webhook получил "
-            "не JSON"
+            "⚠️ Webhook получил не JSON"
         )
 
         return web.json_response(
@@ -1557,10 +2344,6 @@ async def webhook(request):
             status=400,
             headers=cors_headers()
         )
-
-    logger.info(
-        "📨 Telegram update received"
-    )
 
     try:
 
@@ -1641,6 +2424,33 @@ async def start_web_server():
     )
 
     # --------------------------------------------------------
+    # DEDUCT
+    # --------------------------------------------------------
+
+    app.router.add_post(
+        "/api/balance/deduct",
+        api_balance_deduct
+    )
+
+    # --------------------------------------------------------
+    # ADD
+    # --------------------------------------------------------
+
+    app.router.add_post(
+        "/api/balance/add",
+        api_balance_add
+    )
+
+    # --------------------------------------------------------
+    # UNIVERSAL GAME TRANSACTION
+    # --------------------------------------------------------
+
+    app.router.add_post(
+        "/api/game/transaction",
+        api_game_transaction
+    )
+
+    # --------------------------------------------------------
     # OPTIONS
     # --------------------------------------------------------
 
@@ -1652,13 +2462,25 @@ async def start_web_server():
 
     app.router.add_route(
         "OPTIONS",
-        "/api/user/{user_id}",
+        "/api/balance/deduct",
         options
     )
 
     app.router.add_route(
         "OPTIONS",
-        "/api/balance",
+        "/api/balance/add",
+        options
+    )
+
+    app.router.add_route(
+        "OPTIONS",
+        "/api/game/transaction",
+        options
+    )
+
+    app.router.add_route(
+        "OPTIONS",
+        "/api/user/{user_id}",
         options
     )
 
@@ -1706,7 +2528,19 @@ async def start_web_server():
     )
 
     logger.info(
-        "💰 BALANCE: /api/balance/{user_id}"
+        "💰 GET BALANCE: /api/balance/{user_id}"
+    )
+
+    logger.info(
+        "➖ DEDUCT: /api/balance/deduct"
+    )
+
+    logger.info(
+        "➕ ADD: /api/balance/add"
+    )
+
+    logger.info(
+        "🎮 GAME: /api/game/transaction"
     )
 
     logger.info(
@@ -1722,12 +2556,10 @@ async def start_web_server():
     )
 
     # --------------------------------------------------------
-    # LOCAL TEST
+    # LOCAL HEALTH TEST
     # --------------------------------------------------------
 
-    await asyncio.sleep(
-        1
-    )
+    await asyncio.sleep(1)
 
     try:
 
@@ -1797,10 +2629,6 @@ async def setup_bot():
         scope=BotCommandScopeDefault()
     )
 
-    # --------------------------------------------------------
-    # MENU BUTTON
-    # --------------------------------------------------------
-
     await bot.set_chat_menu_button(
         menu_button=MenuButtonWebApp(
             text="🎮 Играть",
@@ -1829,7 +2657,10 @@ async def setup_webhook():
 
         info = await bot.get_webhook_info()
 
-        current_url = info.url or "не установлен"
+        current_url = (
+            info.url
+            or "не установлен"
+        )
 
         logger.info(
             f"📡 Текущий webhook: "
@@ -1930,7 +2761,7 @@ async def main():
     )
 
     # --------------------------------------------------------
-    # START WEB SERVER
+    # WEB SERVER
     # --------------------------------------------------------
 
     await start_web_server()
