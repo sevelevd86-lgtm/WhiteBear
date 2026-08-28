@@ -26,6 +26,7 @@ from aiogram.types import (
     MenuButtonWebApp,
     Message,
     PreCheckoutQuery,
+    Update,
     WebAppInfo,
 )
 from aiogram.utils.keyboard import InlineKeyboardBuilder
@@ -41,17 +42,16 @@ BOT_USERNAME = "White_Bear_ROBOT"
 
 PORT = int(os.getenv("PORT", "8080"))
 
+WEBAPP_URL = "https://sevelevd86-lgtm.github.io/WhiteBear/"
+
+PUBLIC_URL = "https://bot-1787862010-6746-jix44.bothost.tech"
+
+WEBHOOK_URL = f"{PUBLIC_URL}/webhook"
+
 DB_NAME = "users.db"
 
 BASE_DIR = Path(__file__).resolve().parent
 
-# GitHub Pages с игрой
-WEBAPP_URL = os.getenv(
-    "WEBAPP_URL",
-    "https://sevelevd86-lgtm.github.io/WhiteBear/"
-).strip()
-
-# initData Telegram
 INIT_DATA_MAX_AGE = 86400
 
 
@@ -69,24 +69,13 @@ logger = logging.getLogger("white_bear")
 
 
 # ============================================================
-# ПРОВЕРКА НАСТРОЕК
+# ПРОВЕРКА ТОКЕНА
 # ============================================================
 
 if not BOT_TOKEN:
     raise RuntimeError(
-        "BOT_TOKEN не установлен. "
-        "Добавь BOT_TOKEN в переменные окружения."
+        "❌ BOT_TOKEN не установлен в переменных окружения."
     )
-
-if not WEBAPP_URL:
-    raise RuntimeError(
-        "WEBAPP_URL не установлен."
-    )
-
-
-logger.info(
-    f"🌐 WebApp URL: {WEBAPP_URL}"
-)
 
 
 # ============================================================
@@ -186,6 +175,7 @@ def create_user(
     exists = cur.fetchone()
 
     if exists:
+
         cur.execute("""
             UPDATE users
             SET username = ?,
@@ -203,6 +193,7 @@ def create_user(
         return
 
     while True:
+
         ref_code = secrets.token_hex(8)
 
         cur.execute(
@@ -285,7 +276,10 @@ def add_balance(
 
     conn.close()
 
-    return float(row["balance"]) if row else 0.0
+    if row:
+        return float(row["balance"])
+
+    return 0.0
 
 
 # ============================================================
@@ -293,6 +287,7 @@ def add_balance(
 # ============================================================
 
 def get_referrals_count(user_id: int):
+
     conn = db()
     cur = conn.cursor()
 
@@ -312,6 +307,7 @@ def get_referrals_count(user_id: int):
 
 
 def get_referral_link(user_id: int):
+
     return (
         f"https://t.me/"
         f"{BOT_USERNAME}"
@@ -320,6 +316,7 @@ def get_referral_link(user_id: int):
 
 
 def get_user_by_ref_code(ref_code: str):
+
     conn = db()
     cur = conn.cursor()
 
@@ -342,6 +339,7 @@ def add_referral(
     referrer_id: int,
     referred_id: int
 ):
+
     if referrer_id == referred_id:
         return False
 
@@ -359,7 +357,9 @@ def add_referral(
     ))
 
     if cur.fetchone():
+
         conn.close()
+
         return False
 
     cur.execute("""
@@ -462,7 +462,7 @@ def validate_init_data(init_data: str):
     except Exception as e:
 
         logger.error(
-            f"Ошибка проверки initData: {e}"
+            f"❌ Ошибка проверки initData: {e}"
         )
 
         return None
@@ -638,6 +638,31 @@ async def start(message: Message):
 
 
 # ============================================================
+# GAME COMMAND
+# ============================================================
+
+@dp.message(Command("game"))
+async def game_command(message: Message):
+
+    await message.answer(
+        "🎮 <b>White Bear Drop</b>\n\n"
+        "Открывай игру:",
+        reply_markup=InlineKeyboardMarkup(
+            inline_keyboard=[
+                [
+                    InlineKeyboardButton(
+                        text="🎮 Открыть игру",
+                        web_app=WebAppInfo(
+                            url=WEBAPP_URL
+                        )
+                    )
+                ]
+            ]
+        )
+    )
+
+
+# ============================================================
 # BALANCE COMMAND
 # ============================================================
 
@@ -689,15 +714,13 @@ async def profile_command(message: Message):
 # ============================================================
 
 @dp.callback_query(F.data == "deposit")
-async def deposit(
-    callback: types.CallbackQuery
-):
+async def deposit(callback: types.CallbackQuery):
 
     await callback.message.edit_text(
         "⭐ <b>Пополнение баланса</b>\n\n"
         "Выберите количество Stars.\n\n"
-        "После успешной оплаты сумма "
-        "автоматически зачислится "
+        "После успешной оплаты Stars "
+        "сумма автоматически зачислится "
         "на ваш Telegram ID.",
         reply_markup=deposit_keyboard()
     )
@@ -714,32 +737,28 @@ async def create_invoice(
     amount: int
 ):
 
+    payload = (
+        f"deposit:"
+        f"{user_id}:"
+        f"{amount}:"
+        f"{secrets.token_hex(8)}"
+    )
+
     await bot.send_invoice(
         chat_id=user_id,
-
         title=f"Пополнение {amount} ⭐",
-
         description=(
             f"Пополнение игрового баланса "
             f"на {amount} Telegram Stars."
         ),
-
-        payload=(
-            f"deposit:"
-            f"{user_id}:"
-            f"{amount}:"
-            f"{secrets.token_hex(8)}"
-        ),
-
+        payload=payload,
         currency="XTR",
-
         prices=[
             LabeledPrice(
                 label=f"{amount} Stars",
                 amount=amount
             )
         ],
-
         provider_token=""
     )
 
@@ -773,7 +792,7 @@ async def buy_stars(
     except Exception as e:
 
         logger.exception(
-            f"Ошибка invoice: {e}"
+            f"❌ Ошибка invoice: {e}"
         )
 
         await callback.answer(
@@ -840,12 +859,6 @@ async def successful_payment(
     )
 
     if payment.currency != "XTR":
-
-        logger.warning(
-            f"⚠️ Неизвестная валюта "
-            f"от пользователя {user_id}"
-        )
-
         return
 
     conn = db()
@@ -874,7 +887,7 @@ async def successful_payment(
         return
 
     # --------------------------------------------------------
-    # ПРОВЕРКА ПОЛЬЗОВАТЕЛЯ
+    # СОЗДАЁМ ПОЛЬЗОВАТЕЛЯ, ЕСЛИ ЕГО НЕТ
     # --------------------------------------------------------
 
     cur.execute("""
@@ -892,8 +905,7 @@ async def successful_payment(
             ref_code = secrets.token_hex(8)
 
             cur.execute(
-                "SELECT user_id "
-                "FROM users "
+                "SELECT user_id FROM users "
                 "WHERE ref_code = ?",
                 (ref_code,)
             )
@@ -918,9 +930,7 @@ async def successful_payment(
         ))
 
     # --------------------------------------------------------
-    # НАЧИСЛЕНИЕ
-    #
-    # РОВНО СТОЛЬКО STARS, СКОЛЬКО ОПЛАЧЕНО
+    # НАЧИСЛЯЕМ РОВНО СУММУ ОПЛАТЫ
     # --------------------------------------------------------
 
     cur.execute("""
@@ -933,7 +943,7 @@ async def successful_payment(
     ))
 
     # --------------------------------------------------------
-    # СОХРАНЕНИЕ ПЛАТЕЖА
+    # СОХРАНЯЕМ ПЛАТЁЖ
     # --------------------------------------------------------
 
     cur.execute("""
@@ -987,7 +997,9 @@ async def successful_payment(
         f"⭐ Оплачено: <b>{amount}</b>\n"
         f"💰 Начислено: <b>{amount} ⭐</b>\n"
         f"💳 Баланс: "
-        f"<b>{new_balance:.2f} ⭐</b>"
+        f"<b>{new_balance:.2f} ⭐</b>\n\n"
+        f"🎮 Откройте игру — баланс "
+        f"будет синхронизирован."
     )
 
 
@@ -1007,7 +1019,6 @@ async def balance_callback(
     await callback.message.edit_text(
         f"💰 <b>Ваш баланс</b>\n\n"
         f"<b>{balance:.2f} ⭐</b>",
-
         reply_markup=InlineKeyboardMarkup(
             inline_keyboard=[
                 [
@@ -1048,7 +1059,6 @@ async def profile_callback(
         f"<code>{user_id}</code>\n"
         f"💰 Баланс: "
         f"<b>{balance:.2f} ⭐</b>",
-
         reply_markup=InlineKeyboardMarkup(
             inline_keyboard=[
                 [
@@ -1090,7 +1100,6 @@ async def referral_callback(
         f"<code>{link}</code>\n\n"
         f"👥 Приглашено: <b>{count}</b>\n"
         f"💰 Награда: <b>10 ⭐</b>",
-
         reply_markup=InlineKeyboardMarkup(
             inline_keyboard=[
                 [
@@ -1124,7 +1133,6 @@ async def back_callback(
         f"🆔 ID: <code>{user_id}</code>\n"
         f"💰 Баланс: "
         f"<b>{balance:.2f} ⭐</b>",
-
         reply_markup=main_keyboard()
     )
 
@@ -1137,15 +1145,14 @@ async def back_callback(
 
 async def health(request):
 
-    return web.json_response({
-        "ok": True,
-        "status": "running",
-        "service": "White Bear Bot"
-    })
+    return web.Response(
+        text="OK",
+        content_type="text/plain"
+    )
 
 
 # ============================================================
-# BALANCE API
+# API BALANCE
 # ============================================================
 
 async def api_balance(request):
@@ -1169,21 +1176,9 @@ async def api_balance(request):
             status=401
         )
 
-    try:
-
-        user_id = int(
-            user["id"]
-        )
-
-    except Exception:
-
-        return web.json_response(
-            {
-                "ok": False,
-                "error": "invalid_user_id"
-            },
-            status=400
-        )
+    user_id = int(
+        user["id"]
+    )
 
     create_user(
         user_id,
@@ -1208,7 +1203,7 @@ async def api_balance(request):
 
 
 # ============================================================
-# USER API
+# API USER
 # ============================================================
 
 async def api_user(request):
@@ -1246,10 +1241,6 @@ async def api_user(request):
         user_id
     )
 
-    referrals = get_referrals_count(
-        user_id
-    )
-
     return web.json_response(
         {
             "ok": True,
@@ -1257,14 +1248,48 @@ async def api_user(request):
                 "id": user_id,
                 "username": user.get("username"),
                 "first_name": user.get("first_name"),
-                "balance": balance,
-                "referrals": referrals
+                "balance": balance
             }
         },
         headers={
             "Cache-Control": "no-store"
         }
     )
+
+
+# ============================================================
+# WEBHOOK
+# ============================================================
+
+async def webhook(request):
+
+    try:
+
+        data = await request.json()
+
+        update = Update.model_validate(
+            data
+        )
+
+        await dp.feed_update(
+            bot,
+            update
+        )
+
+        return web.Response(
+            text="OK"
+        )
+
+    except Exception as e:
+
+        logger.exception(
+            f"❌ Ошибка webhook: {e}"
+        )
+
+        return web.Response(
+            text="Webhook error",
+            status=500
+        )
 
 
 # ============================================================
@@ -1279,13 +1304,16 @@ async def options(request):
 
     response.headers["Access-Control-Allow-Origin"] = "*"
 
-    response.headers["Access-Control-Allow-Headers"] = (
-        "X-Telegram-Init-Data, Content-Type"
+    response.headers[
+        "Access-Control-Allow-Headers"
+    ] = (
+        "Content-Type, "
+        "X-Telegram-Init-Data"
     )
 
-    response.headers["Access-Control-Allow-Methods"] = (
-        "GET, OPTIONS"
-    )
+    response.headers[
+        "Access-Control-Allow-Methods"
+    ] = "GET, OPTIONS"
 
     return response
 
@@ -1295,27 +1323,39 @@ async def options(request):
 # ============================================================
 
 @web.middleware
-async def cors_middleware(request, handler):
+async def cors_middleware(
+    request,
+    handler
+):
 
     try:
 
-        response = await handler(request)
+        response = await handler(
+            request
+        )
 
     except web.HTTPException as exc:
 
         response = exc
 
-    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers[
+        "Access-Control-Allow-Origin"
+    ] = "*"
 
-    response.headers["Access-Control-Allow-Headers"] = (
-        "X-Telegram-Init-Data, Content-Type"
+    response.headers[
+        "Access-Control-Allow-Headers"
+    ] = (
+        "Content-Type, "
+        "X-Telegram-Init-Data"
     )
 
-    response.headers["Access-Control-Allow-Methods"] = (
-        "GET, OPTIONS"
-    )
+    response.headers[
+        "Access-Control-Allow-Methods"
+    ] = "GET, OPTIONS"
 
-    response.headers["Cache-Control"] = "no-store"
+    response.headers[
+        "Cache-Control"
+    ] = "no-store"
 
     return response
 
@@ -1324,7 +1364,7 @@ async def cors_middleware(request, handler):
 # WEB SERVER
 # ============================================================
 
-async def start_web_server():
+async def create_web_app():
 
     app = web.Application(
         middlewares=[
@@ -1332,25 +1372,42 @@ async def start_web_server():
         ]
     )
 
-    # Health
+    # --------------------------------------------------------
+    # HEALTH
+    # --------------------------------------------------------
+
     app.router.add_get(
         "/health",
         health
     )
 
-    # Balance
+    # --------------------------------------------------------
+    # API
+    # --------------------------------------------------------
+
     app.router.add_get(
         "/api/balance",
         api_balance
     )
 
-    # User
     app.router.add_get(
         "/api/user",
         api_user
     )
 
+    # --------------------------------------------------------
+    # WEBHOOK
+    # --------------------------------------------------------
+
+    app.router.add_post(
+        "/webhook",
+        webhook
+    )
+
+    # --------------------------------------------------------
     # OPTIONS
+    # --------------------------------------------------------
+
     app.router.add_route(
         "OPTIONS",
         "/api/balance",
@@ -1363,46 +1420,11 @@ async def start_web_server():
         options
     )
 
-    runner = web.AppRunner(
-        app
-    )
-
-    await runner.setup()
-
-    site = web.TCPSite(
-        runner,
-        "0.0.0.0",
-        PORT
-    )
-
-    await site.start()
-
-    logger.info(
-        f"🌐 Web API запущен "
-        f"на порту {PORT}"
-    )
-
-    logger.info(
-        "❤️ Health: /health"
-    )
-
-    logger.info(
-        "💰 API: /api/balance"
-    )
-
-    logger.info(
-        "👤 API: /api/user"
-    )
-
-    while True:
-
-        await asyncio.sleep(
-            3600
-        )
+    return app
 
 
 # ============================================================
-# BOT COMMANDS
+# SETUP BOT
 # ============================================================
 
 async def setup_bot():
@@ -1436,9 +1458,9 @@ async def setup_bot():
         scope=BotCommandScopeDefault()
     )
 
-    # ========================================================
-    # МЕНЮ TELEGRAM
-    # ========================================================
+    # --------------------------------------------------------
+    # MENU BUTTON
+    # --------------------------------------------------------
 
     await bot.set_chat_menu_button(
         menu_button=MenuButtonWebApp(
@@ -1455,6 +1477,50 @@ async def setup_bot():
 
 
 # ============================================================
+# SET WEBHOOK
+# ============================================================
+
+async def setup_webhook():
+
+    logger.info(
+        f"🌐 WebApp URL: {WEBAPP_URL}"
+    )
+
+    logger.info(
+        f"🔗 Webhook URL: {WEBHOOK_URL}"
+    )
+
+    try:
+
+        current = await bot.get_webhook_info()
+
+        logger.info(
+            f"📡 Текущий webhook: "
+            f"{current.url or 'не установлен'}"
+        )
+
+        await bot.set_webhook(
+            url=WEBHOOK_URL,
+            allowed_updates=dp.resolve_used_update_types(),
+            drop_pending_updates=False
+        )
+
+        info = await bot.get_webhook_info()
+
+        logger.info(
+            f"✅ Webhook установлен: {info.url}"
+        )
+
+    except Exception as e:
+
+        logger.exception(
+            f"❌ Не удалось установить webhook: {e}"
+        )
+
+        raise
+
+
+# ============================================================
 # MAIN
 # ============================================================
 
@@ -1464,32 +1530,89 @@ async def main():
         "🚀 Запуск White Bear..."
     )
 
+    # --------------------------------------------------------
+    # DATABASE
+    # --------------------------------------------------------
+
     init_db()
 
-    # Удаляем старый webhook,
-    # чтобы polling работал нормально.
-
-    await bot.delete_webhook(
-        drop_pending_updates=False
-    )
+    # --------------------------------------------------------
+    # BOT
+    # --------------------------------------------------------
 
     await setup_bot()
 
+    # --------------------------------------------------------
+    # WEBHOOK
+    # --------------------------------------------------------
+
+    await setup_webhook()
+
+    # --------------------------------------------------------
+    # WEB SERVER
+    # --------------------------------------------------------
+
+    app = await create_web_app()
+
+    runner = web.AppRunner(
+        app
+    )
+
+    await runner.setup()
+
+    site = web.TCPSite(
+        runner,
+        host="0.0.0.0",
+        port=PORT
+    )
+
+    await site.start()
+
     logger.info(
-        "🤖 Telegram polling запускается..."
+        f"🌐 Web API запущен на порту {PORT}"
     )
 
-    await asyncio.gather(
-
-        dp.start_polling(
-            bot,
-            allowed_updates=
-                dp.resolve_used_update_types()
-        ),
-
-        start_web_server()
-
+    logger.info(
+        "❤️ Health: /health"
     )
+
+    logger.info(
+        "💰 API: /api/balance"
+    )
+
+    logger.info(
+        "👤 API: /api/user"
+    )
+
+    logger.info(
+        "📡 Webhook: /webhook"
+    )
+
+    logger.info(
+        "🐻‍❄️ White Bear полностью запущен!"
+    )
+
+    # --------------------------------------------------------
+    # KEEP ALIVE
+    # --------------------------------------------------------
+
+    try:
+
+        while True:
+
+            await asyncio.sleep(
+                3600
+            )
+
+    finally:
+
+        await runner.cleanup()
+
+        await bot.delete_webhook(
+            drop_pending_updates=False
+        )
+
+        await bot.session.close()
 
 
 # ============================================================
