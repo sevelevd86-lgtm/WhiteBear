@@ -3,10 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Кошелёк</title>
+    <title>💰 Мой баланс</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
         body {
             font-family: Arial, sans-serif;
             background: #0a1628;
@@ -19,55 +23,46 @@
         }
         .container {
             background: #142a4a;
-            padding: 30px;
-            border-radius: 20px;
+            padding: 40px 30px;
+            border-radius: 24px;
             width: 100%;
-            max-width: 360px;
+            max-width: 380px;
             text-align: center;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
         }
-        h1 { color: #6ab0ff; margin-bottom: 10px; }
+        h1 {
+            font-size: 24px;
+            color: #6ab0ff;
+            margin-bottom: 10px;
+        }
         .balance {
-            font-size: 40px;
+            font-size: 48px;
             font-weight: 900;
             color: #ffd84d;
-            margin: 20px 0;
+            margin: 25px 0;
         }
-        input {
-            width: 100%;
-            padding: 14px;
-            border-radius: 12px;
-            border: 1px solid #2a7ad8;
-            background: #0a1628;
-            color: #fff;
-            font-size: 18px;
-            text-align: center;
-            outline: none;
+        .hint {
+            color: #8ab4d8;
+            font-size: 13px;
+            line-height: 1.5;
         }
-        input:focus { border-color: #6ab0ff; }
-        .btn-group {
-            display: flex;
-            gap: 12px;
-            margin-top: 18px;
-        }
-        .btn {
-            flex: 1;
-            padding: 14px;
+        .refresh-btn {
+            margin-top: 20px;
+            padding: 12px 30px;
             border: none;
             border-radius: 12px;
+            background: #2a7ad8;
+            color: #fff;
             font-size: 16px;
             font-weight: 800;
             cursor: pointer;
-            transition: 0.2s;
-            color: #fff;
         }
-        .btn:active { transform: scale(0.96); }
-        .btn-primary { background: linear-gradient(135deg, #2a7ad8, #1a5ab8); }
-        .btn-danger  { background: linear-gradient(135deg, #c04060, #a03050); }
-        .btn-secondary { background: #1a3a6a; }
-        .hint {
-            margin-top: 20px;
-            color: #8ab4d8;
+        .refresh-btn:active {
+            transform: scale(0.96);
+        }
+        .footer {
+            margin-top: 25px;
+            color: #5a8aaa;
             font-size: 12px;
         }
         .error {
@@ -79,15 +74,11 @@
 </head>
 <body>
     <div class="container">
-        <h1>💰 Кошелёк</h1>
+        <h1>💰 Мой баланс</h1>
         <div class="balance" id="balanceDisplay">Загрузка...</div>
-        <input type="number" id="amountInput" placeholder="Сумма" value="100" min="1">
-        <div class="btn-group">
-            <button class="btn btn-primary" id="depositBtn">Пополнить</button>
-            <button class="btn btn-danger" id="withdrawBtn">Вывести</button>
-        </div>
-        <button class="btn btn-secondary" id="refreshBtn" style="margin-top:10px; width:100%;">🔄 Обновить баланс</button>
-        <div class="hint">Баланс синхронизируется с ботом</div>
+        <p class="hint">Пополнить баланс можно в чате с ботом</p>
+        <button class="refresh-btn" id="refreshBtn">🔄 Обновить</button>
+        <div class="footer">Данные синхронизируются с ботом</div>
         <div id="errorMessage" class="error"></div>
     </div>
 
@@ -95,20 +86,16 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Получаем ID пользователя из Telegram
-        const userId = tg.initDataUnsafe?.user?.id;
-
         const balanceDisplay = document.getElementById('balanceDisplay');
-        const amountInput = document.getElementById('amountInput');
-        const depositBtn = document.getElementById('depositBtn');
-        const withdrawBtn = document.getElementById('withdrawBtn');
         const refreshBtn = document.getElementById('refreshBtn');
         const errorMessage = document.getElementById('errorMessage');
+
+        // Получаем user_id из Telegram
+        const userId = tg.initDataUnsafe?.user?.id;
 
         // ⚠️ ВАЖНО: замените на ДОМЕН ВАШЕГО БОТА на Bothost
         const API_BASE = 'https://whitebear.bothost.tech';
 
-        // === Функция загрузки баланса с сервера ===
         async function fetchBalance() {
             if (!userId) {
                 balanceDisplay.textContent = '❌ Ошибка';
@@ -129,40 +116,11 @@
             }
         }
 
-        // === Отправка действия в бот (пополнение / вывод) ===
-        function sendAction(action, amount) {
-            tg.sendData(JSON.stringify({ action, amount }));
-            // Не закрываем сразу, чтобы пользователь видел сайт
-            // tg.close(); // закомментировано
-            // Показываем уведомление
-            tg.showAlert(`✅ Запрос на ${action === 'deposit' ? 'пополнение' : 'вывод'} ${amount} ⭐ отправлен!`);
-            // Обновляем баланс через 2 секунды
-            setTimeout(fetchBalance, 2000);
-        }
-
-        // === Обработчики кнопок ===
-        depositBtn.addEventListener('click', () => {
-            const amount = parseInt(amountInput.value);
-            if (amount > 0) {
-                sendAction('deposit', amount);
-            } else {
-                tg.showAlert('Введите сумму больше 0');
-            }
-        });
-
-        withdrawBtn.addEventListener('click', () => {
-            const amount = parseInt(amountInput.value);
-            if (amount > 0) {
-                sendAction('withdraw', amount);
-            } else {
-                tg.showAlert('Введите сумму больше 0');
-            }
-        });
-
-        refreshBtn.addEventListener('click', fetchBalance);
-
-        // === Загружаем баланс при открытии ===
+        // Загружаем баланс при открытии
         fetchBalance();
+
+        // По кнопке обновить
+        refreshBtn.addEventListener('click', fetchBalance);
     </script>
 </body>
 </html>
