@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>White Bear Drop</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial,Helvetica,sans-serif;background:#070b11;color:#fff}
@@ -477,17 +478,50 @@ const API_ENDPOINTS = [
 const tg=window.Telegram&&window.Telegram.WebApp?window.Telegram.WebApp:null;
 if(tg){try{tg.ready();tg.expand();}catch(e){}}
 
-const tgUser=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user
- ? tg.initDataUnsafe.user
- : null;
+let USER_ID=0;
+let TELEGRAM_USER=null;
+let initData="";
 
-let USER_ID=tgUser&&tgUser.id
- ? Number(tgUser.id)
- : Number(localStorage.getItem("wb_user_id")||0);
+function refreshTelegramIdentity(){
+ if(!tg)return false;
+ try{tg.ready();}catch(e){}
+ const user=tg.initDataUnsafe&&tg.initDataUnsafe.user
+  ? tg.initDataUnsafe.user
+  : null;
+ const data=tg.initData||"";
 
-if(USER_ID>0) localStorage.setItem("wb_user_id",String(USER_ID));
+ if(user&&user.id){
+  TELEGRAM_USER=user;
+  USER_ID=Number(user.id);
+  initData=data;
+  localStorage.setItem("wb_user_id",String(USER_ID));
+  localStorage.setItem(
+   "wb_user_name",
+   [user.first_name,user.last_name].filter(Boolean).join(" ")||user.username||"Игрок"
+  );
+  return true;
+ }
 
-const initData=tg&&tg.initData?tg.initData:"";
+ // If Telegram supplied initData but no user object, do not reuse another
+ // account's cached ID.
+ if(data){
+  USER_ID=0;
+ }else{
+  const saved=Number(localStorage.getItem("wb_user_id")||0);
+  USER_ID=Number.isFinite(saved)&&saved>0?saved:0;
+ }
+ initData=data;
+ return false;
+}
+
+refreshTelegramIdentity();
+if(tg){
+ setTimeout(refreshTelegramIdentity,50);
+ setTimeout(refreshTelegramIdentity,250);
+ setTimeout(refreshTelegramIdentity,1000);
+ document.addEventListener("visibilitychange",refreshTelegramIdentity);
+ window.addEventListener("focus",refreshTelegramIdentity);
+}
 let balance=0;
 let activeApiBase=null;
 
@@ -631,6 +665,32 @@ async function transaction(type,amount,operationId,game){
 function idempotency(prefix){
  return prefix+":"+USER_ID+":"+Date.now()+":"+Math.random().toString(36).slice(2);
 }
+async function addInventoryServer(item,source="game"){
+ if(!USER_ID)throw new Error("Telegram ID не найден. Откройте приложение через Telegram.");
+ const payload={
+  user_id:Number(USER_ID),
+  item_key:String(item.item_key||(
+   source+":"+USER_ID+":"+Date.now()+":"+Math.random().toString(36).slice(2)
+  )).slice(0,200),
+  name:String(item.name||"Награда").slice(0,200),
+  emoji:String(item.emoji||"🎁").slice(0,50),
+  value:Number(item.value)||0,
+  rarity:String(item.rarity||"").slice(0,50)
+ };
+ const d=await api("/api/inventory/add",{
+  method:"POST",
+  body:JSON.stringify(payload)
+ });
+ if(d.item){
+  if(!Array.isArray(window.inventoryItems))window.inventoryItems=[];
+  window.inventoryItems.unshift({...d.item});
+ }
+ if(typeof window.renderInventory==="function"){
+  try{window.renderInventory()}catch(e){}
+ }
+ return d;
+}
+
 
 function esc(s){
  return String(s??"").replace(/[&<>"']/g,c=>({
@@ -1013,29 +1073,76 @@ async function openCellTicket(cell){
 }
 async function finishGameTicket(won,item){
  if(gameEndedTicket)return;gameEndedTicket=true;
- resultModalTicket.dataset.prize="0";resultModalTicket.dataset.symbol=won?item.symbol:"";
+ resultModalTicket.dataset.prize="0";
+ resultModalTicket.dataset.symbol=won?item.symbol:"";
+ resultModalTicket.dataset.name=won?item.name:"";
  if(won){
   const prize=item.prize;
-  try{
-   const d=await transaction("add",prize,idempotency("ticket_reward"),"tickets");setBalance(d.balance);
-  }catch(e){toast("Ошибка начисления: "+e.message);return}
   resultModalTicket.dataset.prize=String(prize);
-  resultIconTicket.textContent=item.symbol;resultTitleTicket.textContent="ПОБЕДА!";resultTitleTicket.className="result-title-ticket win";
+  resultIconTicket.textContent=item.symbol;
+  resultTitleTicket.textContent="ПОБЕДА!";
+  resultTitleTicket.className="result-title-ticket win";
   resultTextTicket.innerHTML="Вы нашли 3 одинаковых символа <b>"+esc(item.symbol)+"</b>.<br>Ваш приз: <b>"+esc(item.name)+"</b>.";
   resultMoneyTicket.textContent="+"+prize+" ⭐";
  }else{
-  resultIconTicket.textContent="😔";resultTitleTicket.textContent="ПОПРОБУЙ СНОВА";resultTitleTicket.className="result-title-ticket lose";
+  resultIconTicket.textContent="😔";
+  resultTitleTicket.textContent="ПОПРОБУЙ СНОВА";
+  resultTitleTicket.className="result-title-ticket lose";
   resultTextTicket.textContent="Все 9 ячеек открыты, но трёх одинаковых символов найти не удалось.";
   resultMoneyTicket.textContent="0 ⭐";
  }
  setTimeout(()=>resultModalTicket.classList.add("show"),700);
 }
 function resetTicket(){
- resultModalTicket.classList.remove("show");gameScreenTicket.classList.remove("active");selectScreen.classList.add("active");
- currentTicket=null;cells=[];openedCount=0;freeOpens=0;gameEndedTicket=false;paidTicket.classList.remove("selected");freeTicket.classList.remove("selected");chancePanel.style.display="none";loadBalance();
+ resultModalTicket.classList.remove("show");
+ gameScreenTicket.classList.remove("active");
+ selectScreen.classList.add("active");
+ currentTicket=null;cells=[];openedCount=0;freeOpens=0;gameEndedTicket=false;
+ paidTicket.classList.remove("selected");freeTicket.classList.remove("selected");
+ chancePanel.style.display="none";
+ if(ticketSellButton)ticketSellButton.disabled=false;
+ if(ticketInventoryButton)ticketInventoryButton.disabled=false;
+ loadBalance();
 }
-document.getElementById("sellResult").onclick=()=>resetTicket();
-document.getElementById("backResult").onclick=()=>resetTicket();
+const ticketSellButton=resultModalTicket.querySelector("#sellResult");
+const ticketInventoryButton=resultModalTicket.querySelector("#backResult");
+
+ticketSellButton.onclick=async()=>{
+ const prize=Number(resultModalTicket.dataset.prize||0);
+ if(!prize){resetTicket();return}
+ ticketSellButton.disabled=true;
+ try{
+  const d=await transaction("add",prize,idempotency("ticket_sell"),"tickets");
+  setBalance(d.balance);
+  addProfileHistory("Билет: забран приз +"+prize+" ⭐");
+  toast("Приз забран: +"+prize+" ⭐");
+  resetTicket();
+ }catch(e){
+  ticketSellButton.disabled=false;
+  toast("Ошибка получения приза: "+e.message);
+ }
+};
+
+ticketInventoryButton.onclick=async()=>{
+ const prize=Number(resultModalTicket.dataset.prize||0);
+ if(!prize){resetTicket();return}
+ ticketInventoryButton.disabled=true;
+ try{
+  await addInventoryServer({
+   item_key:"ticket:"+USER_ID+":"+Date.now()+":"+Math.random().toString(36).slice(2),
+   name:resultModalTicket.dataset.name||"Scratch Reward",
+   emoji:resultModalTicket.dataset.symbol||"🎁",
+   value:prize,
+   rarity:""
+  },"tickets");
+  addProfileHistory("Билет: приз отправлен в инвентарь");
+  toast("Приз сохранён в инвентарь 🎒");
+  resetTicket();
+ }catch(e){
+  ticketInventoryButton.disabled=false;
+  toast("Ошибка сохранения приза: "+e.message);
+ }
+};
 document.getElementById("backToTicketsTicket").onclick=()=>{if(gameEndedTicket||openedCount===0)resetTicket();else toast("Сначала завершите билет.")};
 
 
@@ -1209,7 +1316,15 @@ function openCaseCase(){
  }
  let price=currentCaseType==="pls-pepe"?10:currentCaseType==="250"?250:50;
  if(balance<price){showMessageCase("Недостаточно валюты ⭐");return}
- isOpeningCase=true;openButton.disabled=true;setBalanceCase(balance-price);
+ isOpeningCase=true;openButton.disabled=true;
+ try{
+  const d=await transaction("deduct",price,idempotency("case_bet"),"cases");
+  setBalance(d.balance);
+ }catch(e){
+  isOpeningCase=false;openButton.disabled=false;
+  showMessageCase(e.message||"Ошибка списания ⭐");
+  return;
+ }
  const items=getCurrentItemsCase(),winner=getRandomItemCase(items);
  currentWinnerCase=winner;startRouletteCase(items,winner)
 }
@@ -1219,17 +1334,47 @@ document.getElementById("plsPepeBox").onclick=()=>showCaseCase("pls-pepe");
 document.getElementById("freeCaseBox").onclick=()=>{if(!canOpenFreeCase())showMessageCase("FREE кейс можно открыть только раз в сутки ⏰");else showCaseCase("free")};
 document.getElementById("backButtonCase").onclick=()=>{if(isOpeningCase){showMessageCase("Подождите окончания открытия кейса");return}showMainCase()};
 openButton.onclick=openCaseCase;
-document.getElementById("sellResult").onclick=()=>{
+const caseSellButton=resultModalCase.querySelector("#sellResult");
+const caseInventoryButton=resultModalCase.querySelector("#backResult");
+
+caseSellButton.onclick=async()=>{
  if(!currentWinnerCase)return;
- setBalanceCase(balance+currentWinnerCase.value);
- resultModalCase.classList.remove("show");resetRouletteCase(getCurrentItemsCase());currentWinnerCase=null
+ caseSellButton.disabled=true;
+ try{
+  const value=Number(currentWinnerCase.value)||0;
+  const d=await transaction("add",value,idempotency("case_sell"),"cases");
+  setBalance(d.balance);
+  addProfileHistory("Кейс: забран приз +"+value.toFixed(2)+" ⭐");
+  resultModalCase.classList.remove("show");
+  resetRouletteCase(getCurrentItemsCase());
+  currentWinnerCase=null;
+  showMessageCase("Приз забран ⭐");
+ }catch(e){
+  caseSellButton.disabled=false;
+  showMessageCase("Ошибка получения приза: "+e.message);
+ }
 };
-document.getElementById("backResult").onclick=()=>{
+
+caseInventoryButton.onclick=async()=>{
  if(!currentWinnerCase)return;
- window.inventoryItems.push({...currentWinnerCase});
- if(typeof window.renderInventory==="function"){try{window.renderInventory()}catch(e){}}
- resultModalCase.classList.remove("show");resetRouletteCase(getCurrentItemsCase());currentWinnerCase=null;
- showMessageCase("Предмет сохранён в инвентарь 🎒")
+ caseInventoryButton.disabled=true;
+ try{
+  await addInventoryServer({
+   item_key:"case:"+USER_ID+":"+Date.now()+":"+Math.random().toString(36).slice(2),
+   name:currentWinnerCase.name,
+   emoji:currentWinnerCase.emoji,
+   value:Number(currentWinnerCase.value)||0,
+   rarity:currentWinnerCase.rarity||""
+  },"cases");
+  addProfileHistory("Кейс: приз отправлен в инвентарь");
+  resultModalCase.classList.remove("show");
+  resetRouletteCase(getCurrentItemsCase());
+  currentWinnerCase=null;
+  showMessageCase("Предмет сохранён в инвентарь 🎒");
+ }catch(e){
+  caseInventoryButton.disabled=false;
+  showMessageCase("Ошибка сохранения приза: "+e.message);
+ }
 };
 document.getElementById("openCasesButton").onclick=async()=>{
  document.querySelectorAll(".page").forEach(p=>p.classList.add("hidden"));
@@ -1497,7 +1642,7 @@ window.__UPGRADE_LOAD_INVENTORY=async()=>{
 };
 
 /* ================= INIT ================= */
-resizeCanvas();updateZones();setBalance(0);loadBalance();ballLoop();
+refreshTelegramIdentity();resizeCanvas();updateZones();setBalance(0);loadBalance();checkApiConnection();ballLoop();
 })();
 </script>
 </body>
