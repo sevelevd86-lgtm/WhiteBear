@@ -478,50 +478,47 @@ const API_ENDPOINTS = [
 const tg=window.Telegram&&window.Telegram.WebApp?window.Telegram.WebApp:null;
 if(tg){try{tg.ready();tg.expand();}catch(e){}}
 
-let USER_ID=0;
-let TELEGRAM_USER=null;
-let initData="";
-
-function refreshTelegramIdentity(){
- if(!tg)return false;
- try{tg.ready();}catch(e){}
- const user=tg.initDataUnsafe&&tg.initDataUnsafe.user
-  ? tg.initDataUnsafe.user
-  : null;
- const data=tg.initData||"";
-
- if(user&&user.id){
-  TELEGRAM_USER=user;
-  USER_ID=Number(user.id);
-  initData=data;
-  localStorage.setItem("wb_user_id",String(USER_ID));
-  localStorage.setItem(
-   "wb_user_name",
-   [user.first_name,user.last_name].filter(Boolean).join(" ")||user.username||"Игрок"
-  );
-  return true;
- }
-
- // If Telegram supplied initData but no user object, do not reuse another
- // account's cached ID.
- if(data){
-  USER_ID=0;
- }else{
-  const saved=Number(localStorage.getItem("wb_user_id")||0);
-  USER_ID=Number.isFinite(saved)&&saved>0?saved:0;
- }
- initData=data;
- return false;
+function getTelegramUserSafe(){
+ try{
+  if(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user&&tg.initDataUnsafe.user.id){
+   return tg.initDataUnsafe.user;
+  }
+  if(tg&&tg.initData){
+   const params=new URLSearchParams(tg.initData);
+   const raw=params.get("user");
+   if(raw)return JSON.parse(raw);
+  }
+ }catch(e){}
+ return null;
 }
 
-refreshTelegramIdentity();
-if(tg){
- setTimeout(refreshTelegramIdentity,50);
- setTimeout(refreshTelegramIdentity,250);
- setTimeout(refreshTelegramIdentity,1000);
- document.addEventListener("visibilitychange",refreshTelegramIdentity);
- window.addEventListener("focus",refreshTelegramIdentity);
+const tgUser=getTelegramUserSafe();
+
+// ВАЖНО: не берем ID из общего localStorage.
+// Иначе второй Telegram-аккаунт на том же устройстве получал ID первого.
+let USER_ID=tgUser&&tgUser.id?Number(tgUser.id):0;
+
+const initData=tg&&tg.initData?tg.initData:"";
+
+async function refreshTelegramIdentity(){
+ const u=getTelegramUserSafe();
+ if(!u||!u.id)return false;
+ const nextId=Number(u.id);
+ if(!nextId)return false;
+ if(nextId!==USER_ID){
+  USER_ID=nextId;
+  // После смены Telegram-аккаунта загружаем отдельные данные нового пользователя.
+  const statsKey=(name)=>`wb_${USER_ID}_${name}`;
+  gamesPlayed=Number(localStorage.getItem(statsKey("games"))||0);
+  wins=Number(localStorage.getItem(statsKey("wins"))||0);
+  losses=Number(localStorage.getItem(statsKey("losses"))||0);
+  try{profileHistory=JSON.parse(localStorage.getItem(statsKey("profile_history"))||"[]");if(!Array.isArray(profileHistory))profileHistory=[]}catch(e){profileHistory=[]}
+  window.__UPGRADE_USER_ID=USER_ID;
+  window.__WB_USER_ID=USER_ID;
+ }
+ return true;
 }
+
 let balance=0;
 let activeApiBase=null;
 
@@ -665,32 +662,6 @@ async function transaction(type,amount,operationId,game){
 function idempotency(prefix){
  return prefix+":"+USER_ID+":"+Date.now()+":"+Math.random().toString(36).slice(2);
 }
-async function addInventoryServer(item,source="game"){
- if(!USER_ID)throw new Error("Telegram ID не найден. Откройте приложение через Telegram.");
- const payload={
-  user_id:Number(USER_ID),
-  item_key:String(item.item_key||(
-   source+":"+USER_ID+":"+Date.now()+":"+Math.random().toString(36).slice(2)
-  )).slice(0,200),
-  name:String(item.name||"Награда").slice(0,200),
-  emoji:String(item.emoji||"🎁").slice(0,50),
-  value:Number(item.value)||0,
-  rarity:String(item.rarity||"").slice(0,50)
- };
- const d=await api("/api/inventory/add",{
-  method:"POST",
-  body:JSON.stringify(payload)
- });
- if(d.item){
-  if(!Array.isArray(window.inventoryItems))window.inventoryItems=[];
-  window.inventoryItems.unshift({...d.item});
- }
- if(typeof window.renderInventory==="function"){
-  try{window.renderInventory()}catch(e){}
- }
- return d;
-}
-
 
 function esc(s){
  return String(s??"").replace(/[&<>"']/g,c=>({
@@ -699,15 +670,19 @@ function esc(s){
 }
 
 /* ================= NAV / PROFILE / INVENTORY ================= */
-let gamesPlayed=Number(localStorage.getItem("wb_games")||0);
-let wins=Number(localStorage.getItem("wb_wins")||0);
-let losses=Number(localStorage.getItem("wb_losses")||0);
-let profileHistory=JSON.parse(localStorage.getItem("wb_profile_history")||"[]");
+const USER_STORAGE_PREFIX=USER_ID>0?`wb_${USER_ID}_`:`wb_guest_`;
+function userKey(name){return USER_STORAGE_PREFIX+name}
+
+let gamesPlayed=Number(localStorage.getItem(userKey("games"))||0);
+let wins=Number(localStorage.getItem(userKey("wins"))||0);
+let losses=Number(localStorage.getItem(userKey("losses"))||0);
+let profileHistory=[];
+try{profileHistory=JSON.parse(localStorage.getItem(userKey("profile_history"))||"[]");if(!Array.isArray(profileHistory))profileHistory=[]}catch(e){profileHistory=[]}
 
 function saveStats(){
- localStorage.setItem("wb_games",String(gamesPlayed));
- localStorage.setItem("wb_wins",String(wins));
- localStorage.setItem("wb_losses",String(losses));
+ localStorage.setItem(userKey("games"),String(gamesPlayed));
+ localStorage.setItem(userKey("wins"),String(wins));
+ localStorage.setItem(userKey("losses"),String(losses));
 }
 function setStats(){
  const a=document.getElementById("gamesPlayed"),b=document.getElementById("wins"),c=document.getElementById("losses");
@@ -734,7 +709,7 @@ function addProfileHistory(text){
   time:new Date().toLocaleString("ru-RU")
  });
  profileHistory=profileHistory.slice(0,20);
- localStorage.setItem("wb_profile_history",JSON.stringify(profileHistory));
+ localStorage.setItem(userKey("profile_history"),JSON.stringify(profileHistory));
  renderProfileHistory();
 }
 function updateProfile(){
@@ -756,28 +731,46 @@ function updateProfile(){
  renderProfileHistory();
 }
 
+function getLocalInventoryKey(){return USER_ID>0?`wb_inventory_${USER_ID}`:"wb_inventory_guest"}
+function readLocalInventory(){
+ try{
+  const data=JSON.parse(localStorage.getItem(getLocalInventoryKey())||"[]");
+  return Array.isArray(data)?data:[];
+ }catch(e){return []}
+}
+function writeLocalInventory(items){
+ localStorage.setItem(getLocalInventoryKey(),JSON.stringify(Array.isArray(items)?items:[]));
+}
+function addLocalInventoryItem(item){
+ const items=readLocalInventory();
+ const copy={...item,id:item.id||(`local_${Date.now()}_${Math.random().toString(36).slice(2)}`),local:true};
+ items.unshift(copy);writeLocalInventory(items);return copy;
+}
+function removeLocalInventoryItem(id){
+ const items=readLocalInventory().filter(x=>String(x.id)!==String(id));
+ writeLocalInventory(items);
+}
+
 async function loadInventory(){
  const box=document.getElementById("inventoryList");
- if(!box)return;
-
+ if(!box)return false;
  if(!USER_ID){
   window.inventoryItems=[];
   box.innerHTML="<div class='muted'>Откройте приложение через Telegram.</div>";
   return false;
  }
-
  try{
   const d=await api("/api/inventory/"+encodeURIComponent(USER_ID));
-  const items=Array.isArray(d.items)
-   ? d.items
-   : (Array.isArray(d.inventory)?d.inventory:[]);
-
-  window.inventoryItems=items.map(x=>({...x}));
+  const serverItems=Array.isArray(d.items)?d.items:(Array.isArray(d.inventory)?d.inventory:[]);
+  const localItems=readLocalInventory();
+  window.inventoryItems=[...localItems.map(x=>({...x,local:true})),...serverItems.map(x=>({...x,local:false}))];
   renderInventory();
   return true;
  }catch(e){
-  window.inventoryItems=[];
-  box.innerHTML="<div class='bad'>Не удалось загрузить инвентарь.</div>";
+  const localItems=readLocalInventory();
+  window.inventoryItems=localItems.map(x=>({...x,local:true}));
+  renderInventory();
+  if(!localItems.length)box.innerHTML="<div class='bad'>Не удалось загрузить инвентарь.</div>";
   return false;
  }
 }
@@ -785,40 +778,35 @@ async function loadInventory(){
 function renderInventory(){
  const box=document.getElementById("inventoryList");
  if(!box)return;
-
  const items=Array.isArray(window.inventoryItems)?window.inventoryItems:[];
- if(!items.length){
-  box.innerHTML="<div class='muted'>Инвентарь пуст.</div>";
-  return;
- }
-
+ if(!items.length){box.innerHTML="<div class='muted'>Инвентарь пуст.</div>";return}
  box.innerHTML=items.map(x=>`
   <div class="item">
    <div>
     <b>${esc(x.emoji||"🎁")} ${esc(x.name||x.title||"Предмет")}</b>
-    <div class="muted">${esc(x.rarity||"")} · ${Number(x.value||0).toFixed(2)} ⭐</div>
+    <div class="muted">${esc(x.rarity||"")} · ${Number(x.value||0).toFixed(2)} ⭐${x.local?" · сохранён":""}</div>
    </div>
-   <button class="primary sellItem" data-id="${esc(x.id)}" style="width:110px">Продать</button>
+   <button class="primary sellItem" data-id="${esc(x.id)}" data-local="${x.local?"1":"0"}" style="width:110px">Продать</button>
   </div>`).join("");
-
  box.querySelectorAll(".sellItem").forEach(btn=>btn.addEventListener("click",async()=>{
   btn.disabled=true;
+  const id=String(btn.dataset.id||"");
+  const isLocal=btn.dataset.local==="1"||id.startsWith("local_");
+  const item=items.find(x=>String(x.id)===id);
   try{
-   const d=await api("/api/inventory/sell",{
-    method:"POST",
-    body:JSON.stringify({
-     user_id:Number(USER_ID),
-     item_id:String(btn.dataset.id)
-    })
-   });
-   if(d.balance!==undefined)setBalance(d.balance);
-   toast(d.message||"Продано");
-   addProfileHistory(d.message||"Продан предмет");
-   await loadInventory();
-  }catch(e){
-   btn.disabled=false;
-   toast(e.message);
-  }
+   let d;
+   if(isLocal){
+    const value=Number(item?.value||0);
+    if(!(value>0))throw new Error("Неверная стоимость предмета");
+    d=await api("/api/balance/add",{method:"POST",body:JSON.stringify({user_id:Number(USER_ID),amount:value,reason:"inventory:sell_local"})});
+    removeLocalInventoryItem(id);
+   }else{
+    d=await api("/api/inventory/sell",{method:"POST",body:JSON.stringify({user_id:Number(USER_ID),item_id:id})});
+   }
+   if(d&&d.balance!==undefined)setBalance(d.balance);
+   const msg=d?.message||`Предмет продан за ${Number(item?.value||0).toFixed(2)} ⭐`;
+   toast(msg);addProfileHistory(msg);await loadInventory();updateProfile();
+  }catch(e){btn.disabled=false;toast(e.message||"Ошибка продажи")}
  }));
 }
 
@@ -1073,76 +1061,29 @@ async function openCellTicket(cell){
 }
 async function finishGameTicket(won,item){
  if(gameEndedTicket)return;gameEndedTicket=true;
- resultModalTicket.dataset.prize="0";
- resultModalTicket.dataset.symbol=won?item.symbol:"";
- resultModalTicket.dataset.name=won?item.name:"";
+ resultModalTicket.dataset.prize="0";resultModalTicket.dataset.symbol=won?item.symbol:"";
  if(won){
   const prize=item.prize;
+  try{
+   const d=await transaction("add",prize,idempotency("ticket_reward"),"tickets");setBalance(d.balance);
+  }catch(e){toast("Ошибка начисления: "+e.message);return}
   resultModalTicket.dataset.prize=String(prize);
-  resultIconTicket.textContent=item.symbol;
-  resultTitleTicket.textContent="ПОБЕДА!";
-  resultTitleTicket.className="result-title-ticket win";
+  resultIconTicket.textContent=item.symbol;resultTitleTicket.textContent="ПОБЕДА!";resultTitleTicket.className="result-title-ticket win";
   resultTextTicket.innerHTML="Вы нашли 3 одинаковых символа <b>"+esc(item.symbol)+"</b>.<br>Ваш приз: <b>"+esc(item.name)+"</b>.";
   resultMoneyTicket.textContent="+"+prize+" ⭐";
  }else{
-  resultIconTicket.textContent="😔";
-  resultTitleTicket.textContent="ПОПРОБУЙ СНОВА";
-  resultTitleTicket.className="result-title-ticket lose";
+  resultIconTicket.textContent="😔";resultTitleTicket.textContent="ПОПРОБУЙ СНОВА";resultTitleTicket.className="result-title-ticket lose";
   resultTextTicket.textContent="Все 9 ячеек открыты, но трёх одинаковых символов найти не удалось.";
   resultMoneyTicket.textContent="0 ⭐";
  }
  setTimeout(()=>resultModalTicket.classList.add("show"),700);
 }
 function resetTicket(){
- resultModalTicket.classList.remove("show");
- gameScreenTicket.classList.remove("active");
- selectScreen.classList.add("active");
- currentTicket=null;cells=[];openedCount=0;freeOpens=0;gameEndedTicket=false;
- paidTicket.classList.remove("selected");freeTicket.classList.remove("selected");
- chancePanel.style.display="none";
- if(ticketSellButton)ticketSellButton.disabled=false;
- if(ticketInventoryButton)ticketInventoryButton.disabled=false;
- loadBalance();
+ resultModalTicket.classList.remove("show");gameScreenTicket.classList.remove("active");selectScreen.classList.add("active");
+ currentTicket=null;cells=[];openedCount=0;freeOpens=0;gameEndedTicket=false;paidTicket.classList.remove("selected");freeTicket.classList.remove("selected");chancePanel.style.display="none";loadBalance();
 }
-const ticketSellButton=resultModalTicket.querySelector("#sellResult");
-const ticketInventoryButton=resultModalTicket.querySelector("#backResult");
-
-ticketSellButton.onclick=async()=>{
- const prize=Number(resultModalTicket.dataset.prize||0);
- if(!prize){resetTicket();return}
- ticketSellButton.disabled=true;
- try{
-  const d=await transaction("add",prize,idempotency("ticket_sell"),"tickets");
-  setBalance(d.balance);
-  addProfileHistory("Билет: забран приз +"+prize+" ⭐");
-  toast("Приз забран: +"+prize+" ⭐");
-  resetTicket();
- }catch(e){
-  ticketSellButton.disabled=false;
-  toast("Ошибка получения приза: "+e.message);
- }
-};
-
-ticketInventoryButton.onclick=async()=>{
- const prize=Number(resultModalTicket.dataset.prize||0);
- if(!prize){resetTicket();return}
- ticketInventoryButton.disabled=true;
- try{
-  await addInventoryServer({
-   item_key:"ticket:"+USER_ID+":"+Date.now()+":"+Math.random().toString(36).slice(2),
-   name:resultModalTicket.dataset.name||"Scratch Reward",
-   emoji:resultModalTicket.dataset.symbol||"🎁",
-   value:prize,
-   rarity:""
-  },"tickets");
-  addProfileHistory("Билет: приз отправлен в инвентарь");
-  toast("Приз сохранён в инвентарь 🎒");
-  resetTicket();
- }catch(e){
-  ticketInventoryButton.disabled=false;
-  toast("Ошибка сохранения приза: "+e.message);
- }
-};
+document.getElementById("sellResult").onclick=()=>resetTicket();
+document.getElementById("backResult").onclick=()=>resetTicket();
 document.getElementById("backToTicketsTicket").onclick=()=>{if(gameEndedTicket||openedCount===0)resetTicket();else toast("Сначала завершите билет.")};
 
 
@@ -1222,7 +1163,7 @@ function normalizeChancesCase(){
 normalizeChancesCase();
 
 let isOpeningCase=false,currentWinnerCase=null,currentCaseType="paid";
-const FREE_COOLDOWN=24*60*60*1000,FREE_COOLDOWN_KEY="case_free_last_open";
+const FREE_COOLDOWN=24*60*60*1000,FREE_COOLDOWN_KEY=`case_free_last_open:${USER_ID||"guest"}`;
 
 const container=document.getElementById("casesGameContainer");
 const mainScreenCase=document.getElementById("mainScreenCase");
@@ -1316,15 +1257,7 @@ function openCaseCase(){
  }
  let price=currentCaseType==="pls-pepe"?10:currentCaseType==="250"?250:50;
  if(balance<price){showMessageCase("Недостаточно валюты ⭐");return}
- isOpeningCase=true;openButton.disabled=true;
- try{
-  const d=await transaction("deduct",price,idempotency("case_bet"),"cases");
-  setBalance(d.balance);
- }catch(e){
-  isOpeningCase=false;openButton.disabled=false;
-  showMessageCase(e.message||"Ошибка списания ⭐");
-  return;
- }
+ isOpeningCase=true;openButton.disabled=true;setBalanceCase(balance-price);
  const items=getCurrentItemsCase(),winner=getRandomItemCase(items);
  currentWinnerCase=winner;startRouletteCase(items,winner)
 }
@@ -1334,47 +1267,17 @@ document.getElementById("plsPepeBox").onclick=()=>showCaseCase("pls-pepe");
 document.getElementById("freeCaseBox").onclick=()=>{if(!canOpenFreeCase())showMessageCase("FREE кейс можно открыть только раз в сутки ⏰");else showCaseCase("free")};
 document.getElementById("backButtonCase").onclick=()=>{if(isOpeningCase){showMessageCase("Подождите окончания открытия кейса");return}showMainCase()};
 openButton.onclick=openCaseCase;
-const caseSellButton=resultModalCase.querySelector("#sellResult");
-const caseInventoryButton=resultModalCase.querySelector("#backResult");
-
-caseSellButton.onclick=async()=>{
+document.getElementById("sellResult").onclick=()=>{
  if(!currentWinnerCase)return;
- caseSellButton.disabled=true;
- try{
-  const value=Number(currentWinnerCase.value)||0;
-  const d=await transaction("add",value,idempotency("case_sell"),"cases");
-  setBalance(d.balance);
-  addProfileHistory("Кейс: забран приз +"+value.toFixed(2)+" ⭐");
-  resultModalCase.classList.remove("show");
-  resetRouletteCase(getCurrentItemsCase());
-  currentWinnerCase=null;
-  showMessageCase("Приз забран ⭐");
- }catch(e){
-  caseSellButton.disabled=false;
-  showMessageCase("Ошибка получения приза: "+e.message);
- }
+ setBalanceCase(balance+currentWinnerCase.value);
+ resultModalCase.classList.remove("show");resetRouletteCase(getCurrentItemsCase());currentWinnerCase=null
 };
-
-caseInventoryButton.onclick=async()=>{
+document.getElementById("backResult").onclick=()=>{
  if(!currentWinnerCase)return;
- caseInventoryButton.disabled=true;
- try{
-  await addInventoryServer({
-   item_key:"case:"+USER_ID+":"+Date.now()+":"+Math.random().toString(36).slice(2),
-   name:currentWinnerCase.name,
-   emoji:currentWinnerCase.emoji,
-   value:Number(currentWinnerCase.value)||0,
-   rarity:currentWinnerCase.rarity||""
-  },"cases");
-  addProfileHistory("Кейс: приз отправлен в инвентарь");
-  resultModalCase.classList.remove("show");
-  resetRouletteCase(getCurrentItemsCase());
-  currentWinnerCase=null;
-  showMessageCase("Предмет сохранён в инвентарь 🎒");
- }catch(e){
-  caseInventoryButton.disabled=false;
-  showMessageCase("Ошибка сохранения приза: "+e.message);
- }
+ window.inventoryItems.push({...currentWinnerCase});
+ if(typeof window.renderInventory==="function"){try{window.renderInventory()}catch(e){}}
+ resultModalCase.classList.remove("show");resetRouletteCase(getCurrentItemsCase());currentWinnerCase=null;
+ showMessageCase("Предмет сохранён в инвентарь 🎒")
 };
 document.getElementById("openCasesButton").onclick=async()=>{
  document.querySelectorAll(".page").forEach(p=>p.classList.add("hidden"));
@@ -1634,6 +1537,16 @@ window.__UPGRADE_SET_BALANCE=updateBalanceUpgrade;
 /* ================= UPGRADE BRIDGE ================= */
 window.__UPGRADE_USER_ID=USER_ID;
 window.__UPGRADE_TRANSACTION=transaction;
+window.__WB_USER_ID=USER_ID;
+window.__WB_TRANSACTION=transaction;
+window.__WB_API=api;
+window.__WB_LOAD_BALANCE=loadBalance;
+window.__WB_SET_BALANCE=setBalance;
+window.__WB_ADD_LOCAL_ITEM=addLocalInventoryItem;
+window.__WB_REMOVE_LOCAL_ITEM=removeLocalInventoryItem;
+window.__WB_LOAD_INVENTORY=loadInventory;
+window.__WB_REFRESH_IDENTITY=refreshTelegramIdentity;
+
 window.__UPGRADE_UPDATE_UI=()=>{setBalance(balance);};
 window.__UPGRADE_LOAD_INVENTORY=async()=>{
  if(!USER_ID)return [];
@@ -1642,7 +1555,178 @@ window.__UPGRADE_LOAD_INVENTORY=async()=>{
 };
 
 /* ================= INIT ================= */
-refreshTelegramIdentity();resizeCanvas();updateZones();setBalance(0);loadBalance();checkApiConnection();ballLoop();
+resizeCanvas();updateZones();setBalance(0);
+refreshTelegramIdentity().then(()=>{updateProfile();loadBalance();loadInventory();checkApiConnection()}).catch(()=>{});
+setTimeout(()=>refreshTelegramIdentity().then(()=>{updateProfile();loadBalance();loadInventory()}).catch(()=>{}),500);
+ballLoop();
+})();
+</script>
+
+<script>
+/* =========================================================
+   WHITE BEAR COMPATIBILITY LAYER
+   Игры не переписывает. Исправляет только Telegram/API,
+   профиль, общий инвентарь и кнопки наград.
+========================================================= */
+(function(){
+ "use strict";
+ const uid=()=>Number(window.__WB_USER_ID||0);
+ const tx=window.__WB_TRANSACTION;
+ const api=window.__WB_API;
+ const loadInv=window.__WB_LOAD_INVENTORY;
+ const setBal=window.__WB_SET_BALANCE;
+ const toastFn=(m)=>typeof window.toast==="function"?window.toast(m):null;
+
+ function localKey(){return uid()>0?`wb_inventory_${uid()}`:"wb_inventory_guest"}
+ function localItems(){
+  try{const x=JSON.parse(localStorage.getItem(localKey())||"[]");return Array.isArray(x)?x:[]}catch(e){return []}
+ }
+ function saveLocal(x){localStorage.setItem(localKey(),JSON.stringify(Array.isArray(x)?x:[]))}
+ function addLocal(item){
+  const x={...item,id:item.id||`local_${Date.now()}_${Math.random().toString(36).slice(2)}`,local:true};
+  const arr=localItems();arr.unshift(x);saveLocal(arr);return x;
+ }
+ function removeLocal(id){saveLocal(localItems().filter(x=>String(x.id)!==String(id)))}
+ function history(text){
+  try{
+   const key=uid()>0?`wb_${uid()}_profile_history`:"wb_guest_profile_history";
+   let h=JSON.parse(localStorage.getItem(key)||"[]");if(!Array.isArray(h))h=[];
+   h.unshift({text:String(text),time:new Date().toLocaleString("ru-RU")});
+   localStorage.setItem(key,JSON.stringify(h.slice(0,20)));
+  }catch(e){}
+ }
+ function updateAll(){
+  if(typeof setBal==="function"){
+   const b=Number(document.querySelector(".allBalance")?.textContent||0);
+   if(Number.isFinite(b))setBal(b);
+  }
+  if(typeof loadInv==="function")loadInv().catch(()=>{});
+ }
+
+ // --- Уникальные ID для двух одинаковых пар кнопок ---
+ const ticketModal=document.getElementById("resultModalTicket");
+ const caseModal=document.getElementById("resultModalCase");
+ const ticketSell=ticketModal?.querySelector("#sellResult");
+ const ticketBack=ticketModal?.querySelector("#backResult");
+ const caseSell=caseModal?.querySelector("#sellResult");
+ const caseBack=caseModal?.querySelector("#backResult");
+ if(ticketSell)ticketSell.id="sellResultTicket";
+ if(ticketBack)ticketBack.id="backResultTicket";
+ if(caseSell)caseSell.id="sellResultCase";
+ if(caseBack)caseBack.id="backResultCase";
+
+ // --- TICKET: результат уже начислен API. Продажа оставляет приз на балансе;
+ //     инвентарь сначала возвращает начисление и сохраняет предмет локально. ---
+ if(ticketSell)ticketSell.onclick=()=>{
+  const prize=Number(ticketModal?.dataset.prize||0);
+  history(prize>0?`Билет: продан приз +${prize.toFixed(2)} ⭐`:"Билет: без выигрыша");
+  const reset=()=>document.getElementById("backToTicketsTicket")?.click();
+  reset();
+ };
+ if(ticketBack)ticketBack.onclick=async()=>{
+  const prize=Number(ticketModal?.dataset.prize||0);
+  if(prize>0 && uid()>0 && typeof tx==="function"){
+   try{
+    const d=await tx("deduct",prize,`ticket_inventory:${uid()}:${Date.now()}:${Math.random().toString(36).slice(2)}`,"tickets");
+    if(d?.balance!==undefined)setBal(d.balance);
+   }catch(e){toastFn(e.message||"Не удалось сохранить приз");return}
+  }
+  const icon=ticketModal?.dataset.symbol||"🎁";
+  const txt=document.getElementById("resultTextTicket")?.textContent||"";
+  const m=txt.match(/Ваш приз:\s*(.*?)\.?$/);
+  const name=(m&&m[1]?m[1]:"Scratch Prize").trim();
+  addLocal({emoji:icon,name,value:prize,rarity:"",source:"ticket"});
+  history(`Билет: предмет ${name} сохранён в инвентарь`);
+  if(typeof loadInv==="function"){try{await loadInv()}catch(e){}}
+  document.getElementById("backToTicketsTicket")?.click();
+ };
+
+ // --- CASES: игра сама меняет только локальный balance. Здесь синхронизируем
+ //     списание кейса с API и либо продаём приз, либо сохраняем его в инвентарь. ---
+ async function finishCase(mode){
+  const value=Number(document.getElementById("resultValue")?.textContent?.replace(/[^0-9.]/g,"")||0);
+  const name=document.getElementById("resultName")?.textContent||"Prize";
+  const emoji=document.getElementById("resultEmoji")?.textContent||"🎁";
+  const title=document.getElementById("caseTitle")?.textContent||"";
+  let price=0;
+  if(/CASE 250/i.test(title))price=250;
+  else if(/CASE 50/i.test(title))price=50;
+  else if(/PLS PEPE/i.test(title))price=10;
+
+  if(uid()>0 && typeof tx==="function"){
+   try{
+    if(price>0){
+     const d=await tx("deduct",price,`case_sync_bet:${uid()}:${Date.now()}:${Math.random().toString(36).slice(2)}`,"cases");
+     if(d?.balance!==undefined)setBal(d.balance);
+    }
+    if(mode==="sell" && value>0){
+     const d=await tx("add",value,`case_sync_reward:${uid()}:${Date.now()}:${Math.random().toString(36).slice(2)}`,"cases");
+     if(d?.balance!==undefined)setBal(d.balance);
+    }
+   }catch(e){toastFn(e.message||"Не удалось синхронизировать кейс");return false}
+  }
+
+  if(mode==="inventory" && value>0){
+   addLocal({emoji,name,value,rarity:"",source:"case"});
+   history(`Кейс: ${name} сохранён в инвентарь`);
+  }else if(mode==="sell"){
+   history(`Кейс: ${name} забран за +${value.toFixed(2)} ⭐`);
+  }
+  if(typeof loadInv==="function"){try{await loadInv()}catch(e){}}
+  document.getElementById("resultModalCase")?.classList.remove("show");
+  return true;
+ }
+ if(caseSell)caseSell.onclick=()=>finishCase("sell");
+ if(caseBack)caseBack.onclick=()=>finishCase("inventory");
+
+ // --- Upgrade: при выборе предмета он уже удаляется из массива игрой.
+ //     Фиксируем локальный предмет как потраченный, чтобы после перезагрузки
+ //     он не возвращался в инвентарь. Серверные предметы оставляем серверу. ---
+ const upgradeSpin=document.getElementById("spinButtonUpgrade");
+ let upgradeBypass=false;
+ if(upgradeSpin)upgradeSpin.addEventListener("click",async(ev)=>{
+  if(upgradeBypass)return;
+  const selected=document.getElementById("selectedItemDisplay")?.textContent||"";
+  if(!selected||selected==="Баланс")return;
+
+  const local=localItems();
+  const localItem=local.find(x=>selected.includes(String(x.name||"")) && selected.includes(String(x.value)));
+  if(localItem){removeLocal(localItem.id);return}
+
+  const all=Array.isArray(window.inventoryItems)?window.inventoryItems:[];
+  const serverItem=all.find(x=>!x.local && selected.includes(String(x.name||"")) && selected.includes(String(x.value)));
+  if(serverItem && typeof api==="function" && typeof tx==="function"){
+   ev.preventDefault();ev.stopImmediatePropagation();
+   try{
+    const sold=await api("/api/inventory/sell",{method:"POST",body:JSON.stringify({user_id:uid(),item_id:String(serverItem.id)})});
+    if(sold?.balance!==undefined)setBal(sold.balance);
+    const back=await tx("deduct",Number(serverItem.value),`upgrade_item_consume:${uid()}:${serverItem.id}:${Date.now()}:${Math.random().toString(36).slice(2)}`,"upgrade");
+    if(back?.balance!==undefined)setBal(back.balance);
+    upgradeBypass=true;
+    upgradeSpin.click();
+    upgradeBypass=false;
+   }catch(e){
+    toastFn(e.message||"Не удалось использовать предмет");
+   }
+  }
+ },true);
+
+ // --- Перезагрузка данных при возврате в приложение ---
+ document.addEventListener("visibilitychange",()=>{
+  if(!document.hidden){
+   if(typeof window.__WB_LOAD_BALANCE==="function")window.__WB_LOAD_BALANCE().catch(()=>{});
+   if(typeof window.__WB_LOAD_INVENTORY==="function")window.__WB_LOAD_INVENTORY().catch(()=>{});
+  }
+ });
+
+ // После инициализации Telegram SDK ещё раз проверяем ID.
+ setTimeout(async()=>{
+  try{
+   if(typeof window.__WB_REFRESH_IDENTITY==="function")await window.__WB_REFRESH_IDENTITY();
+   if(typeof window.__WB_LOAD_BALANCE==="function")await window.__WB_LOAD_BALANCE();
+   if(typeof window.__WB_LOAD_INVENTORY==="function")await window.__WB_LOAD_INVENTORY();
+  }catch(e){}
+ },250);
 })();
 </script>
 </body>
