@@ -1,13 +1,16 @@
 import json
 import os
-from telegram import Update, KeyboardButton, ReplyKeyboardMarkup, WebAppInfo
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+import logging
+from flask import Flask, request, jsonify
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, ContextTypes
 
-# === ТОКЕН ===
-TOKEN = "8918284594:AAFLxOg1eEx4JS6z6V9wHr-t8T3Q9Qwiepg"  # замените на реальный токен от @BotFather
-
-# === Файл для хранения балансов ===
+# === Настройки ===
+TOKEN = "ВАШ_ТОКЕН_БОТА"  # замените на реальный
 BALANCE_FILE = "balances.json"
+WEBHOOK_URL = "https://whitebear.bothost.tech/webhook"  # ваш домен
+
+logging.basicConfig(level=logging.INFO)
 
 # === Работа с балансами ===
 def load_balances():
@@ -29,75 +32,78 @@ def set_balance(user_id, amount):
     balances[str(user_id)] = amount
     save_balances(balances)
 
-# === Команда /start ===
+# === Flask приложение ===
+app = Flask(__name__)
+
+@app.route('/health')
+def health():
+    return 'OK', 200
+
+@app.route('/api/balance/<int:user_id>')
+def api_balance(user_id):
+    balance = get_balance(user_id)
+    return jsonify({'user_id': user_id, 'balance': balance})
+
+# === Telegram бот ===
+application = Application.builder().token(TOKEN).build()
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     balance = get_balance(user_id)
-
-    # Ссылка на ваше мини-приложение (замените на реальную)
-    webapp_url = "https://ваш-домен.vercel.app"  # например, https://mywallet.vercel.app
-
-    keyboard = [[KeyboardButton("💰 Открыть кошелёк", web_app=WebAppInfo(url=webapp_url))]]
-    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
-
+    keyboard = [
+        [InlineKeyboardButton("💰 Пополнить 10⭐", callback_data='deposit_10')],
+        [InlineKeyboardButton("💰 Пополнить 50⭐", callback_data='deposit_50')],
+        [InlineKeyboardButton("💰 Пополнить 100⭐", callback_data='deposit_100')],
+        [InlineKeyboardButton("📊 Мой баланс", callback_data='balance')],
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text(
         f"👋 Привет! Ваш баланс: {balance} ⭐\n"
-        "Нажмите кнопку ниже, чтобы пополнить или управлять балансом.",
+        "Выберите действие:",
         reply_markup=reply_markup
     )
 
-# === Обработка данных из WebApp ===
-async def handle_webapp_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    data = update.message.web_app_data
-    if not data:
+async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    user_id = query.from_user.id
+    data = query.data
+
+    if data == 'balance':
+        balance = get_balance(user_id)
+        await query.edit_message_text(f"💰 Ваш баланс: {balance} ⭐")
         return
 
-    try:
-        payload = json.loads(data.data)
-        action = payload.get("action")
-        user_id = update.effective_user.id
-        amount = int(payload.get("amount", 0))
+    if data.startswith('deposit_'):
+        amount = int(data.split('_')[1])
+        current = get_balance(user_id)
+        new_balance = current + amount
+        set_balance(user_id, new_balance)
+        await query.edit_message_text(
+            f"✅ Пополнение на {amount} ⭐ успешно!\n"
+            f"Новый баланс: {new_balance} ⭐"
+        )
 
-        if amount <= 0:
-            await update.message.reply_text("❌ Сумма должна быть больше 0.")
-            return
+# === Обработчик вебхука ===
+@app.route('/webhook', methods=['POST'])
+async def webhook():
+    update = Update.de_json(request.get_json(), application.bot)
+    await application.process_update(update)
+    return 'OK', 200
 
-        if action == "deposit":
-            current = get_balance(user_id)
-            new_balance = current + amount
-            set_balance(user_id, new_balance)
-            await update.message.reply_text(
-                f"✅ Пополнение на {amount} ⭐ успешно!\n"
-                f"Новый баланс: {new_balance} ⭐"
-            )
+# === Регистрация хендлеров ===
+application.add_handler(CommandHandler("start", start))
+application.add_handler(CallbackQueryHandler(button_handler))
 
-        elif action == "withdraw":
-            current = get_balance(user_id)
-            if current >= amount:
-                new_balance = current - amount
-                set_balance(user_id, new_balance)
-                await update.message.reply_text(
-                    f"✅ Вывод {amount} ⭐ выполнен!\n"
-                    f"Новый баланс: {new_balance} ⭐"
-                )
-            else:
-                await update.message.reply_text("❌ Недостаточно средств!")
+# === Установка вебхука при запуске ===
+def set_webhook():
+    import requests
+    url = f"https://api.telegram.org/bot{TOKEN}/setWebhook?url={WEBHOOK_URL}"
+    resp = requests.get(url)
+    logging.info(f"Webhook set: {resp.text}")
 
-        else:
-            await update.message.reply_text("⚠️ Неизвестное действие.")
-
-    except Exception as e:
-        await update.message.reply_text(f"❌ Ошибка: {str(e)}")
-
-# === Запуск бота ===
-def main():
-    app = Application.builder().token(TOKEN).build()
-
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, handle_webapp_data))
-
-    print("✅ Бот запущен в режиме Long Polling...")
-    app.run_polling()
-
-if __name__ == "__main__":
-    main()
+# === Запуск Flask ===
+if __name__ == '__main__':
+    set_webhook()
+    port = int(os.environ.get('PORT', 8080))
+    app.run(host='0.0.0.0', port=port)
