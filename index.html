@@ -1574,9 +1574,9 @@ header {
     >
       <button
         class="promo-button deposit-btn"
-        data-amount="50"
+        data-amount="1"
       >
-        ⭐ 50
+        ⭐ 1
       </button>
       <button
         class="promo-button deposit-btn"
@@ -2264,10 +2264,7 @@ header {
 /* ==========================================================
    WHITE BEAR DROP API
 ========================================================== */
-const API_BASE =
-  location.protocol === 'file:'
-    ? 'https://whitebear.bothost.tech'
-    : location.origin;
+const API_BASE = 'https://whitebear.bothost.tech';
 const tg =
   window.Telegram?.WebApp || null;
 if (tg) {
