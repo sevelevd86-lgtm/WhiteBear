@@ -4,7 +4,7 @@ from telegram import Update, KeyboardButton, ReplyKeyboardMarkup, WebAppInfo
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
 # === ТОКЕН ===
-TOKEN = "ВАШ_ТОКЕН_БОТА"  # замените на реальный токен от @BotFather
+TOKEN = "8918284594:AAFLxOg1eEx4JS6z6V9wHr-t8T3Q9Qwiepg"  # замените на реальный токен от @BotFather
 
 # === Файл для хранения балансов ===
 BALANCE_FILE = "balances.json"
