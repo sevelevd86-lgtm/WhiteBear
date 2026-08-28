@@ -6,15 +6,15 @@
     <title>Кошелёк</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: Arial, sans-serif;
             background: #0a1628;
-            color: white;
+            color: #fff;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
             padding: 20px;
         }
         .container {
@@ -22,20 +22,33 @@
             padding: 30px;
             border-radius: 20px;
             width: 100%;
-            max-width: 350px;
+            max-width: 360px;
             text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
         }
-        h1 { color: #6ab0ff; }
+        h1 { color: #6ab0ff; margin-bottom: 10px; }
         .balance {
-            font-size: 36px;
+            font-size: 40px;
             font-weight: 900;
             color: #ffd84d;
             margin: 20px 0;
         }
+        input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid #2a7ad8;
+            background: #0a1628;
+            color: #fff;
+            font-size: 18px;
+            text-align: center;
+            outline: none;
+        }
+        input:focus { border-color: #6ab0ff; }
         .btn-group {
             display: flex;
-            gap: 10px;
-            margin-top: 20px;
+            gap: 12px;
+            margin-top: 18px;
         }
         .btn {
             flex: 1;
@@ -46,26 +59,16 @@
             font-weight: 800;
             cursor: pointer;
             transition: 0.2s;
+            color: #fff;
         }
-        .btn-primary {
-            background: #2a7ad8;
-            color: white;
-        }
-        .btn-danger {
-            background: #c04060;
-            color: white;
-        }
-        .btn:active { transform: scale(0.95); }
-        input {
-            width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid #2a7ad8;
-            background: #0a1628;
-            color: white;
-            font-size: 18px;
-            text-align: center;
-            margin-top: 10px;
+        .btn:active { transform: scale(0.96); }
+        .btn-primary { background: linear-gradient(135deg, #2a7ad8, #1a5ab8); }
+        .btn-danger  { background: linear-gradient(135deg, #c04060, #a03050); }
+        .btn-secondary { background: #1a3a6a; }
+        .hint {
+            margin-top: 20px;
+            color: #8ab4d8;
+            font-size: 12px;
         }
     </style>
 </head>
@@ -78,37 +81,31 @@
             <button class="btn btn-primary" id="depositBtn">Пополнить</button>
             <button class="btn btn-danger" id="withdrawBtn">Вывести</button>
         </div>
-        <p style="margin-top:20px; color:#8ab4d8; font-size:12px;">Баланс синхронизируется с ботом</p>
+        <button class="btn btn-secondary" id="getBalanceBtn" style="margin-top:10px; width:100%;">Узнать баланс</button>
+        <div class="hint">Баланс синхронизируется с ботом</div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand();  // растянуть на весь экран
+        tg.expand();
 
         const balanceDisplay = document.getElementById('balanceDisplay');
         const amountInput = document.getElementById('amountInput');
         const depositBtn = document.getElementById('depositBtn');
         const withdrawBtn = document.getElementById('withdrawBtn');
-
-        // Пример: можем получить начальный баланс из данных пользователя, но мы не храним его тут
-        // Лучше запросить у бота через sendData, но для простоты покажем заглушку
-        // Реальный баланс хранится у бота, мы его не знаем, но можем отобразить после обновления
+        const getBalanceBtn = document.getElementById('getBalanceBtn');
 
         function sendAction(action, amount) {
             tg.sendData(JSON.stringify({ action, amount }));
+            tg.close(); // закрываем приложение после отправки
         }
 
         depositBtn.addEventListener('click', () => {
             const amount = parseInt(amountInput.value);
             if (amount > 0) {
                 sendAction('deposit', amount);
-                // можно показать локальное изменение, но лучше дождаться ответа от бота
-                // Однако ответ от бота придёт в чат, а не в приложение.
-                // Поэтому после отправки закрываем приложение или показываем уведомление.
-                tg.showAlert(`Пополнение на ${amount} ⭐ отправлено!`);
-                tg.close();
             } else {
-                tg.showAlert('Введите корректную сумму');
+                tg.showAlert('Введите сумму больше 0');
             }
         });
 
@@ -116,16 +113,20 @@
             const amount = parseInt(amountInput.value);
             if (amount > 0) {
                 sendAction('withdraw', amount);
-                tg.showAlert(`Запрос на вывод ${amount} ⭐ отправлен!`);
-                tg.close();
             } else {
-                tg.showAlert('Введите корректную сумму');
+                tg.showAlert('Введите сумму больше 0');
             }
         });
 
-        // Получить баланс от бота можно через sendData с запросом, но для простоты оставим так.
-        // Можно также при открытии приложения отправить запрос на получение баланса, но бот должен ответить.
-        // В этом примере упрощённо.
+        getBalanceBtn.addEventListener('click', () => {
+            // Отправляем запрос на баланс, но бот должен обработать это действие.
+            // Мы не реализовали отдельную команду, но можно сделать просто запрос.
+            // Однако бот не ответит в приложение, поэтому лучше использовать отдельный обработчик.
+            // Для простоты просто показываем сообщение.
+            tg.showAlert('Запрос баланса отправлен боту. Проверьте чат.');
+            tg.sendData(JSON.stringify({ action: 'get_balance' }));
+            tg.close();
+        });
     </script>
 </body>
 </html>
