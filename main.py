@@ -12,11 +12,19 @@ from urllib.parse import parse_qsl
 from fastapi import FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
+
 import uvicorn
 
-from aiogram import Bot, Dispatcher, F
-from aiogram.filters import CommandStart
-from aiogram.types import Message, LabeledPrice, PreCheckoutQuery
+from aiogram import Bot, Dispatcher, F, types
+from aiogram.filters import CommandStart, Command
+from aiogram.types import (
+    Message,
+    LabeledPrice,
+    PreCheckoutQuery,
+    InlineKeyboardMarkup,
+    InlineKeyboardButton,
+    WebAppInfo,
+)
 
 
 # ============================================================
@@ -46,19 +54,15 @@ WEBAPP_URL = os.getenv(
 ).strip()
 
 
-# ============================================================
-# ПРОВЕРКА TOKEN
-# ============================================================
-
 if not BOT_TOKEN:
 
     raise RuntimeError(
-        "BOT_TOKEN не задан в Secrets."
+        "❌ BOT_TOKEN не задан в Secrets."
     )
 
 
 # ============================================================
-# BOT
+# TELEGRAM BOT
 # ============================================================
 
 bot = Bot(
@@ -74,7 +78,7 @@ dp = Dispatcher()
 
 app = FastAPI(
     title="White Bear Drop API",
-    version="2.0.0"
+    version="3.0.0"
 )
 
 app.add_middleware(
@@ -101,6 +105,10 @@ def db():
 
     con.execute(
         "PRAGMA journal_mode=WAL"
+    )
+
+    con.execute(
+        "PRAGMA busy_timeout=30000"
     )
 
     con.execute(
@@ -282,7 +290,7 @@ def ensure_user(
         con.commit()
 
 
-def get_balance(
+def get_user(
     user_id: int
 ):
 
@@ -294,7 +302,7 @@ def get_balance(
 
         row = con.execute(
             """
-            SELECT balance
+            SELECT *
             FROM users
             WHERE user_id=?
             """,
@@ -305,15 +313,32 @@ def get_balance(
 
         if not row:
 
-            return 0.0
+            return None
 
-        return float(
-            row["balance"]
+        return dict(
+            row
         )
 
 
+def get_balance(
+    user_id: int
+):
+
+    user = get_user(
+        user_id
+    )
+
+    if not user:
+
+        return 0.0
+
+    return float(
+        user["balance"]
+    )
+
+
 # ============================================================
-# БЕЗОПАСНАЯ ТРАНЗАКЦИЯ БАЛАНСА
+# BALANCE TRANSACTION
 # ============================================================
 
 def balance_transaction(
@@ -350,16 +375,13 @@ def balance_transaction(
 
     with closing(db()) as con:
 
-        # ----------------------------------------------------
-        # ВАЖНО:
-        # НЕ вызываем ensure_user() после BEGIN IMMEDIATE.
-        # Иначе создаётся второе соединение SQLite и возможен
-        # database locked.
-        # ----------------------------------------------------
-
         con.execute(
             "BEGIN IMMEDIATE"
         )
+
+        # ----------------------------------------------------
+        # Проверяем повтор операции
+        # ----------------------------------------------------
 
         existing = con.execute(
             """
@@ -394,6 +416,10 @@ def balance_transaction(
                 )
 
             return 0.0
+
+        # ----------------------------------------------------
+        # Пользователь
+        # ----------------------------------------------------
 
         row = con.execute(
             """
@@ -438,7 +464,7 @@ def balance_transaction(
             )
 
         # ----------------------------------------------------
-        # DEDUCT
+        # СПИСАНИЕ
         # ----------------------------------------------------
 
         if operation_type == "deduct":
@@ -457,7 +483,7 @@ def balance_transaction(
             )
 
         # ----------------------------------------------------
-        # ADD
+        # НАЧИСЛЕНИЕ
         # ----------------------------------------------------
 
         else:
@@ -468,7 +494,7 @@ def balance_transaction(
             )
 
         # ----------------------------------------------------
-        # UPDATE BALANCE
+        # UPDATE
         # ----------------------------------------------------
 
         con.execute(
@@ -555,12 +581,12 @@ def verify_init_data(
             )
         )
 
-        if not auth_date:
+        if auth_date <= 0:
 
             return None
 
         # ----------------------------------------------------
-        # INIT DATA ДЕЙСТВУЕТ 24 ЧАСА
+        # 24 HOURS
         # ----------------------------------------------------
 
         if (
@@ -612,14 +638,14 @@ def verify_init_data(
         return None
 
 
-# ============================================================
-# RESOLVE USER
-# ============================================================
-
 def resolve_user(
     user_id,
     init_data
 ):
+
+    # --------------------------------------------------------
+    # СНАЧАЛА ПРОБУЕМ TELEGRAM INIT DATA
+    # --------------------------------------------------------
 
     verified = verify_init_data(
         init_data or ""
@@ -652,10 +678,9 @@ def resolve_user(
         )
 
     # --------------------------------------------------------
-    # Для запросов из Telegram обязательно желательно иметь
-    # initData.
+    # FALLBACK
     #
-    # Оставляем fallback user_id для совместимости.
+    # Нужен для совместимости со старыми версиями HTML.
     # --------------------------------------------------------
 
     if (
@@ -770,205 +795,6 @@ class SellRequest(BaseModel):
     user_id: int
 
     item_id: str
-
-
-# ============================================================
-# HEALTH
-# ============================================================
-
-@app.get(
-    "/health"
-)
-async def health():
-
-    return {
-        "ok": True,
-        "status": "online",
-        "service": "White Bear Drop",
-        "time": int(
-            time.time()
-        )
-    }
-
-
-# ============================================================
-# BALANCE
-# ============================================================
-
-@app.get(
-    "/api/balance/{user_id}"
-)
-async def api_balance(
-    user_id: int
-):
-
-    return {
-        "ok": True,
-        "balance": get_balance(
-            user_id
-        )
-    }
-
-
-# ============================================================
-# ADD BALANCE
-# ============================================================
-
-@app.post(
-    "/api/balance/add"
-)
-async def api_add_balance(
-    req: BalanceRequest,
-    x_telegram_init_data: str | None = Header(
-        default=None
-    )
-):
-
-    uid, _ = resolve_user(
-        req.user_id,
-        x_telegram_init_data
-    )
-
-    operation_id = (
-        f"balance_add:"
-        f"{uid}:"
-        f"{secrets.token_hex(12)}"
-    )
-
-    try:
-
-        new_balance = balance_transaction(
-            uid,
-            operation_id,
-            "add",
-            req.amount,
-            req.reason or "balance:add"
-        )
-
-    except ValueError as e:
-
-        raise HTTPException(
-            status_code=400,
-            detail=str(e)
-        )
-
-    return {
-        "ok": True,
-        "balance": new_balance
-    }
-
-
-# ============================================================
-# DEDUCT BALANCE
-# ============================================================
-
-@app.post(
-    "/api/balance/deduct"
-)
-async def api_deduct_balance(
-    req: BalanceRequest,
-    x_telegram_init_data: str | None = Header(
-        default=None
-    )
-):
-
-    uid, _ = resolve_user(
-        req.user_id,
-        x_telegram_init_data
-    )
-
-    operation_id = (
-        f"balance_deduct:"
-        f"{uid}:"
-        f"{secrets.token_hex(12)}"
-    )
-
-    try:
-
-        new_balance = balance_transaction(
-            uid,
-            operation_id,
-            "deduct",
-            req.amount,
-            req.reason or "balance:deduct"
-        )
-
-    except ValueError as e:
-
-        raise HTTPException(
-            status_code=400,
-            detail=str(e)
-        )
-
-    return {
-        "ok": True,
-        "balance": new_balance
-    }
-
-
-# ============================================================
-# UNIVERSAL GAME TRANSACTION
-# ============================================================
-
-@app.post(
-    "/api/game/transaction"
-)
-async def api_game_transaction(
-    req: TransactionRequest,
-    x_telegram_init_data: str | None = Header(
-        default=None
-    )
-):
-
-    uid, _ = resolve_user(
-        req.user_id,
-        x_telegram_init_data
-    )
-
-    if not req.operation_id:
-
-        raise HTTPException(
-            status_code=400,
-            detail="operation_id обязателен"
-        )
-
-    operation_type = (
-        req.type
-        .strip()
-        .lower()
-    )
-
-    if operation_type not in (
-        "add",
-        "deduct"
-    ):
-
-        raise HTTPException(
-            status_code=400,
-            detail="Неверный тип операции"
-        )
-
-    try:
-
-        new_balance = balance_transaction(
-            uid,
-            req.operation_id,
-            operation_type,
-            req.amount,
-            req.game or "game"
-        )
-
-    except ValueError as e:
-
-        raise HTTPException(
-            status_code=400,
-            detail=str(e)
-        )
-
-    return {
-        "ok": True,
-        "balance": new_balance
-    }
 
 
 # ============================================================
@@ -1253,7 +1079,7 @@ CASES = {
 
 
 # ============================================================
-# WEIGHTED REWARD
+# RANDOM REWARD
 # ============================================================
 
 def weighted_reward(
@@ -1261,26 +1087,448 @@ def weighted_reward(
 ):
 
     total = sum(
-        float(item[3])
+        float(
+            item[3]
+        )
         for item in items
     )
 
-    random_value = (
+    value = (
         secrets.SystemRandom().random()
         * total
     )
 
     for item in items:
 
-        random_value -= float(
+        value -= float(
             item[3]
         )
 
-        if random_value <= 0:
+        if value <= 0:
 
             return item
 
     return items[-1]
+
+
+# ============================================================
+# HEALTH
+# ============================================================
+
+@app.get(
+    "/health"
+)
+async def health():
+
+    return {
+
+        "ok": True,
+
+        "status": "online",
+
+        "service": "White Bear Drop",
+
+        "api": True,
+
+        "time": int(
+            time.time()
+        )
+
+    }
+
+
+# ============================================================
+# API STATUS
+# ============================================================
+
+@app.get(
+    "/api/status"
+)
+async def api_status():
+
+    return {
+
+        "ok": True,
+
+        "status": "online",
+
+        "api": True,
+
+        "service": "White Bear Drop",
+
+        "version": "3.0.0",
+
+        "games": {
+
+            "cases": True,
+
+            "ball": True,
+
+            "scratch": True,
+
+            "upgrade": True
+
+        },
+
+        "inventory": True,
+
+        "promo": True,
+
+        "payments": True
+
+    }
+
+
+# ============================================================
+# API ME
+#
+# HTML МОЖЕТ ВЫЗВАТЬ:
+#
+# GET /api/me
+#
+# С HEADER:
+# X-Telegram-Init-Data
+# ============================================================
+
+@app.get(
+    "/api/me"
+)
+async def api_me(
+    x_telegram_init_data: str | None = Header(
+        default=None
+    )
+):
+
+    verified = verify_init_data(
+        x_telegram_init_data or ""
+    )
+
+    if not verified:
+
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid Telegram initData"
+        )
+
+    uid = int(
+        verified["id"]
+    )
+
+    ensure_user(
+        uid
+    )
+
+    user = get_user(
+        uid
+    )
+
+    return {
+
+        "ok": True,
+
+        "api": True,
+
+        "authenticated": True,
+
+        "user": {
+
+            "id": uid,
+
+            "username":
+                user["username"],
+
+            "first_name":
+                user["first_name"],
+
+            "last_name":
+                user["last_name"]
+
+        },
+
+        "balance":
+            float(
+                user["balance"]
+            )
+
+    }
+
+
+# ============================================================
+# USER
+# ============================================================
+
+@app.get(
+    "/api/user/{user_id}"
+)
+async def api_user(
+    user_id: int
+):
+
+    user = get_user(
+        user_id
+    )
+
+    if not user:
+
+        ensure_user(
+            user_id
+        )
+
+        user = get_user(
+            user_id
+        )
+
+    return {
+
+        "ok": True,
+
+        "api": True,
+
+        "user_id":
+            user_id,
+
+        "username":
+            user["username"],
+
+        "first_name":
+            user["first_name"],
+
+        "last_name":
+            user["last_name"],
+
+        "balance":
+            float(
+                user["balance"]
+            )
+
+    }
+
+
+# ============================================================
+# BALANCE
+# ============================================================
+
+@app.get(
+    "/api/balance/{user_id}"
+)
+async def api_balance(
+    user_id: int
+):
+
+    return {
+
+        "ok": True,
+
+        "api": True,
+
+        "user_id":
+            user_id,
+
+        "balance":
+            get_balance(
+                user_id
+            )
+
+    }
+
+
+# ============================================================
+# ADD BALANCE
+# ============================================================
+
+@app.post(
+    "/api/balance/add"
+)
+async def api_add_balance(
+    req: BalanceRequest,
+    x_telegram_init_data: str | None = Header(
+        default=None
+    )
+):
+
+    uid, _ = resolve_user(
+        req.user_id,
+        x_telegram_init_data
+    )
+
+    operation_id = (
+        f"balance_add:"
+        f"{uid}:"
+        f"{secrets.token_hex(16)}"
+    )
+
+    try:
+
+        new_balance = balance_transaction(
+
+            uid,
+
+            operation_id,
+
+            "add",
+
+            req.amount,
+
+            req.reason
+            or "balance:add"
+
+        )
+
+    except ValueError as e:
+
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
+
+    return {
+
+        "ok": True,
+
+        "balance":
+            new_balance
+
+    }
+
+
+# ============================================================
+# DEDUCT BALANCE
+# ============================================================
+
+@app.post(
+    "/api/balance/deduct"
+)
+async def api_deduct_balance(
+    req: BalanceRequest,
+    x_telegram_init_data: str | None = Header(
+        default=None
+    )
+):
+
+    uid, _ = resolve_user(
+        req.user_id,
+        x_telegram_init_data
+    )
+
+    operation_id = (
+        f"balance_deduct:"
+        f"{uid}:"
+        f"{secrets.token_hex(16)}"
+    )
+
+    try:
+
+        new_balance = balance_transaction(
+
+            uid,
+
+            operation_id,
+
+            "deduct",
+
+            req.amount,
+
+            req.reason
+            or "balance:deduct"
+
+        )
+
+    except ValueError as e:
+
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
+
+    return {
+
+        "ok": True,
+
+        "balance":
+            new_balance
+
+    }
+
+
+# ============================================================
+# UNIVERSAL GAME TRANSACTION
+# ============================================================
+
+@app.post(
+    "/api/game/transaction"
+)
+async def api_game_transaction(
+    req: TransactionRequest,
+    x_telegram_init_data: str | None = Header(
+        default=None
+    )
+):
+
+    uid, _ = resolve_user(
+        req.user_id,
+        x_telegram_init_data
+    )
+
+    operation_id = (
+        req.operation_id
+        .strip()
+    )
+
+    if not operation_id:
+
+        raise HTTPException(
+            status_code=400,
+            detail="operation_id обязателен"
+        )
+
+    operation_type = (
+        req.type
+        .strip()
+        .lower()
+    )
+
+    if operation_type not in (
+        "add",
+        "deduct"
+    ):
+
+        raise HTTPException(
+            status_code=400,
+            detail="Неверный тип операции"
+        )
+
+    try:
+
+        new_balance = balance_transaction(
+
+            uid,
+
+            operation_id,
+
+            operation_type,
+
+            req.amount,
+
+            req.game
+            or "game"
+
+        )
+
+    except ValueError as e:
+
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
+
+    return {
+
+        "ok": True,
+
+        "balance":
+            new_balance
+
+    }
 
 
 # ============================================================
@@ -1317,6 +1565,10 @@ async def api_open_case(
         case["price"]
     )
 
+    # --------------------------------------------------------
+    # Проверяем цену
+    # --------------------------------------------------------
+
     if abs(
         float(req.price)
         - server_price
@@ -1328,7 +1580,7 @@ async def api_open_case(
         )
 
     # --------------------------------------------------------
-    # FREE CASE COOLDOWN
+    # FREE CASE
     # --------------------------------------------------------
 
     if req.case_id == "free":
@@ -1384,25 +1636,29 @@ async def api_open_case(
                 )
 
     # --------------------------------------------------------
-    # СНИМАЕМ СТОИМОСТЬ
+    # ПЛАТНЫЙ КЕЙС
     # --------------------------------------------------------
 
     if server_price > 0:
 
-        bet_operation = (
-            f"case_bet:"
-            f"{uid}:"
-            f"{secrets.token_hex(12)}"
-        )
-
         try:
 
             balance_transaction(
+
                 uid,
-                bet_operation,
+
+                (
+                    f"case_bet:"
+                    f"{uid}:"
+                    f"{secrets.token_hex(16)}"
+                ),
+
                 "deduct",
+
                 server_price,
+
                 f"case:{req.case_id}"
+
             )
 
         except ValueError as e:
@@ -1413,7 +1669,7 @@ async def api_open_case(
             )
 
     # --------------------------------------------------------
-    # ВЫБИРАЕМ ПРИЗ
+    # РАНДОМНЫЙ ПРИЗ
     # --------------------------------------------------------
 
     (
@@ -1427,25 +1683,31 @@ async def api_open_case(
     )
 
     # --------------------------------------------------------
-    # НАЧИСЛЯЕМ ПРИЗ
+    # НАЧИСЛЕНИЕ ПРИЗА
     # --------------------------------------------------------
 
     reward_operation = (
         f"case_reward:"
         f"{uid}:"
-        f"{secrets.token_hex(12)}"
+        f"{secrets.token_hex(16)}"
     )
 
     new_balance = balance_transaction(
+
         uid,
+
         reward_operation,
+
         "add",
+
         reward_value,
+
         f"case_reward:{req.case_id}"
+
     )
 
     # --------------------------------------------------------
-    # ИНВЕНТАРЬ
+    # INVENTORY
     # --------------------------------------------------------
 
     with closing(db()) as con:
@@ -1478,23 +1740,31 @@ async def api_open_case(
         con.commit()
 
     return {
+
         "ok": True,
 
         "reward": {
 
-            "emoji": emoji,
+            "emoji":
+                emoji,
 
-            "name": name,
+            "name":
+                name,
 
-            "value": reward_value,
+            "value":
+                reward_value,
 
-            "rarity": rarity,
+            "rarity":
+                rarity,
 
-            "chance": chance
+            "chance":
+                chance
 
         },
 
-        "balance": new_balance
+        "balance":
+            new_balance
+
     }
 
 
@@ -1517,20 +1787,24 @@ async def api_ball(
         x_telegram_init_data
     )
 
-    bet_operation = (
-        f"ball_bet:"
-        f"{uid}:"
-        f"{secrets.token_hex(12)}"
-    )
-
     try:
 
         balance_transaction(
+
             uid,
-            bet_operation,
+
+            (
+                f"ball_bet:"
+                f"{uid}:"
+                f"{secrets.token_hex(16)}"
+            ),
+
             "deduct",
+
             req.bet,
+
             "ball:bet"
+
         )
 
     except ValueError as e:
@@ -1558,22 +1832,29 @@ async def api_ball(
         multiplier = 2.5
 
     prize = round(
-        req.bet * multiplier,
+        req.bet
+        * multiplier,
         2
     )
 
     if prize > 0:
 
         new_balance = balance_transaction(
+
             uid,
+
             (
                 f"ball_reward:"
                 f"{uid}:"
-                f"{secrets.token_hex(12)}"
+                f"{secrets.token_hex(16)}"
             ),
+
             "add",
+
             prize,
+
             "ball:reward"
+
         )
 
     else:
@@ -1586,19 +1867,23 @@ async def api_ball(
 
         "ok": True,
 
+        "bet":
+            req.bet,
+
+        "multiplier":
+            multiplier,
+
+        "prize":
+            prize,
+
+        "balance":
+            new_balance,
+
         "result": (
             f"Ставка: {req.bet} ⭐\n"
             f"Множитель: x{multiplier}\n"
             f"Выигрыш: {prize:.2f} ⭐"
-        ),
-
-        "bet": req.bet,
-
-        "multiplier": multiplier,
-
-        "prize": prize,
-
-        "balance": new_balance
+        )
 
     }
 
@@ -1627,15 +1912,21 @@ async def api_scratch(
     try:
 
         balance_transaction(
+
             uid,
+
             (
                 f"scratch_bet:"
                 f"{uid}:"
-                f"{secrets.token_hex(12)}"
+                f"{secrets.token_hex(16)}"
             ),
+
             "deduct",
+
             cost,
+
             "scratch:bet"
+
         )
 
     except ValueError as e:
@@ -1648,21 +1939,13 @@ async def api_scratch(
     prizes = [
 
         0,
-
         0,
-
         0,
-
         3,
-
         5,
-
         10,
-
         15,
-
         20,
-
         25
 
     ]
@@ -1674,15 +1957,21 @@ async def api_scratch(
     if prize > 0:
 
         new_balance = balance_transaction(
+
             uid,
+
             (
                 f"scratch_reward:"
                 f"{uid}:"
-                f"{secrets.token_hex(12)}"
+                f"{secrets.token_hex(16)}"
             ),
+
             "add",
+
             prize,
+
             "scratch:reward"
+
         )
 
     else:
@@ -1695,14 +1984,19 @@ async def api_scratch(
 
         "ok": True,
 
+        "cost":
+            cost,
+
+        "prize":
+            prize,
+
+        "balance":
+            new_balance,
+
         "result": (
             f"Скретч-карта: {cost} ⭐\n"
             f"Выигрыш: {prize} ⭐"
-        ),
-
-        "prize": prize,
-
-        "balance": new_balance
+        )
 
     }
 
@@ -1736,15 +2030,21 @@ async def api_upgrade(
     try:
 
         balance_transaction(
+
             uid,
+
             (
                 f"upgrade_bet:"
                 f"{uid}:"
-                f"{secrets.token_hex(12)}"
+                f"{secrets.token_hex(16)}"
             ),
+
             "deduct",
+
             req.bet,
+
             "upgrade:bet"
+
         )
 
     except ValueError as e:
@@ -1765,15 +2065,21 @@ async def api_upgrade(
         prize = req.bet * 2
 
         new_balance = balance_transaction(
+
             uid,
+
             (
                 f"upgrade_reward:"
                 f"{uid}:"
-                f"{secrets.token_hex(12)}"
+                f"{secrets.token_hex(16)}"
             ),
+
             "add",
+
             prize,
+
             "upgrade:reward"
+
         )
 
         result = (
@@ -1797,13 +2103,17 @@ async def api_upgrade(
 
         "ok": True,
 
-        "result": result,
+        "success":
+            success,
 
-        "success": success,
+        "prize":
+            prize,
 
-        "prize": prize,
+        "balance":
+            new_balance,
 
-        "balance": new_balance
+        "result":
+            result
 
     }
 
@@ -1832,8 +2142,11 @@ async def api_promo(
 ):
 
     uid, _ = resolve_user(
+
         req.user_id,
+
         x_telegram_init_data
+
     )
 
     code = (
@@ -1854,7 +2167,7 @@ async def api_promo(
     ]
 
     # --------------------------------------------------------
-    # АТОМАРНО ПРОВЕРЯЕМ ПРОМОКОД
+    # Проверяем промокод
     # --------------------------------------------------------
 
     with closing(db()) as con:
@@ -1923,30 +2236,33 @@ async def api_promo(
             )
 
     # --------------------------------------------------------
-    # НАЧИСЛЯЕМ БАЛАНС
+    # НАЧИСЛЯЕМ
     # --------------------------------------------------------
 
     operation_id = (
         f"promo:"
         f"{uid}:"
         f"{code}:"
-        f"{secrets.token_hex(12)}"
+        f"{secrets.token_hex(16)}"
     )
 
     try:
 
         new_balance = balance_transaction(
+
             uid,
+
             operation_id,
+
             "add",
+
             amount,
+
             f"promo:{code}"
+
         )
 
     except Exception:
-
-        # Если начисление не получилось,
-        # разрешаем использовать промокод повторно.
 
         with closing(db()) as con:
 
@@ -1971,12 +2287,20 @@ async def api_promo(
 
         "ok": True,
 
-        "message": (
-            f"Промокод {code} активирован! "
-            f"+{amount} ⭐"
-        ),
+        "code":
+            code,
 
-        "balance": new_balance
+        "amount":
+            amount,
+
+        "balance":
+            new_balance,
+
+        "message": (
+            f"Промокод {code} "
+            f"активирован! "
+            f"+{amount} ⭐"
+        )
 
     }
 
@@ -2022,15 +2346,18 @@ async def api_inventory(
         "ok": True,
 
         "items": [
+
             dict(row)
+
             for row in rows
+
         ]
 
     }
 
 
 # ============================================================
-# SELL INVENTORY ITEM
+# SELL ITEM
 # ============================================================
 
 @app.post(
@@ -2044,8 +2371,11 @@ async def api_sell_item(
 ):
 
     uid, _ = resolve_user(
+
         req.user_id,
+
         x_telegram_init_data
+
     )
 
     try:
@@ -2060,6 +2390,10 @@ async def api_sell_item(
             status_code=400,
             detail="Неверный ID предмета"
         )
+
+    # --------------------------------------------------------
+    # Удаляем предмет атомарно
+    # --------------------------------------------------------
 
     with closing(db()) as con:
 
@@ -2113,23 +2447,30 @@ async def api_sell_item(
         f"sell:"
         f"{uid}:"
         f"{item_id}:"
-        f"{secrets.token_hex(12)}"
+        f"{secrets.token_hex(16)}"
     )
 
     try:
 
         new_balance = balance_transaction(
+
             uid,
+
             operation_id,
+
             "add",
+
             value,
+
             f"inventory:sell:{item_id}"
+
         )
 
     except Exception:
 
-        # Возвращаем предмет, если начисление
-        # почему-то не произошло.
+        # ----------------------------------------------------
+        # Возвращаем предмет
+        # ----------------------------------------------------
 
         with closing(db()) as con:
 
@@ -2166,18 +2507,22 @@ async def api_sell_item(
 
         "ok": True,
 
+        "value":
+            value,
+
+        "balance":
+            new_balance,
+
         "message": (
             f"Предмет продан за "
             f"{value:.2f} ⭐"
-        ),
-
-        "balance": new_balance
+        )
 
     }
 
 
 # ============================================================
-# TELEGRAM STARS PAYMENT
+# STARS PAYMENT
 # ============================================================
 
 @app.post(
@@ -2191,15 +2536,18 @@ async def api_create_payment(
 ):
 
     uid, _ = resolve_user(
+
         req.user_id,
+
         x_telegram_init_data
+
     )
 
     payload = (
         f"stars:"
         f"{uid}:"
         f"{req.amount}:"
-        f"{secrets.token_urlsafe(16)}"
+        f"{secrets.token_urlsafe(20)}"
     )
 
     with closing(db()) as con:
@@ -2249,10 +2597,13 @@ async def api_create_payment(
                 prices=[
 
                     LabeledPrice(
+
                         label=(
                             f"{req.amount} Stars"
                         ),
+
                         amount=req.amount
+
                     )
 
                 ]
@@ -2284,21 +2635,192 @@ async def api_create_payment(
 
         "success": True,
 
-        "invoice_link": invoice_link,
+        "invoice_link":
+            invoice_link,
 
-        "amount": req.amount
+        "amount":
+            req.amount
 
     }
 
 
 # ============================================================
-# TELEGRAM START
+# TELEGRAM KEYBOARD
+# ============================================================
+
+def webapp_button():
+
+    return InlineKeyboardButton(
+
+        text="🎮 Открыть игру",
+
+        web_app=WebAppInfo(
+            url=WEBAPP_URL
+        )
+
+    )
+
+
+def main_keyboard():
+
+    return InlineKeyboardMarkup(
+
+        inline_keyboard=[
+
+            [
+                webapp_button()
+            ],
+
+            [
+                InlineKeyboardButton(
+                    text="💰 Баланс",
+                    callback_data="balance"
+                ),
+
+                InlineKeyboardButton(
+                    text="👤 Профиль",
+                    callback_data="profile"
+                )
+            ],
+
+            [
+                InlineKeyboardButton(
+                    text="⭐ Пополнить",
+                    callback_data="deposit"
+                ),
+
+                InlineKeyboardButton(
+                    text="📎 Реферал",
+                    callback_data="referral"
+                )
+            ]
+
+        ]
+
+    )
+
+
+def deposit_keyboard():
+
+    return InlineKeyboardMarkup(
+
+        inline_keyboard=[
+
+            [
+
+                InlineKeyboardButton(
+                    text="⭐ 10",
+                    callback_data="buy_10"
+                ),
+
+                InlineKeyboardButton(
+                    text="⭐ 50",
+                    callback_data="buy_50"
+                )
+
+            ],
+
+            [
+
+                InlineKeyboardButton(
+                    text="⭐ 100",
+                    callback_data="buy_100"
+                ),
+
+                InlineKeyboardButton(
+                    text="⭐ 250",
+                    callback_data="buy_250"
+                )
+
+            ],
+
+            [
+
+                InlineKeyboardButton(
+                    text="🔙 Назад",
+                    callback_data="back"
+                )
+
+            ]
+
+        ]
+
+    )
+
+
+# ============================================================
+# /START
 # ============================================================
 
 @dp.message(
     CommandStart()
 )
 async def start_command(
+    message: Message
+):
+
+    if not message.from_user:
+
+        return
+
+    ensure_user(
+
+        message.from_user.id,
+
+        message.from_user
+
+    )
+
+    balance = get_balance(
+
+        message.from_user.id
+
+    )
+
+    await message.answer(
+
+        "🐻‍❄️ <b>White Bear Drop</b>\n\n"
+
+        f"💰 Баланс: "
+        f"<b>{balance:.2f} ⭐</b>\n\n"
+
+        "🎮 Добро пожаловать!\n"
+        "Открой игру кнопкой ниже.",
+
+        reply_markup=main_keyboard()
+
+    )
+
+
+# ============================================================
+# /GAME
+# ============================================================
+
+@dp.message(
+    Command("game")
+)
+async def game_command(
+    message: Message
+):
+
+    await message.answer(
+
+        "🎮 <b>White Bear Drop</b>\n\n"
+        "Нажми кнопку ниже:",
+
+        reply_markup=main_keyboard()
+
+    )
+
+
+# ============================================================
+# /BALANCE
+# ============================================================
+
+@dp.message(
+    Command("balance")
+)
+async def balance_command(
     message: Message
 ):
 
@@ -2317,15 +2839,427 @@ async def start_command(
 
     await message.answer(
 
+        "💰 <b>Ваш баланс</b>\n\n"
+        f"<b>{balance:.2f} ⭐</b>",
+
+        reply_markup=main_keyboard()
+
+    )
+
+
+# ============================================================
+# /PROFILE
+# ============================================================
+
+@dp.message(
+    Command("profile")
+)
+async def profile_command(
+    message: Message
+):
+
+    if not message.from_user:
+
+        return
+
+    ensure_user(
+        message.from_user.id,
+        message.from_user
+    )
+
+    balance = get_balance(
+        message.from_user.id
+    )
+
+    await message.answer(
+
+        "👤 <b>Профиль</b>\n\n"
+
+        f"🆔 ID: "
+        f"<code>{message.from_user.id}</code>\n"
+
+        f"👤 Username: "
+        f"@{message.from_user.username or 'нет'}\n"
+
+        f"💰 Баланс: "
+        f"<b>{balance:.2f} ⭐</b>",
+
+        reply_markup=main_keyboard()
+
+    )
+
+
+# ============================================================
+# BALANCE CALLBACK
+# ============================================================
+
+@dp.callback_query(
+    F.data == "balance"
+)
+async def balance_callback(
+    callback: types.CallbackQuery
+):
+
+    uid = callback.from_user.id
+
+    ensure_user(
+        uid,
+        callback.from_user
+    )
+
+    balance = get_balance(
+        uid
+    )
+
+    await callback.message.edit_text(
+
+        "💰 <b>Ваш баланс</b>\n\n"
+
+        f"<b>{balance:.2f} ⭐</b>",
+
+        reply_markup=InlineKeyboardMarkup(
+
+            inline_keyboard=[
+
+                [
+
+                    InlineKeyboardButton(
+                        text="⭐ Пополнить",
+                        callback_data="deposit"
+                    )
+
+                ],
+
+                [
+
+                    InlineKeyboardButton(
+                        text="🎮 Играть",
+                        web_app=WebAppInfo(
+                            url=WEBAPP_URL
+                        )
+                    )
+
+                ],
+
+                [
+
+                    InlineKeyboardButton(
+                        text="🔙 Назад",
+                        callback_data="back"
+                    )
+
+                ]
+
+            ]
+
+        )
+
+    )
+
+    await callback.answer()
+
+
+# ============================================================
+# PROFILE CALLBACK
+# ============================================================
+
+@dp.callback_query(
+    F.data == "profile"
+)
+async def profile_callback(
+    callback: types.CallbackQuery
+):
+
+    uid = callback.from_user.id
+
+    ensure_user(
+        uid,
+        callback.from_user
+    )
+
+    user = get_user(
+        uid
+    )
+
+    await callback.message.edit_text(
+
+        "👤 <b>Профиль</b>\n\n"
+
+        f"🆔 ID: "
+        f"<code>{uid}</code>\n"
+
+        f"👤 Username: "
+        f"@{user['username'] or 'нет'}\n"
+
+        f"💰 Баланс: "
+        f"<b>{float(user['balance']):.2f} ⭐</b>",
+
+        reply_markup=InlineKeyboardMarkup(
+
+            inline_keyboard=[
+
+                [
+
+                    InlineKeyboardButton(
+                        text="⭐ Пополнить",
+                        callback_data="deposit"
+                    )
+
+                ],
+
+                [
+
+                    InlineKeyboardButton(
+                        text="🎮 Играть",
+                        web_app=WebAppInfo(
+                            url=WEBAPP_URL
+                        )
+                    )
+
+                ],
+
+                [
+
+                    InlineKeyboardButton(
+                        text="🔙 Назад",
+                        callback_data="back"
+                    )
+
+                ]
+
+            ]
+
+        )
+
+    )
+
+    await callback.answer()
+
+
+# ============================================================
+# DEPOSIT CALLBACK
+# ============================================================
+
+@dp.callback_query(
+    F.data == "deposit"
+)
+async def deposit_callback(
+    callback: types.CallbackQuery
+):
+
+    await callback.message.edit_text(
+
+        "⭐ <b>Пополнение баланса</b>\n\n"
+
+        "Выберите количество Stars:",
+
+        reply_markup=deposit_keyboard()
+
+    )
+
+    await callback.answer()
+
+
+# ============================================================
+# BUY STARS
+# ============================================================
+
+@dp.callback_query(
+    F.data.startswith("buy_")
+)
+async def buy_stars(
+    callback: types.CallbackQuery
+):
+
+    try:
+
+        amount = int(
+            callback.data.replace(
+                "buy_",
+                ""
+            )
+        )
+
+        if amount <= 0:
+
+            raise ValueError
+
+        uid = callback.from_user.id
+
+        ensure_user(
+            uid,
+            callback.from_user
+        )
+
+        payload = (
+            f"stars:"
+            f"{uid}:"
+            f"{amount}:"
+            f"{secrets.token_urlsafe(20)}"
+        )
+
+        with closing(db()) as con:
+
+            con.execute(
+                """
+                INSERT INTO payments
+                (
+                    user_id,
+                    payload,
+                    amount,
+                    status,
+                    created_at
+                )
+                VALUES (?,?,?,?,?)
+                """,
+                (
+                    uid,
+                    payload,
+                    amount,
+                    "pending",
+                    int(time.time())
+                )
+            )
+
+            con.commit()
+
+        await bot.send_invoice(
+
+            chat_id=uid,
+
+            title=(
+                f"Пополнение "
+                f"{amount} ⭐"
+            ),
+
+            description=(
+                "Пополнение баланса "
+                "White Bear Drop"
+            ),
+
+            payload=payload,
+
+            currency="XTR",
+
+            prices=[
+
+                LabeledPrice(
+                    label=(
+                        f"{amount} Stars"
+                    ),
+                    amount=amount
+                )
+
+            ]
+
+        )
+
+        await callback.answer()
+
+    except Exception as e:
+
+        print(
+            "BUY STARS ERROR:",
+            repr(e)
+        )
+
+        await callback.answer(
+
+            "❌ Не удалось создать оплату",
+
+            show_alert=True
+
+        )
+
+
+# ============================================================
+# REFERRAL
+# ============================================================
+
+@dp.callback_query(
+    F.data == "referral"
+)
+async def referral_callback(
+    callback: types.CallbackQuery
+):
+
+    uid = callback.from_user.id
+
+    link = (
+        f"https://t.me/"
+        f"{(await bot.me()).username}"
+        f"?start=ref_{uid}"
+    )
+
+    await callback.message.edit_text(
+
+        "📎 <b>Реферальная система</b>\n\n"
+
+        "Приглашай друзей в White Bear Drop.\n\n"
+
+        f"🔗 Твоя ссылка:\n"
+        f"<code>{link}</code>\n\n"
+
+        "🎁 Награда: <b>10 ⭐</b>",
+
+        reply_markup=InlineKeyboardMarkup(
+
+            inline_keyboard=[
+
+                [
+
+                    InlineKeyboardButton(
+                        text="🔙 Назад",
+                        callback_data="back"
+                    )
+
+                ]
+
+            ]
+
+        )
+
+    )
+
+    await callback.answer()
+
+
+# ============================================================
+# BACK
+# ============================================================
+
+@dp.callback_query(
+    F.data == "back"
+)
+async def back_callback(
+    callback: types.CallbackQuery
+):
+
+    uid = callback.from_user.id
+
+    ensure_user(
+        uid,
+        callback.from_user
+    )
+
+    balance = get_balance(
+        uid
+    )
+
+    await callback.message.edit_text(
+
         "🐻‍❄️ <b>White Bear Drop</b>\n\n"
 
         f"💰 Баланс: "
         f"<b>{balance:.2f} ⭐</b>\n\n"
 
-        "🎮 Открой мини-приложение "
-        "через кнопку меню бота."
+        "🎮 Открой игру кнопкой ниже.",
+
+        reply_markup=main_keyboard()
 
     )
+
+    await callback.answer()
 
 
 # ============================================================
@@ -2340,8 +3274,11 @@ async def pre_checkout(
     if query.currency != "XTR":
 
         await query.answer(
+
             ok=False,
+
             error_message="Неверная валюта"
+
         )
 
         return
@@ -2349,8 +3286,11 @@ async def pre_checkout(
     if query.total_amount <= 0:
 
         await query.answer(
+
             ok=False,
+
             error_message="Неверная сумма"
+
         )
 
         return
@@ -2387,7 +3327,7 @@ async def successful_payment(
 
         return
 
-    user_id = (
+    uid = (
         message.from_user.id
     )
 
@@ -2404,7 +3344,7 @@ async def successful_payment(
     )
 
     # --------------------------------------------------------
-    # ПОЛУЧАЕМ ПЛАТЁЖ
+    # ПЛАТЁЖ
     # --------------------------------------------------------
 
     with closing(db()) as con:
@@ -2429,21 +3369,25 @@ async def successful_payment(
             con.rollback()
 
             await message.answer(
+
                 "⚠️ Платёж получен, "
                 "но счёт не найден."
+
             )
 
             return
 
         if int(
             row["user_id"]
-        ) != user_id:
+        ) != uid:
 
             con.rollback()
 
             await message.answer(
-                "⚠️ Этот платёж "
-                "принадлежит другому пользователю."
+
+                "⚠️ Платёж принадлежит "
+                "другому пользователю."
+
             )
 
             return
@@ -2455,8 +3399,10 @@ async def successful_payment(
             con.rollback()
 
             await message.answer(
+
                 "⚠️ Сумма платежа "
                 "не совпадает."
+
             )
 
             return
@@ -2466,8 +3412,10 @@ async def successful_payment(
             con.rollback()
 
             await message.answer(
+
                 "ℹ️ Этот платёж "
-                "уже был зачислен."
+                "уже зачислен."
+
             )
 
             return
@@ -2508,11 +3456,17 @@ async def successful_payment(
     try:
 
         new_balance = balance_transaction(
-            user_id,
+
+            uid,
+
             f"payment:{charge_id}",
+
             "add",
+
             amount,
+
             "telegram_stars"
+
         )
 
     except Exception as e:
@@ -2523,9 +3477,11 @@ async def successful_payment(
         )
 
         await message.answer(
+
             "⚠️ Платёж подтверждён, "
-            "но возникла ошибка зачисления. "
-            "Обратись к администратору."
+            "но произошла ошибка "
+            "зачисления."
+
         )
 
         return
@@ -2538,53 +3494,91 @@ async def successful_payment(
         f"<b>+{amount}</b>\n"
 
         f"💰 Баланс: "
-        f"<b>{new_balance:.2f} ⭐</b>"
+        f"<b>{new_balance:.2f} ⭐</b>",
+
+        reply_markup=main_keyboard()
 
     )
 
 
 # ============================================================
-# API INFO
+# STARTUP
 # ============================================================
 
-@app.get(
-    "/api/status"
-)
-async def api_status():
+async def prepare_bot():
 
-    return {
+    print(
+        "🤖 Подключение к Telegram..."
+    )
 
-        "ok": True,
+    me = await bot.get_me()
 
-        "service": "White Bear Drop",
+    print(
+        f"✅ Бот подключен: "
+        f"@{me.username}"
+    )
 
-        "api": "online",
+    print(
+        "🧹 Удаляем старый webhook..."
+    )
 
-        "games": [
+    try:
 
-            "cases",
-            "ball",
-            "scratch",
-            "upgrade"
+        await bot.delete_webhook(
+            drop_pending_updates=False
+        )
 
-        ],
+        print(
+            "✅ Webhook удалён."
+        )
 
-        "inventory": True,
+    except Exception as e:
 
-        "promocodes": [
+        print(
+            "⚠️ Не удалось удалить webhook:"
+        )
 
-            "200",
-            "met200"
+        print(
+            repr(e)
+        )
 
-        ],
+    # --------------------------------------------------------
+    # Кнопка меню Telegram
+    # --------------------------------------------------------
 
-        "payments": "telegram_stars"
+    try:
 
-    }
+        await bot.set_chat_menu_button(
+
+            menu_button=types.MenuButtonWebApp(
+
+                text="🎮 Играть",
+
+                web_app=WebAppInfo(
+                    url=WEBAPP_URL
+                )
+
+            )
+
+        )
+
+        print(
+            "✅ Кнопка «Играть» установлена."
+        )
+
+    except Exception as e:
+
+        print(
+            "⚠️ Ошибка MenuButton:"
+        )
+
+        print(
+            repr(e)
+        )
 
 
 # ============================================================
-# START API
+# RUN API
 # ============================================================
 
 async def run_api():
@@ -2609,79 +3603,15 @@ async def run_api():
 
 
 # ============================================================
-# TELEGRAM POLLING
+# RUN BOT
 # ============================================================
 
 async def run_bot():
 
-    # --------------------------------------------------------
-    # САМОЕ ВАЖНОЕ ИСПРАВЛЕНИЕ
-    #
-    # Если ранее у бота был установлен webhook,
-    # start_polling() будет выдавать:
-    #
-    # TelegramConflictError:
-    # can't use getUpdates method while webhook is active
-    #
-    # Поэтому перед polling удаляем webhook.
-    # --------------------------------------------------------
+    await prepare_bot()
 
     print(
-        "📡 Проверяем Telegram webhook..."
-    )
-
-    try:
-
-        webhook_info = (
-            await bot.get_webhook_info()
-        )
-
-        if webhook_info.url:
-
-            print(
-                "⚠️ Найден активный webhook:"
-            )
-
-            print(
-                webhook_info.url
-            )
-
-            print(
-                "🧹 Удаляем webhook..."
-            )
-
-            await bot.delete_webhook(
-                drop_pending_updates=False
-            )
-
-            print(
-                "✅ Старый webhook удалён."
-            )
-
-        else:
-
-            print(
-                "✅ Активного webhook нет."
-            )
-
-    except Exception as e:
-
-        print(
-            "❌ Ошибка при проверке webhook:"
-        )
-
-        print(
-            repr(e)
-        )
-
-        raise
-
-    # --------------------------------------------------------
-    # Запускаем polling
-    # --------------------------------------------------------
-
-    print(
-        "🤖 Запускаем Telegram polling..."
+        "🤖 Telegram polling запущен."
     )
 
     await dp.start_polling(
@@ -2756,21 +3686,16 @@ async def main():
     )
 
     print(
-        "⭐ STARS PAYMENT: ON"
+        "⭐ TELEGRAM STARS: ON"
+    )
+
+    print(
+        "🔐 TELEGRAM INIT DATA: ON"
     )
 
     print(
         "=========================================="
     )
-
-    # --------------------------------------------------------
-    # Одновременно:
-    #
-    # 1. FastAPI
-    # 2. Telegram polling
-    #
-    # Но сначала run_bot() удалит старый webhook.
-    # --------------------------------------------------------
 
     await asyncio.gather(
 
@@ -2796,7 +3721,7 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
 
         print(
-            "🛑 White Bear остановлен."
+            "🛑 Бот остановлен."
         )
 
     except Exception as e:
