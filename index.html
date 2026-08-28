@@ -215,6 +215,16 @@ body{position:fixed;inset:0}button,input{font:inherit}.hidden{display:none!impor
 #upgradeGameContainer .select-item-btn,#upgradeGameContainer .selected-item-display{width:100%}
 }
 
+
+/* PROFILE / INVENTORY FIX */
+#inventoryList,#profileHistory{display:flex;flex-direction:column;gap:8px}
+#inventoryList .item,#profileHistory .item{display:flex;align-items:center;justify-content:space-between;gap:10px}
+#profileScreen .panel h2{margin-top:0}
+#profileHistory .history-line{padding:10px 12px;border-radius:12px;background:rgba(10,20,35,.55);border:1px solid rgba(80,150,255,.12);font-size:12px}
+#profileHistory .history-time{color:#718096;font-size:10px;margin-top:3px}
+#profileScreen .promo-input{width:100%;box-sizing:border-box;height:44px;border-radius:11px;border:1px solid rgba(90,160,255,.22);background:rgba(3,9,17,.9);color:#fff;padding:0 12px;outline:0}
+#profileScreen .promo-input:focus{border-color:#328cff;box-shadow:0 0 18px rgba(40,140,255,.12)}
+
 </style>
 </head>
 <body>
@@ -232,18 +242,49 @@ body{position:fixed;inset:0}button,input{font:inherit}.hidden{display:none!impor
 </section>
 
 <section id="inventoryScreen" class="page hidden">
- <div class="header"><div class="logo">🎒 ИНВЕНТАРЬ</div><div class="balance">⭐ <span class="allBalance">0.00</span></div></div>
- <div class="panel"><h2>Ваши предметы</h2><div id="inventoryList"><div class="muted">Загрузка...</div></div></div>
+ <div class="header">
+  <div class="logo">🎒 ИНВЕНТАРЬ</div>
+  <div class="balance">⭐ <span class="allBalance">0.00</span></div>
+ </div>
+ <div class="panel">
+  <h2>Ваши предметы</h2>
+  <div id="inventoryList"><div class="muted">Загрузка...</div></div>
+ </div>
 </section>
 
 <section id="profileScreen" class="page hidden">
- <div class="header"><div class="logo">👤 ПРОФИЛЬ</div><div class="balance">⭐ <span class="allBalance">0.00</span></div></div>
+ <div class="header">
+  <div class="logo">👤 ПРОФИЛЬ</div>
+  <div class="balance">⭐ <span class="allBalance">0.00</span></div>
+ </div>
+
  <div class="panel">
   <h2>Профиль</h2>
-  <div class="item"><span>Telegram ID</span><b id="profileId">—</b></div>
-  <div class="item"><span>Баланс</span><b>⭐ <span class="allBalance">0.00</span></b></div>
+  <div class="item"><span>Имя игрока</span><b id="profileName">Игрок</b></div>
+  <div class="item"><span>ID игрока</span><b id="profileId">—</b></div>
+  <div class="item"><span>Баланс</span><b id="profileBalance">⭐ 0.00</b></div>
   <div class="item"><span>API</span><b id="profileApi" class="bad">Проверка...</b></div>
   <button class="primary" id="refreshProfile">ОБНОВИТЬ</button>
+ </div>
+
+ <div class="panel">
+  <h2>Промокод</h2>
+  <div class="muted" style="margin-bottom:10px">Введите промокод, чтобы получить награду.</div>
+  <input id="promoInput" class="promo-input" type="text" placeholder="Введите промокод" autocomplete="off">
+  <button class="primary" id="promoButton" style="margin-top:8px">АКТИВИРОВАТЬ</button>
+  <div id="promoMessage" class="muted" style="min-height:22px;margin-top:8px"></div>
+ </div>
+
+ <div class="panel">
+  <h2>Статистика</h2>
+  <div class="item"><span>Игр сыграно</span><b id="gamesPlayed">0</b></div>
+  <div class="item"><span>Побед</span><b id="wins">0</b></div>
+  <div class="item"><span>Поражений</span><b id="losses">0</b></div>
+ </div>
+
+ <div class="panel">
+  <h2>История</h2>
+  <div id="profileHistory"><div class="muted">История пуста</div></div>
  </div>
 </section>
 
@@ -458,6 +499,7 @@ function setBalance(v){
  document.getElementById("gameMenuBalance").textContent="Баланс: "+balance.toFixed(2)+" ⭐";
  document.getElementById("ticketBalance").textContent=balance.toFixed(2)+" ⭐";
  document.getElementById("ticketBalanceGame").textContent=balance.toFixed(2)+" ⭐";
+ const pb=document.getElementById("profileBalance");if(pb)pb.textContent="⭐ "+balance.toFixed(2);
 }
 function setApiStatus(ok){
  const a=document.getElementById("apiStatus"),p=document.getElementById("profileApi");
@@ -480,6 +522,111 @@ function idempotency(prefix){return prefix+":"+USER_ID+":"+Date.now()+":"+Math.r
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
 
 /* ================= NAV / PROFILE / INVENTORY ================= */
+let gamesPlayed=Number(localStorage.getItem("wb_games")||0);
+let wins=Number(localStorage.getItem("wb_wins")||0);
+let losses=Number(localStorage.getItem("wb_losses")||0);
+let profileHistory=JSON.parse(localStorage.getItem("wb_profile_history")||"[]");
+
+function saveStats(){
+ localStorage.setItem("wb_games",String(gamesPlayed));
+ localStorage.setItem("wb_wins",String(wins));
+ localStorage.setItem("wb_losses",String(losses));
+}
+function setStats(){
+ const a=document.getElementById("gamesPlayed"),b=document.getElementById("wins"),c=document.getElementById("losses");
+ if(a)a.textContent=gamesPlayed;if(b)b.textContent=wins;if(c)c.textContent=losses;
+}
+function renderProfileHistory(){
+ const box=document.getElementById("profileHistory");if(!box)return;
+ if(!profileHistory.length){box.innerHTML="<div class='muted'>История пуста</div>";return}
+ box.innerHTML=profileHistory.slice(0,20).map(x=>`
+  <div class="history-line">
+   <div>${esc(x.text)}</div>
+   <div class="history-time">${esc(x.time)}</div>
+  </div>`).join("");
+}
+function addProfileHistory(text){
+ profileHistory.unshift({text:String(text),time:new Date().toLocaleString("ru-RU")});
+ profileHistory=profileHistory.slice(0,20);
+ localStorage.setItem("wb_profile_history",JSON.stringify(profileHistory));
+ renderProfileHistory();
+}
+function updateProfile(){
+ const name=document.getElementById("profileName");
+ const id=document.getElementById("profileId");
+ const pbal=document.getElementById("profileBalance");
+ const u=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user?tg.initDataUnsafe.user:null;
+ if(name)name.textContent=u?([u.first_name,u.last_name].filter(Boolean).join(" ")||u.username||"Игрок"):"Игрок";
+ if(id)id.textContent=USER_ID||"—";
+ if(pbal)pbal.textContent="⭐ "+Number(balance||0).toFixed(2);
+ setStats();renderProfileHistory();
+}
+async function loadInventory(){
+ const box=document.getElementById("inventoryList");if(!box)return;
+ if(!USER_ID){window.inventoryItems=[];box.innerHTML="<div class='muted'>Откройте приложение через Telegram.</div>";return}
+ try{
+  const d=await api("/api/inventory/"+encodeURIComponent(USER_ID));
+  const items=Array.isArray(d.items)?d.items:(Array.isArray(d.inventory)?d.inventory:[]);
+  window.inventoryItems=items.map(x=>({...x}));
+  renderInventory();
+ }catch(e){
+  window.inventoryItems=[];
+  box.innerHTML="<div class='bad'>Не удалось загрузить инвентарь.</div>";
+ }
+}
+function renderInventory(){
+ const box=document.getElementById("inventoryList");if(!box)return;
+ const items=Array.isArray(window.inventoryItems)?window.inventoryItems:[];
+ if(!items.length){box.innerHTML="<div class='muted'>Инвентарь пуст.</div>";return}
+ box.innerHTML=items.map(x=>`
+  <div class="item">
+   <div>
+    <b>${esc(x.emoji||"🎁")} ${esc(x.name||x.title||"Предмет")}</b>
+    <div class="muted">${esc(x.rarity||"")} · ${Number(x.value||0).toFixed(2)} ⭐</div>
+   </div>
+   <button class="primary sellItem" data-id="${esc(x.id)}" style="width:110px">Продать</button>
+  </div>`).join("");
+ box.querySelectorAll(".sellItem").forEach(btn=>btn.addEventListener("click",async()=>{
+  btn.disabled=true;
+  try{
+   const d=await api("/api/inventory/sell",{method:"POST",body:JSON.stringify({user_id:Number(USER_ID),item_id:String(btn.dataset.id)})});
+   if(d.balance!==undefined)setBalance(d.balance);
+   addProfileHistory(`Продан предмет на ${Number(d.message?.match(/([0-9.]+) ⭐/)?.[1]||0).toFixed(2)} ⭐`);
+   await loadInventory();
+  }catch(e){btn.disabled=false;toast(e.message)}
+ }));
+}
+document.getElementById("navMenu").onclick=()=>showPage("home");
+document.getElementById("navInventory").onclick=async()=>{showPage("inventoryScreen");await loadInventory();await loadBalance()};
+document.getElementById("navProfile").onclick=async()=>{showPage("profileScreen");updateProfile();await loadBalance();updateProfile();await checkProfileApi()};
+document.getElementById("refreshProfile").onclick=async()=>{await loadBalance();await loadInventory();updateProfile();await checkProfileApi()};
+
+async function checkProfileApi(){
+ const el=document.getElementById("profileApi");if(!el)return false;
+ try{await api("/health");el.textContent="ПОДКЛЮЧЕН";el.className="ok";return true}
+ catch(e){
+  try{await api("/api/status");el.textContent="ПОДКЛЮЧЕН";el.className="ok";return true}
+  catch(e2){el.textContent="ОШИБКА";el.className="bad";return false}
+ }
+}
+
+const promoButton=document.getElementById("promoButton");
+if(promoButton)promoButton.addEventListener("click",async()=>{
+ const input=document.getElementById("promoInput"),message=document.getElementById("promoMessage");
+ const code=(input.value||"").trim().toLowerCase();
+ if(!code){message.textContent="Введите промокод";message.style.color="#ef4752";return}
+ if(!USER_ID){message.textContent="Откройте приложение через Telegram";message.style.color="#ef4752";return}
+ promoButton.disabled=true;
+ try{
+  const d=await api("/api/promo/activate",{method:"POST",body:JSON.stringify({user_id:Number(USER_ID),code})});
+  if(d.balance!==undefined)setBalance(d.balance);
+  message.textContent="✅ "+(d.message||"Промокод активирован");message.style.color="#39e58c";
+  input.value="";addProfileHistory(`Промокод ${code}: +${Number(d.balance||0)-Number(balance||0) || "награда"} ⭐`);
+  updateProfile();
+ }catch(e){message.textContent="❌ "+e.message;message.style.color="#ef4752"}
+ finally{promoButton.disabled=false}
+});
+
 function showPage(id){
  ["home","inventoryScreen","profileScreen"].forEach(x=>document.getElementById(x).classList.toggle("hidden",x!==id));
  document.querySelectorAll(".bottom button").forEach(x=>x.classList.remove("active"));
@@ -487,21 +634,15 @@ function showPage(id){
  if(id==="inventoryScreen")document.getElementById("navInventory").classList.add("active");
  if(id==="profileScreen")document.getElementById("navProfile").classList.add("active");
 }
-async function loadInventory(){
- const box=document.getElementById("inventoryList");
- if(!USER_ID){box.innerHTML="<div class='muted'>Откройте приложение через Telegram.</div>";return}
- try{
-  const d=await api("/api/inventory/"+USER_ID);
-  const items=d.items||d.inventory||[];
-  if(!items.length){box.innerHTML="<div class='muted'>Инвентарь пуст.</div>";return}
-  box.innerHTML=items.map(x=>`<div class="item"><div><b>${esc(x.emoji||"🎁")} ${esc(x.name||x.title||"Предмет")}</b><div class="muted">${esc(x.rarity||"")} · ${Number(x.value||0).toFixed(2)} ⭐</div></div><button class="primary sellItem" data-id="${esc(x.id)}" style="width:110px">Продать</button></div>`).join("");
-  box.querySelectorAll(".sellItem").forEach(b=>b.addEventListener("click",async()=>{try{const d=await api("/api/inventory/sell",{method:"POST",body:JSON.stringify({user_id:Number(USER_ID),item_id:b.dataset.id})});if(d.balance!==undefined)setBalance(d.balance);toast(d.message||"Продано");loadInventory()}catch(e){toast(e.message)}}));
- }catch(e){box.innerHTML="<div class='bad'>Не удалось загрузить инвентарь.</div>"}
-}
-document.getElementById("navMenu").onclick=()=>showPage("home");
-document.getElementById("navInventory").onclick=async()=>{showPage("inventoryScreen");await loadInventory();await loadBalance()};
-document.getElementById("navProfile").onclick=async()=>{showPage("profileScreen");document.getElementById("profileId").textContent=USER_ID||"—";await loadBalance()};
-document.getElementById("refreshProfile").onclick=async()=>{await loadBalance();await loadInventory()};
+window.renderInventory=renderInventory;
+window.loadInventory=loadInventory;
+window.__UPGRADE_USER_ID=USER_ID;
+window.__UPGRADE_LOAD_INVENTORY=async()=>{
+ await loadInventory();
+ return Array.isArray(window.inventoryItems)?window.inventoryItems:[];
+};
+window.__UPGRADE_UPDATE_UI=()=>{updateBalanceUI();updateProfile()};
+setStats();renderProfileHistory();
 
 /* ================= BALL ================= */
 const canvas=document.getElementById("gameCanvas"),ctx=canvas.getContext("2d");
