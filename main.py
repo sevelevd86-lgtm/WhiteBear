@@ -6,7 +6,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, Labeled
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, PreCheckoutQueryHandler, MessageHandler, filters, ContextTypes
 
 # === НАСТРОЙКИ ===
-TOKEN = "ВАШ_ТОКЕН_БОТА"  # Замените на токен от @BotFather
+TOKEN = "8918284594:AAFLxOg1eEx4JS6z6V9wHr-t8T3Q9Qwiepg"  # Замените на токен от @BotFather
 BALANCE_FILE = "balances.json"
 WEBHOOK_URL = "https://whitebear.bothost.tech/webhook"  # Ваш домен + /webhook
 
