@@ -2,872 +2,1462 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-
-<title>🐻‍❄️ White Bear Drop</title>
+<meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"
+>
+<title>🐻‍❄️ DROP</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
 *{
     box-sizing:border-box;
-    margin:0;
-    padding:0;
     -webkit-tap-highlight-color:transparent;
 }
 
 html,body{
+    margin:0;
+    padding:0;
     width:100%;
     min-height:100%;
-    background:#07101d;
+    background:#06111f;
     color:#fff;
-    font-family:Arial,Helvetica,sans-serif;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
 }
 
 body{
     overflow-x:hidden;
 }
 
-button{
-    border:0;
-    outline:0;
-    cursor:pointer;
-    color:#fff;
-    font-family:inherit;
+button,
+input{
+    font:inherit;
 }
 
-.app{
+button{
+    cursor:pointer;
+}
+
+button:disabled{
+    opacity:.55;
+    cursor:not-allowed;
+}
+
+/* =========================================================
+   APP
+========================================================= */
+
+#app{
+    min-height:100vh;
+    background:
+        radial-gradient(
+            circle at 50% -10%,
+            rgba(54,102,180,.18),
+            transparent 38%
+        ),
+        #06111f;
+}
+
+#content{
     width:100%;
     max-width:620px;
-    min-height:100vh;
-    margin:auto;
-    padding-bottom:100px;
+    margin:0 auto;
+    padding:
+        92px
+        16px
+        110px;
 }
 
-/* ================= HEADER ================= */
-
-.header{
-    position:sticky;
-    top:0;
-    z-index:100;
-    height:74px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:0 16px;
-    background:rgba(7,16,29,.94);
-    border-bottom:1px solid rgba(255,255,255,.08);
-    backdrop-filter:blur(16px);
-}
-
-.logo{
-    font-size:21px;
-    font-weight:900;
-}
-
-.balance{
-    display:flex;
-    align-items:center;
-    gap:6px;
-    padding:10px 14px;
-    border-radius:14px;
-    background:rgba(255,255,255,.07);
-    font-weight:800;
-}
-
-.star{
-    color:#ffd84d;
-}
-
-/* ================= CONTENT ================= */
-
-.content{
-    padding:18px 14px;
-}
-
-.page{
+.screen{
     display:none;
+    animation:screenIn .18s ease;
 }
 
-.page.active{
+.screen.active{
     display:block;
 }
 
-.title{
-    font-size:28px;
-    font-weight:900;
-    margin-bottom:5px;
+@keyframes screenIn{
+    from{
+        opacity:0;
+        transform:translateY(6px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
 }
 
-.subtitle{
-    color:#8e9bad;
-    margin-bottom:18px;
-}
+/* =========================================================
+   HEADER
+========================================================= */
 
-/* ================= CARDS ================= */
+header{
+    position:fixed;
+    z-index:100;
+    top:0;
+    left:0;
+    right:0;
+    height:74px;
 
-.card{
-    position:relative;
-    margin-bottom:14px;
-    padding:18px;
-    border-radius:22px;
-    background:linear-gradient(
-        145deg,
-        rgba(28,48,74,.95),
-        rgba(12,24,40,.95)
-    );
-    border:1px solid rgba(255,255,255,.08);
-    box-shadow:0 12px 35px rgba(0,0,0,.2);
-}
-
-.card h2{
-    font-size:21px;
-    margin-bottom:7px;
-}
-
-.card p{
-    color:#9caabd;
-    font-size:14px;
-    line-height:1.45;
-}
-
-.play{
-    width:100%;
-    margin-top:15px;
-    padding:14px;
-    border-radius:15px;
-    background:linear-gradient(135deg,#397cff,#635bff);
-    font-size:16px;
-    font-weight:900;
-}
-
-.play:active{
-    transform:scale(.98);
-}
-
-/* ================= GAMES ================= */
-
-.game-header{
     display:flex;
     align-items:center;
     justify-content:space-between;
-    margin-bottom:18px;
+
+    padding:
+        0
+        max(16px,calc((100vw - 620px)/2 + 16px));
+
+    background:
+        rgba(5,15,28,.92);
+
+    border-bottom:
+        1px solid rgba(255,255,255,.08);
+
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
 }
 
-.back{
-    padding:9px 13px;
-    border-radius:12px;
-    background:rgba(255,255,255,.08);
-}
-
-.game-box{
-    padding:18px;
-    border-radius:24px;
-    background:#0c1a2b;
-    border:1px solid rgba(255,255,255,.08);
-}
-
-.game-title{
-    text-align:center;
+.logo{
     font-size:25px;
-    font-weight:900;
-    margin-bottom:6px;
+    font-weight:1000;
+    letter-spacing:-.5px;
 }
 
-.game-description{
-    text-align:center;
-    color:#8492a5;
+.balance{
+    min-width:105px;
+    padding:13px 17px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+
+    border-radius:18px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #172437,
+            #101b2b
+        );
+
+    border:
+        1px solid rgba(255,255,255,.07);
+
+    box-shadow:
+        0 8px 30px rgba(0,0,0,.18);
+
+    font-size:18px;
+    font-weight:1000;
+}
+
+/* =========================================================
+   HEADINGS
+========================================================= */
+
+h1{
+    margin:0 0 7px;
+    font-size:36px;
+    line-height:1.05;
+    letter-spacing:-1px;
+}
+
+h2{
+    margin:0 0 15px;
+    font-size:26px;
+}
+
+h3{
+    margin:0;
+}
+
+.sub{
+    color:#8292a8;
+    font-size:15px;
+    line-height:1.4;
     margin-bottom:20px;
 }
 
-/* ================= BET ================= */
+/* =========================================================
+   PANELS
+========================================================= */
 
-.bet-title{
-    color:#8795a8;
-    font-size:13px;
-    margin-bottom:8px;
-}
+.panel{
+    padding:20px;
+    margin-bottom:14px;
 
-.bet-row{
-    display:flex;
-    gap:8px;
-}
+    border-radius:24px;
 
-.bet-input{
-    flex:1;
-    min-width:0;
-    padding:14px;
-    border-radius:13px;
-    border:1px solid rgba(255,255,255,.1);
-    background:#07111e;
-    color:#fff;
-    font-size:17px;
-    outline:none;
-}
-
-.bet-button{
-    padding:0 14px;
-    border-radius:13px;
-    background:#17283e;
-    font-weight:800;
-}
-
-.bet-presets{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:7px;
-    margin-top:9px;
-}
-
-.bet-presets button{
-    padding:10px 4px;
-    border-radius:11px;
-    background:#14253a;
-    font-weight:700;
-}
-
-.action{
-    width:100%;
-    margin-top:15px;
-    padding:15px;
-    border-radius:15px;
-    background:linear-gradient(135deg,#397cff,#695bff);
-    font-size:17px;
-    font-weight:900;
-}
-
-.action:disabled{
-    opacity:.45;
-}
-
-/* ================= CASE ================= */
-
-.case-box{
-    height:220px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    margin-bottom:18px;
-    border-radius:20px;
     background:
-        radial-gradient(circle at center,
-        rgba(77,133,255,.25),
-        transparent 55%),
-        #081421;
-    border:1px solid rgba(255,255,255,.07);
+        linear-gradient(
+            145deg,
+            rgba(28,49,77,.9),
+            rgba(12,27,45,.94)
+        );
+
+    border:
+        1px solid rgba(135,173,220,.12);
+
+    box-shadow:
+        0 15px 45px rgba(0,0,0,.18);
+}
+
+.panel-title{
+    font-size:22px;
+    font-weight:1000;
+    margin-bottom:7px;
+}
+
+.note{
+    color:#8798ae;
+    font-size:13px;
+    line-height:1.45;
+}
+
+.bigbalance{
+    margin:15px 0;
+    font-size:42px;
+    font-weight:1000;
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.btn{
+    width:100%;
+    border:0;
+
+    padding:15px 18px;
+
+    border-radius:16px;
+
+    color:#fff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2b4e80,
+            #1e3b67
+        );
+
+    font-weight:900;
+
+    box-shadow:
+        0 8px 22px rgba(0,0,0,.15);
+
+    transition:
+        transform .12s ease,
+        filter .12s ease;
+}
+
+.btn:active{
+    transform:scale(.98);
+}
+
+.btn:hover{
+    filter:brightness(1.08);
+}
+
+.btn.green{
+    background:
+        linear-gradient(
+            135deg,
+            #21b96b,
+            #168b51
+        );
+}
+
+.btn.red{
+    background:
+        linear-gradient(
+            135deg,
+            #d94358,
+            #a92d42
+        );
+}
+
+.btn.secondary{
+    background:
+        rgba(255,255,255,.07);
+
+    border:
+        1px solid rgba(255,255,255,.07);
+}
+
+.row{
+    display:flex;
+    gap:10px;
+}
+
+.row>*{
+    flex:1;
+}
+
+/* =========================================================
+   CASE CARDS
+========================================================= */
+
+.case-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:13px;
+}
+
+.case-card{
+    position:relative;
+
+    min-height:180px;
+
+    padding:20px;
+
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:24px;
+
+    color:#fff;
+    text-align:left;
+
+    background:
+        linear-gradient(
+            145deg,
+            #172a43,
+            #0d1b2d
+        );
+
+    overflow:hidden;
+
+    box-shadow:
+        0 12px 35px rgba(0,0,0,.2);
+
+    transition:
+        transform .15s ease,
+        filter .15s ease;
+}
+
+.case-card:active{
+    transform:scale(.97);
+}
+
+.case-card:hover{
+    filter:brightness(1.08);
+}
+
+.case-card.free{
+    grid-column:1 / -1;
+
+    min-height:150px;
+
+    background:
+        radial-gradient(
+            circle at 80% 10%,
+            rgba(70,137,255,.3),
+            transparent 35%
+        ),
+        linear-gradient(
+            145deg,
+            #19345a,
+            #0b1b31
+        );
+}
+
+.case-card.pepe{
+    background:
+        radial-gradient(
+            circle at 90% 0,
+            rgba(71,214,125,.2),
+            transparent 38%
+        ),
+        linear-gradient(
+            145deg,
+            #183b36,
+            #102720
+        );
+}
+
+.case-card.c50{
+    background:
+        radial-gradient(
+            circle at 100% 0,
+            rgba(255,213,66,.17),
+            transparent 40%
+        ),
+        linear-gradient(
+            145deg,
+            #302b1d,
+            #1c1b17
+        );
+}
+
+.case-card.c250{
+    background:
+        radial-gradient(
+            circle at 100% 0,
+            rgba(87,132,255,.22),
+            transparent 42%
+        ),
+        linear-gradient(
+            145deg,
+            #202b4c,
+            #111b32
+        );
 }
 
 .case-icon{
-    font-size:100px;
-    animation:float 2s ease-in-out infinite;
-}
-
-@keyframes float{
-    0%,100%{transform:translateY(0)}
-    50%{transform:translateY(-9px)}
-}
-
-/* ================= COIN ================= */
-
-.coin-area{
-    height:240px;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-}
-
-.coin{
-    width:145px;
-    height:145px;
-    border-radius:50%;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-size:70px;
-    background:linear-gradient(145deg,#ffe477,#f1ad22);
-    box-shadow:
-        0 0 45px rgba(255,205,60,.25),
-        inset 0 0 0 8px rgba(255,255,255,.15);
-}
-
-.coin.flip{
-    animation:flip .7s ease;
-}
-
-@keyframes flip{
-    0%{transform:rotateY(0)}
-    100%{transform:rotateY(720deg)}
-}
-
-/* ================= MULTIPLIER ================= */
-
-.multiplier{
-    text-align:center;
-    font-size:58px;
-    font-weight:900;
-    margin:25px 0;
-}
-
-.green{
-    color:#54ed9a;
-}
-
-.red{
-    color:#ff657c;
-}
-
-/* ================= SCRATCH ================= */
-
-.scratch{
-    position:relative;
-    height:190px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    overflow:hidden;
-    border-radius:20px;
-    background:#14273c;
+    font-size:44px;
     margin-bottom:15px;
 }
 
-.scratch-result{
-    font-size:42px;
-    font-weight:900;
+.case-name{
+    font-size:21px;
+    font-weight:1000;
 }
 
-/* ================= UPGRADE ================= */
+.case-price{
+    margin-top:8px;
 
-.upgrade-level{
-    text-align:center;
-    font-size:55px;
-    font-weight:900;
-    margin:25px 0;
+    color:#9babc0;
+
+    font-size:13px;
+    font-weight:700;
 }
 
-.upgrade-info{
-    text-align:center;
-    color:#93a0b2;
+.case-free-label{
+    position:absolute;
+    right:15px;
+    top:15px;
+
+    padding:8px 12px;
+
+    border-radius:999px;
+
+    background:#2b7cff;
+
+    font-size:12px;
+    font-weight:1000;
 }
 
-.upgrade-buttons{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:10px;
-    margin-top:20px;
+/* =========================================================
+   GAME CARDS
+========================================================= */
+
+.game-card{
+    padding:20px;
+    margin-bottom:13px;
+
+    border-radius:23px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #182c46,
+            #0d1c30
+        );
+
+    border:
+        1px solid rgba(255,255,255,.08);
 }
 
-/* ================= PROFILE ================= */
-
-.profile-box{
-    text-align:center;
-    padding:28px 18px;
+.game-top{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom:10px;
 }
 
-.avatar{
-    width:80px;
-    height:80px;
+.game-icon{
+    width:55px;
+    height:55px;
+
     display:flex;
     align-items:center;
     justify-content:center;
-    margin:0 auto 14px;
+
+    border-radius:17px;
+
+    background:
+        rgba(255,255,255,.07);
+
+    font-size:29px;
+}
+
+.game-title{
+    font-size:20px;
+    font-weight:1000;
+}
+
+.game-description{
+    color:#8293a9;
+    font-size:13px;
+    line-height:1.4;
+    margin-bottom:15px;
+}
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+input{
+    width:100%;
+
+    padding:16px;
+
+    margin-bottom:12px;
+
+    border:
+        1px solid rgba(255,255,255,.08);
+
+    border-radius:17px;
+
+    outline:none;
+
+    color:#fff;
+
+    background:#071321;
+
+    font-size:16px;
+}
+
+input:focus{
+    border-color:
+        rgba(72,133,255,.7);
+}
+
+/* =========================================================
+   PROFILE
+========================================================= */
+
+.profile-card{
+    text-align:center;
+}
+
+.profile-avatar{
+    width:110px;
+    height:110px;
+
+    margin:0 auto 20px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
     border-radius:50%;
-    background:linear-gradient(135deg,#4b83ff,#704dff);
-    font-size:40px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #477dff,
+            #6845ff
+        );
+
+    font-size:58px;
+
+    box-shadow:
+        0 15px 45px rgba(65,93,255,.28);
 }
 
 .profile-name{
-    font-size:23px;
-    font-weight:900;
+    font-size:29px;
+    font-weight:1000;
 }
 
 .profile-id{
     margin-top:5px;
-    color:#8290a4;
+    color:#72849b;
 }
 
-.profile-balance{
-    margin-top:20px;
-    font-size:30px;
+/* =========================================================
+   API STATUS
+========================================================= */
+
+.api-card{
+    margin-top:18px;
+    margin-bottom:15px;
+
+    padding:18px;
+
+    border-radius:22px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(22,42,67,.95),
+            rgba(10,24,40,.95)
+        );
+
+    border:
+        1px solid rgba(255,255,255,.07);
+}
+
+.api-title{
+    margin-bottom:12px;
+
+    font-size:17px;
+    font-weight:1000;
+}
+
+.api-status{
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    font-size:15px;
     font-weight:900;
 }
 
-/* ================= PROMO ================= */
+.api-dot{
+    width:12px;
+    height:12px;
+    border-radius:50%;
+}
 
-.promo-input{
-    width:100%;
+.api-status.online{
+    color:#48df86;
+}
+
+.api-status.online .api-dot{
+    background:#48df86;
+    box-shadow:
+        0 0 12px rgba(72,223,134,.8);
+}
+
+.api-status.offline{
+    color:#ef5263;
+}
+
+.api-status.offline .api-dot{
+    background:#ef5263;
+    box-shadow:
+        0 0 12px rgba(239,82,99,.7);
+}
+
+.api-details{
+    margin-top:8px;
+
+    color:#71839a;
+
+    font-size:11px;
+}
+
+/* =========================================================
+   INVENTORY
+========================================================= */
+
+.inventory-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+
     padding:15px;
-    border-radius:14px;
-    background:#07111e;
-    border:1px solid rgba(255,255,255,.1);
-    color:#fff;
-    font-size:16px;
-    outline:none;
+
+    margin-bottom:9px;
+
+    border-radius:17px;
+
+    background:
+        rgba(255,255,255,.045);
+
+    border:
+        1px solid rgba(255,255,255,.06);
 }
 
-.promo-button{
-    width:100%;
-    margin-top:10px;
-    padding:14px;
-    border-radius:14px;
-    background:#243b5c;
+.inventory-left{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.inventory-emoji{
+    width:45px;
+    height:45px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:13px;
+
+    background:
+        rgba(255,255,255,.06);
+
+    font-size:24px;
+}
+
+.inventory-name{
     font-weight:900;
 }
 
-/* ================= MODAL ================= */
+.inventory-value{
+    color:#ffd34e;
+    font-size:13px;
+}
+
+/* =========================================================
+   MODAL
+========================================================= */
 
 .modal{
     position:fixed;
-    inset:0;
     z-index:500;
+
+    inset:0;
+
     display:none;
     align-items:flex-end;
     justify-content:center;
-    background:rgba(0,0,0,.65);
+
+    padding:15px;
+
+    background:
+        rgba(0,0,0,.72);
+
+    backdrop-filter:blur(8px);
 }
 
-.modal.active{
+.modal.show{
     display:flex;
 }
 
-.modal-box{
-    width:min(620px,100%);
-    padding:22px;
-    border-radius:25px 25px 0 0;
-    background:#0c1a2b;
-    border-top:1px solid rgba(255,255,255,.1);
-}
+.sheet{
+    width:100%;
+    max-width:600px;
 
-.modal-title{
-    font-size:23px;
-    font-weight:900;
-    margin-bottom:16px;
+    max-height:
+        calc(100vh - 30px);
+
+    overflow:auto;
+
+    padding:22px;
+
+    border-radius:
+        27px
+        27px
+        20px
+        20px;
+
+    background:
+        linear-gradient(
+            160deg,
+            #172c46,
+            #091727
+        );
+
+    border:
+        1px solid rgba(255,255,255,.08);
+
+    box-shadow:
+        0 -20px 80px rgba(0,0,0,.45);
 }
 
 .close{
-    width:100%;
-    margin-top:10px;
-    padding:13px;
-    border-radius:13px;
-    background:#18293e;
-}
+    float:right;
 
-/* ================= NAV ================= */
+    width:38px;
+    height:38px;
 
-.nav{
-    position:fixed;
-    z-index:200;
-    bottom:0;
-    left:50%;
-    transform:translateX(-50%);
-    width:min(620px,100%);
-    height:82px;
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    padding:9px 8px calc(9px + env(safe-area-inset-bottom));
-    background:rgba(7,16,29,.96);
-    border-top:1px solid rgba(255,255,255,.08);
-    backdrop-filter:blur(16px);
-}
+    border:0;
+    border-radius:50%;
 
-.nav button{
-    background:transparent;
-    color:#748297;
-    font-size:11px;
-    font-weight:700;
-}
+    background:
+        rgba(255,255,255,.08);
 
-.nav button span{
-    display:block;
-    font-size:22px;
-    margin-bottom:4px;
-}
-
-.nav button.active{
     color:#fff;
+
+    font-size:24px;
 }
 
-/* ================= TOAST ================= */
+/* =========================================================
+   ROULETTE
+========================================================= */
 
-.toast{
-    position:fixed;
-    z-index:1000;
+.roulette{
+    position:relative;
+
+    overflow:hidden;
+
+    margin:18px 0;
+
+    padding:15px 0;
+
+    border-radius:21px;
+
+    background:
+        #071321;
+
+    border:
+        1px solid rgba(255,255,255,.07);
+}
+
+.roulette-pointer{
+    position:absolute;
+
+    z-index:5;
+
+    top:0;
     left:50%;
-    bottom:100px;
-    transform:translateX(-50%) translateY(20px);
-    max-width:90%;
-    padding:13px 17px;
-    border-radius:14px;
-    background:#18283c;
-    opacity:0;
-    pointer-events:none;
-    transition:.25s;
-    font-weight:700;
+
+    transform:translateX(-50%);
+
+    width:0;
+    height:0;
+
+    border-left:
+        13px solid transparent;
+
+    border-right:
+        13px solid transparent;
+
+    border-top:
+        22px solid #ffd34e;
+
+    filter:
+        drop-shadow(
+            0 0 8px
+            rgba(255,211,78,.6)
+        );
+}
+
+.roulette-window{
+    overflow:hidden;
+}
+
+.roulette-track{
+    display:flex;
+    gap:9px;
+
+    width:max-content;
+
+    padding:12px;
+
+    transform:translateX(0);
+}
+
+.roulette-item{
+    width:110px;
+    min-width:110px;
+    height:110px;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:17px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #203550,
+            #101f32
+        );
+
+    border:
+        1px solid rgba(255,255,255,.08);
+}
+
+.roulette-emoji{
+    font-size:39px;
+}
+
+.roulette-name{
+    margin-top:7px;
+
+    padding:0 5px;
+
+    color:#d4ddea;
+
+    font-size:10px;
+    font-weight:900;
+
     text-align:center;
 }
 
-.toast.show{
+/* =========================================================
+   RESULT
+========================================================= */
+
+.result{
+    text-align:center;
+}
+
+.result-emoji{
+    font-size:80px;
+    margin:15px 0;
+}
+
+.result-label{
+    color:#8293a9;
+
+    font-size:12px;
+    font-weight:900;
+}
+
+.result-name{
+    margin-top:7px;
+
+    font-size:27px;
+    font-weight:1000;
+}
+
+.result-value{
+    margin-top:8px;
+
+    color:#ffd34e;
+
+    font-size:23px;
+    font-weight:1000;
+}
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+#toast{
+    position:fixed;
+
+    z-index:1000;
+
+    left:50%;
+    bottom:95px;
+
+    transform:
+        translateX(-50%)
+        translateY(25px);
+
+    opacity:0;
+
+    pointer-events:none;
+
+    max-width:90%;
+
+    padding:13px 18px;
+
+    border-radius:15px;
+
+    background:
+        #182b43;
+
+    border:
+        1px solid rgba(255,255,255,.08);
+
+    box-shadow:
+        0 12px 40px rgba(0,0,0,.3);
+
+    text-align:center;
+
+    font-size:14px;
+    font-weight:900;
+
+    transition:.25s;
+}
+
+#toast.show{
     opacity:1;
-    transform:translateX(-50%) translateY(0);
+
+    transform:
+        translateX(-50%)
+        translateY(0);
+}
+
+/* =========================================================
+   BOTTOM NAV
+========================================================= */
+
+.bottom{
+    position:fixed;
+
+    z-index:100;
+
+    left:0;
+    right:0;
+    bottom:0;
+
+    height:82px;
+
+    display:grid;
+    grid-template-columns:
+        repeat(4,1fr);
+
+    max-width:620px;
+    margin:auto;
+
+    padding:
+        7px
+        8px
+        calc(7px + env(safe-area-inset-bottom));
+
+    background:
+        rgba(5,16,29,.96);
+
+    border-top:
+        1px solid rgba(255,255,255,.07);
+
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+}
+
+.nav{
+    border:0;
+
+    background:transparent;
+
+    color:#6f8096;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+
+    gap:4px;
+
+    font-size:11px;
+    font-weight:800;
+}
+
+.nav b{
+    font-size:25px;
+    line-height:1;
+}
+
+.nav.active{
+    color:#fff;
+}
+
+.nav.active b{
+    filter:
+        drop-shadow(
+            0 0 8px
+            rgba(85,130,255,.55)
+        );
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:480px){
+
+    #content{
+        padding-left:13px;
+        padding-right:13px;
+    }
+
+    h1{
+        font-size:32px;
+    }
+
+    .case-card{
+        min-height:165px;
+    }
+
+    .case-icon{
+        font-size:39px;
+    }
+
+    .case-name{
+        font-size:18px;
+    }
+
+    .panel{
+        padding:17px;
+    }
 }
 </style>
 </head>
 
 <body>
 
-<div class="app">
+<div id="app">
 
-<header class="header">
+<header>
     <div class="logo">🐻‍❄️ DROP</div>
 
     <div class="balance">
-        <span class="star">⭐</span>
+        ⭐
         <span id="headerBalance">0.00</span>
     </div>
 </header>
 
-<main class="content">
+<main id="content">
 
-<!-- ================= HOME ================= -->
+<!-- =======================================================
+     CASES
+======================================================= -->
 
-<section id="homePage" class="page active">
+<section
+    id="home"
+    class="screen active"
+>
 
-    <div class="title">Игры</div>
-    <div class="subtitle">
-        Испытай удачу и выиграй ⭐
+    <h1>Кейсы</h1>
+
+    <div class="sub">
+        Открывай кейсы и забирай награды ⭐
     </div>
 
-    <div class="card">
-        <h2>🎁 Кейсы</h2>
-        <p>
-            Открывай кейсы и получай случайную награду.
-        </p>
+    <div class="case-grid">
 
-        <button class="play"
-                onclick="openGame('cases')">
-            Играть
-        </button>
-    </div>
-
-    <div class="card">
-        <h2>🪙 Монетка</h2>
-        <p>
-            Выбери сторону и попробуй удвоить ставку.
-        </p>
-
-        <button class="play"
-                onclick="openGame('coin')">
-            Играть
-        </button>
-    </div>
-
-    <div class="card">
-        <h2>🎟 Scratch</h2>
-        <p>
-            Открой карточку и узнай свой выигрыш.
-        </p>
-
-        <button class="play"
-                onclick="openGame('scratch')">
-            Играть
-        </button>
-    </div>
-
-    <div class="card">
-        <h2>🚀 Upgrade</h2>
-        <p>
-            Повышай множитель и рискни балансом.
-        </p>
-
-        <button class="play"
-                onclick="openGame('upgrade')">
-            Играть
-        </button>
-    </div>
-
-</section>
-
-
-<!-- ================= GAMES ================= -->
-
-<section id="gamePage" class="page">
-
-    <div class="game-header">
-        <button class="back"
-                onclick="exitGame()">
-            ← Назад
-        </button>
-
-        <div id="gameBalance">⭐ 0.00</div>
-    </div>
-
-
-    <!-- CASES -->
-
-    <div id="casesGame"
-         class="game-box"
-         style="display:none">
-
-        <div class="game-title">
-            🎁 Кейсы
-        </div>
-
-        <div class="game-description">
-            Выбери стоимость открытия
-        </div>
-
-        <div class="case-box">
-            <div class="case-icon">📦</div>
-        </div>
-
-        <div class="bet-presets">
-            <button onclick="setBet(10)">10 ⭐</button>
-            <button onclick="setBet(25)">25 ⭐</button>
-            <button onclick="setBet(50)">50 ⭐</button>
-            <button onclick="setBet(100)">100 ⭐</button>
-        </div>
-
-        <input
-            id="caseBet"
-            class="bet-input"
-            type="number"
-            min="1"
-            value="10"
-            style="margin-top:10px"
+        <button
+            class="case-card free"
+            onclick="openCase('free')"
         >
+            <span class="case-free-label">
+                FREE
+            </span>
 
-        <button class="action"
-                onclick="playCases()">
-            Открыть кейс
-        </button>
-
-        <div id="caseResult"
-             style="text-align:center;margin-top:18px;font-size:21px;font-weight:900">
-        </div>
-
-    </div>
-
-
-    <!-- COIN -->
-
-    <div id="coinGame"
-         class="game-box"
-         style="display:none">
-
-        <div class="game-title">
-            🪙 Монетка
-        </div>
-
-        <div class="game-description">
-            Орёл — x2 • Решка — проигрыш
-        </div>
-
-        <div class="coin-area">
-            <div id="coin"
-                 class="coin">
-                🪙
+            <div class="case-icon">
+                🎁
             </div>
-        </div>
 
-        <div class="bet-row">
-            <input
-                id="coinBet"
-                class="bet-input"
-                type="number"
-                min="1"
-                value="10"
-            >
-
-            <button class="bet-button"
-                    onclick="setGameBet('coinBet',2)">
-                ×2
-            </button>
-        </div>
-
-        <button class="action"
-                onclick="playCoin()">
-            Подбросить
-        </button>
-
-        <div id="coinResult"
-             style="text-align:center;margin-top:18px;font-size:20px;font-weight:900">
-        </div>
-
-    </div>
-
-
-    <!-- SCRATCH -->
-
-    <div id="scratchGame"
-         class="game-box"
-         style="display:none">
-
-        <div class="game-title">
-            🎟 Scratch
-        </div>
-
-        <div class="game-description">
-            Испытай удачу
-        </div>
-
-        <div class="scratch">
-            <div id="scratchResult"
-                 class="scratch-result">
-                ?
+            <div class="case-name">
+                CASE FREE
             </div>
-        </div>
 
-        <div class="bet-row">
-            <input
-                id="scratchBet"
-                class="bet-input"
-                type="number"
-                min="1"
-                value="10"
-            >
-        </div>
-
-        <button class="action"
-                onclick="playScratch()">
-            Открыть
+            <div class="case-price">
+                Бесплатный кейс
+            </div>
         </button>
 
-    </div>
+        <button
+            class="case-card pepe"
+            onclick="openCase('pls-pepe')"
+        >
+            <div class="case-icon">
+                🐸
+            </div>
 
+            <div class="case-name">
+                PLS PEPE
+            </div>
 
-    <!-- UPGRADE -->
+            <div class="case-price">
+                Стоимость открытия — 10 ⭐
+            </div>
+        </button>
 
-    <div id="upgradeGame"
-         class="game-box"
-         style="display:none">
+        <button
+            class="case-card c50"
+            onclick="openCase('50')"
+        >
+            <div class="case-icon">
+                ⭐
+            </div>
 
-        <div class="game-title">
-            🚀 Upgrade
-        </div>
+            <div class="case-name">
+                CASE 50
+            </div>
 
-        <div class="game-description">
-            Увеличивай множитель
-        </div>
+            <div class="case-price">
+                Стоимость открытия — 50 ⭐
+            </div>
+        </button>
 
-        <div id="upgradeMultiplier"
-             class="multiplier">
-            x1.00
-        </div>
+        <button
+            class="case-card c250"
+            onclick="openCase('250')"
+        >
+            <div class="case-icon">
+                💎
+            </div>
 
-        <div class="bet-row">
-            <input
-                id="upgradeBet"
-                class="bet-input"
-                type="number"
-                min="1"
-                value="10"
-            >
-        </div>
+            <div class="case-name">
+                CASE 250
+            </div>
 
-        <div class="upgrade-buttons">
-
-            <button class="action"
-                    onclick="upgrade(true)">
-                ⬆️ Рискнуть
-            </button>
-
-            <button class="action"
-                    onclick="cashout()">
-                💰 Забрать
-            </button>
-
-        </div>
-
-        <div id="upgradeResult"
-             style="text-align:center;margin-top:18px;font-weight:900">
-        </div>
+            <div class="case-price">
+                Стоимость открытия — 250 ⭐
+            </div>
+        </button>
 
     </div>
 
 </section>
 
+<!-- =======================================================
+     GAMES
+======================================================= -->
 
-<!-- ================= PROFILE ================= -->
+<section
+    id="games"
+    class="screen"
+>
 
-<section id="profilePage"
-         class="page">
+    <h1>Игры</h1>
 
-    <div class="title">
-        👤 Профиль
+    <div class="sub">
+        Играй за ⭐ с серверным балансом
     </div>
 
-    <div class="card profile-box">
+    <div class="game-card">
 
-        <div class="avatar">
+        <div class="game-top">
+
+            <div class="game-icon">
+                ⚪
+            </div>
+
+            <div>
+                <div class="game-title">
+                    Шарик
+                </div>
+
+                <div class="note">
+                    Случайный выигрыш
+                </div>
+            </div>
+
+        </div>
+
+        <div class="game-description">
+            Сделай ставку и попробуй получить
+            случайный выигрыш.
+        </div>
+
+        <button
+            class="btn"
+            onclick="openBall()"
+        >
+            Играть
+        </button>
+
+    </div>
+
+    <div class="game-card">
+
+        <div class="game-top">
+
+            <div class="game-icon">
+                🎟️
+            </div>
+
+            <div>
+                <div class="game-title">
+                    Билеты
+                </div>
+
+                <div class="note">
+                    Scratch
+                </div>
+            </div>
+
+        </div>
+
+        <div class="game-description">
+            Выбери ставку и получи случайный
+            результат.
+        </div>
+
+        <button
+            class="btn"
+            onclick="openScratch()"
+        >
+            Играть
+        </button>
+
+    </div>
+
+    <div class="game-card">
+
+        <div class="game-top">
+
+            <div class="game-icon">
+                🎡
+            </div>
+
+            <div>
+                <div class="game-title">
+                    Upgrade
+                </div>
+
+                <div class="note">
+                    Апгрейд
+                </div>
+            </div>
+
+        </div>
+
+        <div class="game-description">
+            Рискни балансом и попробуй
+            увеличить ставку.
+        </div>
+
+        <button
+            class="btn"
+            onclick="openUpgrade()"
+        >
+            Играть
+        </button>
+
+    </div>
+
+</section>
+
+<!-- =======================================================
+     PROFILE
+======================================================= -->
+
+<section
+    id="profile"
+    class="screen"
+>
+
+    <h1>Профиль</h1>
+
+    <div class="sub">
+        Твой аккаунт White Bear
+    </div>
+
+    <div class="panel profile-card">
+
+        <div class="profile-avatar">
             🐻‍❄️
         </div>
 
-        <div id="profileName"
-             class="profile-name">
+        <div
+            class="profile-name"
+            id="profileName"
+        >
             Пользователь
         </div>
 
-        <div id="profileId"
-             class="profile-id">
+        <div
+            class="profile-id"
+            id="profileId"
+        >
             ID: —
         </div>
 
-        <div class="profile-balance">
-            ⭐ <span id="profileBalance">0.00</span>
+        <div class="bigbalance">
+            ⭐
+            <span id="profileBalance">
+                0.00
+            </span>
+        </div>
+
+        <div class="row">
+
+            <button
+                class="btn green"
+                onclick="openTopup()"
+            >
+                Пополнить
+            </button>
+
+            <button
+                class="btn secondary"
+                onclick="refreshBalance()"
+            >
+                Обновить
+            </button>
+
         </div>
 
     </div>
 
-    <div class="card">
+    <!-- PROMO -->
 
-        <h2>🎟 Промокод</h2>
+    <div class="panel">
 
-        <p>
+        <div class="panel-title">
+            🎟 Промокод
+        </div>
+
+        <div class="note">
             Введи промокод для получения бонуса.
-        </p>
+        </div>
+
+        <br>
 
         <input
             id="promoInput"
-            class="promo-input"
+            type="text"
             placeholder="Введите промокод"
             autocomplete="off"
         >
 
-        <button class="promo-button"
-                onclick="activatePromo()">
+        <button
+            class="btn"
+            onclick="activatePromo()"
+        >
             Активировать
         </button>
 
     </div>
 
+    <!-- API -->
+
+    <div class="api-card">
+
+        <div class="api-title">
+            🔌 Состояние подключения
+        </div>
+
+        <div
+            id="apiStatus"
+            class="api-status offline"
+        >
+
+            <span class="api-dot"></span>
+
+            <span id="apiStatusText">
+                API не подключен
+            </span>
+
+        </div>
+
+        <div
+            class="api-details"
+            id="apiDetails"
+        >
+            Проверка соединения...
+        </div>
+
+    </div>
+
 </section>
 
+<!-- =======================================================
+     REFERRAL
+======================================================= -->
 
-<!-- ================= TOPUP ================= -->
+<section
+    id="referral"
+    class="screen"
+>
 
-<section id="topupPage"
-         class="page">
+    <h1>Реферал</h1>
 
-    <div class="title">
-        ⭐ Пополнение
+    <div class="sub">
+        Приглашай друзей и получай ⭐
     </div>
 
-    <div class="subtitle">
-        Пополни баланс через Telegram Stars.
-    </div>
+    <div class="panel">
 
-    <div class="card">
+        <div class="panel-title">
+            📎 Твоя ссылка
+        </div>
 
-        <h2>⭐ Telegram Stars</h2>
+        <div
+            class="note"
+            id="refLink"
+        >
+            Загрузка...
+        </div>
 
-        <p>
-            После успешной оплаты Stars автоматически
-            зачисляются на игровой баланс.
-        </p>
+        <br>
 
-        <button class="play"
-                onclick="openTelegramDeposit()">
-            Пополнить баланс
+        <button
+            class="btn"
+            onclick="copyReferral()"
+        >
+            Скопировать ссылку
         </button>
 
     </div>
@@ -876,32 +1466,45 @@ button{
 
 </main>
 
+<!-- =======================================================
+     BOTTOM NAV
+======================================================= -->
 
-<!-- ================= NAV ================= -->
+<nav class="bottom">
 
-<nav class="nav">
+    <button
+        class="nav active"
+        data-screen="home"
+        onclick="showScreen('home')"
+    >
+        <b>🎁</b>
+        Кейсы
+    </button>
 
-    <button id="navHome"
-            class="active"
-            onclick="showPage('home')">
-        <span>🎮</span>
+    <button
+        class="nav"
+        data-screen="games"
+        onclick="showScreen('games')"
+    >
+        <b>🎮</b>
         Игры
     </button>
 
-    <button id="navProfile"
-            onclick="showPage('profile')">
-        <span>👤</span>
+    <button
+        class="nav"
+        data-screen="profile"
+        onclick="showScreen('profile')"
+    >
+        <b>👤</b>
         Профиль
     </button>
 
-    <button id="navTopup"
-            onclick="showPage('topup')">
-        <span>⭐</span>
-        Пополнить
-    </button>
-
-    <button onclick="openReferral()">
-        <span>📎</span>
+    <button
+        class="nav"
+        data-screen="referral"
+        onclick="showScreen('referral')"
+    >
+        <b>📎</b>
         Реферал
     </button>
 
@@ -909,104 +1512,90 @@ button{
 
 </div>
 
+<!-- =======================================================
+     MODAL
+======================================================= -->
 
-<!-- ================= TOAST ================= -->
+<div
+    id="modal"
+    class="modal"
+    onclick="modalBackgroundClick(event)"
+>
 
-<div id="toast"
-     class="toast">
+    <div
+        id="sheet"
+        class="sheet"
+    ></div>
+
 </div>
 
+<div id="toast"></div>
 
 <script>
-/* ============================================================
-   TELEGRAM
-============================================================ */
 
-const tg = window.Telegram?.WebApp;
+/* =========================================================
+   TELEGRAM
+========================================================= */
+
+const tg =
+    window.Telegram &&
+    window.Telegram.WebApp
+        ? window.Telegram.WebApp
+        : null;
 
 if(tg){
+
     tg.ready();
-    tg.expand();
-}
-
-
-/* ============================================================
-   API
-============================================================ */
-
-const API_BASE =
-    "https://whitebear.bothost.tech";
-
-
-/* ============================================================
-   USER
-============================================================ */
-
-let telegramUser = null;
-
-if(tg && tg.initDataUnsafe && tg.initDataUnsafe.user){
-
-    telegramUser =
-        tg.initDataUnsafe.user;
-
-}
-
-if(!telegramUser){
 
     try{
-
-        const saved =
-            localStorage.getItem("telegram_user");
-
-        if(saved){
-            telegramUser =
-                JSON.parse(saved);
-        }
-
+        tg.expand();
     }catch(e){}
 
 }
 
 
-/* ============================================================
-   GAME STATE
-============================================================ */
+/* =========================================================
+   API
+========================================================= */
 
-let currentGame = null;
+const API_BASE =
+    "https://whitebear.bothost.tech";
 
-let upgradeActive = false;
+let telegramUser =
+    tg &&
+    tg.initDataUnsafe &&
+    tg.initDataUnsafe.user
+        ? tg.initDataUnsafe.user
+        : null;
 
-let upgradeCurrentBet = 0;
+let balance = 0;
 
-let upgradeMultiplier = 1;
+let apiOnline = false;
+
+let busy = false;
 
 
-/* ============================================================
+/* =========================================================
    HELPERS
-============================================================ */
+========================================================= */
 
-function userId(){
+function $(selector){
 
-    if(!telegramUser)
-        return null;
-
-    return Number(
-        telegramUser.id
+    return document.querySelector(
+        selector
     );
+
 }
 
 
-function operationId(){
+function escapeHTML(value){
 
-    return (
-        Date.now().toString(36)
-        +
-        "-"
-        +
-        Math.random()
-            .toString(36)
-            .slice(2)
-    );
+    return String(value)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
 
 }
 
@@ -1014,436 +1603,919 @@ function operationId(){
 function showToast(text){
 
     const toast =
-        document.getElementById("toast");
+        $("#toast");
 
-    toast.textContent = text;
+    toast.textContent =
+        text;
 
-    toast.classList.add("show");
+    toast.classList.add(
+        "show"
+    );
 
     clearTimeout(
         window.toastTimer
     );
 
     window.toastTimer =
-        setTimeout(() => {
-
-            toast.classList.remove(
-                "show"
-            );
-
-        },2500);
+        setTimeout(
+            ()=>{
+                toast.classList.remove(
+                    "show"
+                );
+            },
+            2500
+        );
 
 }
 
 
-/* ============================================================
-   API REQUEST
-============================================================ */
+function openModal(html){
 
-async function api(path, options = {}){
+    $("#sheet").innerHTML =
+        html;
+
+    $("#modal").classList.add(
+        "show"
+    );
+
+}
+
+
+function closeModal(){
+
+    $("#modal").classList.remove(
+        "show"
+    );
+
+    $("#sheet").innerHTML =
+        "";
+
+}
+
+
+function modalBackgroundClick(event){
+
+    if(
+        event.target.id ===
+        "modal"
+    ){
+        closeModal();
+    }
+
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+function showScreen(screen){
+
+    document
+        .querySelectorAll(
+            ".screen"
+        )
+        .forEach(
+            element=>{
+                element.classList.remove(
+                    "active"
+                );
+            }
+        );
+
+    const target =
+        document.getElementById(
+            screen
+        );
+
+    if(target){
+
+        target.classList.add(
+            "active"
+        );
+
+    }
+
+    document
+        .querySelectorAll(
+            ".nav"
+        )
+        .forEach(
+            button=>{
+
+                button.classList.toggle(
+                    "active",
+                    button.dataset.screen ===
+                    screen
+                );
+
+            }
+        );
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+}
+
+
+/* =========================================================
+   BALANCE UI
+========================================================= */
+
+function updateBalanceUI(){
+
+    balance =
+        Number(balance);
+
+    if(
+        !Number.isFinite(balance)
+    ){
+        balance = 0;
+    }
+
+    balance =
+        Math.round(
+            balance * 100
+        ) / 100;
+
+    const value =
+        balance.toFixed(2);
+
+    const header =
+        $("#headerBalance");
+
+    const profile =
+        $("#profileBalance");
+
+    if(header){
+        header.textContent =
+            value;
+    }
+
+    if(profile){
+        profile.textContent =
+            value;
+    }
+
+}
+
+
+/* =========================================================
+   API REQUEST
+========================================================= */
+
+async function apiRequest(
+    endpoint,
+    options={}
+){
 
     const headers = {
         "Content-Type":
             "application/json"
     };
 
-    if(tg && tg.initData){
+    if(
+        tg &&
+        tg.initData
+    ){
 
         headers[
             "X-Telegram-Init-Data"
-        ] = tg.initData;
+        ] =
+            tg.initData;
 
     }
 
     const response =
         await fetch(
-            API_BASE + path,
+            API_BASE +
+            endpoint,
             {
                 ...options,
-                headers
+                headers:{
+                    ...headers,
+                    ...(options.headers || {})
+                },
+                cache:"no-store"
             }
         );
 
     let data;
 
     try{
+
         data =
             await response.json();
+
     }catch(e){
+
         throw new Error(
-            "Сервер вернул неверный ответ"
+            "API вернул некорректный ответ"
         );
+
     }
 
-    if(!response.ok){
+    if(
+        !response.ok
+    ){
 
-        const error =
-            data.error || "server_error";
-
-        throw new Error(error);
+        throw new Error(
+            data.error ||
+            "Ошибка API"
+        );
 
     }
 
     return data;
+
 }
 
 
-/* ============================================================
-   BALANCE
-============================================================ */
+/* =========================================================
+   API STATUS
+========================================================= */
 
-let balance = 0;
+async function checkAPI(){
+
+    const status =
+        $("#apiStatus");
+
+    const statusText =
+        $("#apiStatusText");
+
+    const details =
+        $("#apiDetails");
+
+    try{
+
+        const response =
+            await fetch(
+                API_BASE +
+                "/health",
+                {
+                    method:"GET",
+                    cache:"no-store"
+                }
+            );
+
+        if(
+            !response.ok
+        ){
+            throw new Error(
+                "HTTP " +
+                response.status
+            );
+        }
+
+        const data =
+            await response.json();
+
+        if(
+            !data.ok
+        ){
+            throw new Error(
+                "API вернул ошибку"
+            );
+        }
+
+        apiOnline =
+            true;
+
+        status.classList.remove(
+            "offline"
+        );
+
+        status.classList.add(
+            "online"
+        );
+
+        statusText.textContent =
+            "API подключен";
+
+        details.textContent =
+            "whitebear.bothost.tech • сервер работает";
+
+    }catch(error){
+
+        apiOnline =
+            false;
+
+        status.classList.remove(
+            "online"
+        );
+
+        status.classList.add(
+            "offline"
+        );
+
+        statusText.textContent =
+            "API не подключен";
+
+        details.textContent =
+            "Не удалось установить соединение с сервером";
+
+        console.error(
+            "API:",
+            error
+        );
+
+    }
+
+}
 
 
-async function loadBalance(){
+/* =========================================================
+   TELEGRAM USER
+========================================================= */
 
-    const id =
-        userId();
+function getUser(){
 
-    if(!id){
+    if(
+        tg &&
+        tg.initDataUnsafe &&
+        tg.initDataUnsafe.user
+    ){
+
+        return tg.initDataUnsafe.user;
+
+    }
+
+    return null;
+
+}
+
+
+/* =========================================================
+   LOAD BALANCE
+========================================================= */
+
+async function refreshBalance(){
+
+    const user =
+        getUser();
+
+    if(!user){
 
         showToast(
             "Открой приложение через Telegram"
         );
 
-        return;
+        return false;
 
     }
+
+    telegramUser =
+        user;
 
     try{
 
         const data =
-            await api(
-                `/api/user/${id}`
+            await apiRequest(
+                "/api/balance/" +
+                encodeURIComponent(
+                    user.id
+                )
             );
 
-        if(data.ok){
+        if(
+            !data.ok
+        ){
 
-            balance =
-                Number(data.balance || 0);
-
-            updateBalanceUI();
-
-            if(telegramUser){
-
-                document.getElementById(
-                    "profileName"
-                ).textContent =
-                    telegramUser.first_name ||
-                    telegramUser.username ||
-                    "Пользователь";
-
-                document.getElementById(
-                    "profileId"
-                ).textContent =
-                    "ID: " + id;
-
-            }
+            throw new Error(
+                data.error ||
+                "Не удалось получить баланс"
+            );
 
         }
 
+        balance =
+            Number(
+                data.balance
+            ) || 0;
+
+        updateBalanceUI();
+
+        updateProfile();
+
+        apiOnline =
+            true;
+
+        return true;
+
     }catch(error){
 
-        console.error(error);
+        console.error(
+            "Balance:",
+            error
+        );
 
         showToast(
             "Не удалось получить баланс"
         );
 
+        return false;
+
     }
 
 }
 
 
-function updateBalanceUI(){
+/* =========================================================
+   PROFILE
+========================================================= */
 
-    document.getElementById(
-        "headerBalance"
-    ).textContent =
-        balance.toFixed(2);
+function updateProfile(){
 
-    document.getElementById(
-        "gameBalance"
-    ).textContent =
-        "⭐ " + balance.toFixed(2);
+    const user =
+        getUser();
 
-    document.getElementById(
-        "profileBalance"
-    ).textContent =
-        balance.toFixed(2);
+    if(!user){
+        return;
+    }
+
+    const name =
+        user.first_name ||
+        user.username ||
+        "Пользователь";
+
+    $("#profileName")
+        .textContent =
+            name;
+
+    $("#profileId")
+        .textContent =
+            "ID: " +
+            user.id;
 
 }
 
 
-/* ============================================================
+/* =========================================================
    SERVER TRANSACTION
-============================================================ */
+========================================================= */
 
-async function transaction(
+async function serverTransaction(
     type,
     amount,
     game
 ){
 
-    const id =
-        userId();
+    const user =
+        getUser();
 
-    if(!id)
+    if(!user){
+
         throw new Error(
-            "telegram_required"
+            "Telegram пользователь не найден"
         );
+
+    }
 
     amount =
         Number(amount);
 
     if(
-        !Number.isFinite(amount)
-        ||
+        !Number.isFinite(amount) ||
         amount <= 0
     ){
 
         throw new Error(
-            "invalid_amount"
+            "Некорректная сумма"
         );
 
     }
 
-    const result =
-        await api(
+    const operationId =
+        [
+            "wb",
+            game,
+            type,
+            Date.now(),
+            Math.random()
+                .toString(36)
+                .slice(2,10)
+        ].join("_");
+
+    const data =
+        await apiRequest(
             "/api/game/transaction",
             {
                 method:"POST",
 
-                body:JSON.stringify({
+                body:
+                    JSON.stringify({
+                        user_id:
+                            Number(user.id),
 
-                    user_id:id,
+                        operation_id:
+                            operationId,
 
-                    operation_id:
-                        operationId(),
+                        type:
+                            type,
 
-                    type:type,
+                        amount:
+                            amount,
 
-                    amount:
-                        Number(
-                            amount.toFixed(2)
-                        ),
-
-                    game:game
-
-                })
-
+                        game:
+                            game
+                    })
             }
         );
 
-    if(result.ok){
+    if(
+        !data.ok
+    ){
 
-        balance =
-            Number(result.balance);
-
-        updateBalanceUI();
+        throw new Error(
+            data.error ||
+            "Ошибка транзакции"
+        );
 
     }
 
-    return result;
-
-}
-
-
-/* ============================================================
-   PAGE
-============================================================ */
-
-function hideAllPages(){
-
-    document
-        .querySelectorAll(".page")
-        .forEach(
-            page =>
-                page.classList.remove(
-                    "active"
-                )
-        );
-
-}
-
-
-function showPage(page){
-
-    hideAllPages();
-
-    if(page === "home"){
-
-        document
-            .getElementById("homePage")
-            .classList.add("active");
-
-        setNav("navHome");
-
-    }
-
-    if(page === "profile"){
-
-        document
-            .getElementById("profilePage")
-            .classList.add("active");
-
-        setNav("navProfile");
-
-        loadBalance();
-
-    }
-
-    if(page === "topup"){
-
-        document
-            .getElementById("topupPage")
-            .classList.add("active");
-
-        setNav("navTopup");
-
-    }
-
-}
-
-
-function setNav(id){
-
-    document
-        .querySelectorAll(".nav button")
-        .forEach(
-            button =>
-                button.classList.remove(
-                    "active"
-                )
-        );
-
-    const button =
-        document.getElementById(id);
-
-    if(button)
-        button.classList.add("active");
-
-}
-
-
-/* ============================================================
-   OPEN GAME
-============================================================ */
-
-function openGame(game){
-
-    currentGame =
-        game;
-
-    hideAllPages();
-
-    document
-        .getElementById("gamePage")
-        .classList.add("active");
-
-    document
-        .querySelectorAll(
-            "#casesGame,#coinGame,#scratchGame,#upgradeGame"
-        )
-        .forEach(
-            el =>
-                el.style.display = "none"
-        );
-
-    const element =
-        document.getElementById(
-            game + "Game"
-        );
-
-    if(element)
-        element.style.display =
-            "block";
+    balance =
+        Number(
+            data.balance
+        ) || 0;
 
     updateBalanceUI();
 
-}
-
-
-function exitGame(){
-
-    currentGame =
-        null;
-
-    upgradeActive =
-        false;
-
-    showPage("home");
+    return data;
 
 }
 
 
-/* ============================================================
-   BET HELPERS
-============================================================ */
+/* =========================================================
+   DEDUCT
+========================================================= */
 
-function setBet(amount){
-
-    document.getElementById(
-        "caseBet"
-    ).value = amount;
-
-}
-
-
-function setGameBet(
-    id,
-    multiplier
+async function deduct(
+    amount,
+    game
 ){
 
-    const input =
-        document.getElementById(id);
-
-    input.value =
-        Math.max(
-            1,
-            Math.floor(
-                Number(input.value || 1)
-                * multiplier
-            )
-        );
+    return await serverTransaction(
+        "deduct",
+        amount,
+        game
+    );
 
 }
 
 
-/* ============================================================
-   CASES
-============================================================ */
+/* =========================================================
+   ADD
+========================================================= */
 
-async function playCases(){
+async function add(
+    amount,
+    game
+){
 
-    const input =
-        document.getElementById(
-            "caseBet"
-        );
+    return await serverTransaction(
+        "add",
+        amount,
+        game
+    );
 
-    const bet =
-        Number(input.value);
+}
 
-    const result =
-        document.getElementById(
-            "caseResult"
-        );
 
-    if(
-        !Number.isFinite(bet)
-        ||
-        bet <= 0
-    ){
+/* =========================================================
+   CASE DATA
+========================================================= */
 
-        showToast(
-            "Введите корректную ставку"
-        );
+const CASES = {
 
-        return;
+    "free":{
+        title:
+            "CASE FREE 🎁",
+
+        price:0,
+
+        items:[
+            {
+                emoji:"3 ⭐",
+                name:"3 Stars",
+                value:3,
+                chance:23
+            },
+            {
+                emoji:"5 ⭐",
+                name:"5 Stars",
+                value:5,
+                chance:22
+            },
+            {
+                emoji:"7 ⭐",
+                name:"7 Stars",
+                value:7,
+                chance:27
+            },
+            {
+                emoji:"🐻",
+                name:"Bear",
+                value:15,
+                chance:12
+            },
+            {
+                emoji:"🎁",
+                name:"Gift",
+                value:25,
+                chance:6
+            },
+            {
+                emoji:"🚀",
+                name:"Rocket",
+                value:50,
+                chance:5
+            },
+            {
+                emoji:"🍦",
+                name:"Vice Cream",
+                value:450,
+                chance:.00001
+            }
+        ]
+
+    },
+
+    "pls-pepe":{
+        title:
+            "PLS PEPE 🐸",
+
+        price:10,
+
+        items:[
+            {
+                emoji:"💰",
+                name:"0.5 на баланс",
+                value:.5,
+                chance:24.009997
+            },
+            {
+                emoji:"💰",
+                name:"1 на баланс",
+                value:1,
+                chance:25
+            },
+            {
+                emoji:"💰",
+                name:"3 на баланс",
+                value:3,
+                chance:15
+            },
+            {
+                emoji:"💰",
+                name:"5 на баланс",
+                value:5,
+                chance:15
+            },
+            {
+                emoji:"💰",
+                name:"7 на баланс",
+                value:7,
+                chance:10
+            },
+            {
+                emoji:"💘",
+                name:"15 ⭐",
+                value:15,
+                chance:3.33
+            },
+            {
+                emoji:"🎁",
+                name:"25",
+                value:25,
+                chance:.5
+            },
+            {
+                emoji:"🐸",
+                name:"Plush Pepe",
+                value:800000,
+                chance:.001
+            }
+        ]
+
+    },
+
+    "50":{
+        title:
+            "CASE 50 ⭐",
+
+        price:50,
+
+        items:[
+            {
+                emoji:"🐻",
+                name:"Toy Bear",
+                value:5000,
+                chance:.0001
+            },
+            {
+                emoji:"🖊️",
+                name:"Fine Pen",
+                value:1000,
+                chance:.0001
+            },
+            {
+                emoji:"💎",
+                name:"Diamond",
+                value:100,
+                chance:15
+            },
+            {
+                emoji:"🏆",
+                name:"Trophy",
+                value:100,
+                chance:15
+            },
+            {
+                emoji:"🎂",
+                name:"Cake",
+                value:50,
+                chance:20
+            },
+            {
+                emoji:"🎁",
+                name:"Gift",
+                value:25,
+                chance:20
+            },
+            {
+                emoji:"🐻",
+                name:"Bear",
+                value:15,
+                chance:15
+            },
+            {
+                emoji:"7 ⭐",
+                name:"7 Stars",
+                value:7,
+                chance:15
+            }
+        ]
+
+    },
+
+    "250":{
+        title:
+            "CASE 250 ⭐",
+
+        price:250,
+
+        items:[
+            {
+                emoji:"💰",
+                name:"10 на баланс",
+                value:10,
+                chance:3
+            },
+            {
+                emoji:"🐻",
+                name:"15 ⭐",
+                value:15,
+                chance:2.5
+            },
+            {
+                emoji:"🎁",
+                name:"25 ⭐",
+                value:25,
+                chance:7.5
+            },
+            {
+                emoji:"💐",
+                name:"50 ⭐",
+                value:50,
+                chance:10
+            },
+            {
+                emoji:"💍",
+                name:"100 ⭐",
+                value:100,
+                chance:11.5
+            },
+            {
+                emoji:"💎",
+                name:"100 ⭐",
+                value:100,
+                chance:11.5
+            },
+            {
+                emoji:"💰",
+                name:"200 на баланс",
+                value:200,
+                chance:15
+            },
+            {
+                emoji:"💰",
+                name:"250 на баланс",
+                value:250,
+                chance:7
+            },
+            {
+                emoji:"💰",
+                name:"300 на баланс",
+                value:300,
+                chance:6
+            },
+            {
+                emoji:"💰",
+                name:"350 на баланс",
+                value:350,
+                chance:3
+            },
+            {
+                emoji:"💰",
+                name:"450 на баланс",
+                value:450,
+                chance:3
+            },
+            {
+                emoji:"🍦",
+                name:"Vice Cream",
+                value:450,
+                chance:.0005
+            },
+            {
+                emoji:"🐕",
+                name:"Snoop Dogg",
+                value:550,
+                chance:.00045
+            }
+        ]
 
     }
 
-    if(balance < bet){
+};
+
+
+/* =========================================================
+   RANDOM ITEM
+========================================================= */
+
+function randomItem(items){
+
+    let total =
+        items.reduce(
+            (sum,item)=>
+                sum +
+                Number(item.chance || 0),
+            0
+        );
+
+    let random =
+        Math.random() *
+        total;
+
+    for(
+        const item of items
+    ){
+
+        random -=
+            Number(
+                item.chance || 0
+            );
+
+        if(
+            random <= 0
+        ){
+            return item;
+        }
+
+    }
+
+    return items[
+        items.length - 1
+    ];
+
+}
+
+
+/* =========================================================
+   CASE
+========================================================= */
+
+async function openCase(type){
+
+    if(busy){
+        return;
+    }
+
+    const config =
+        CASES[type];
+
+    if(!config){
+        return;
+    }
+
+    if(
+        type !== "free" &&
+        balance <
+        config.price
+    ){
 
         showToast(
             "Недостаточно ⭐"
@@ -1453,249 +2525,543 @@ async function playCases(){
 
     }
 
+    busy =
+        true;
+
+    const items =
+        config.items;
+
+    const winner =
+        randomItem(items);
+
     try{
 
-        result.textContent =
-            "⏳ Открываем...";
+        if(
+            config.price > 0
+        ){
 
-        /*
-         * Сначала списываем ставку.
-         */
+            await deduct(
+                config.price,
+                "case:" + type
+            );
 
-        await transaction(
-            "deduct",
-            bet,
-            "cases"
+        }
+
+        await showRoulette(
+            config,
+            winner
         );
 
         /*
-         * После успешного списания
-         * рассчитываем результат.
+         * Награда начисляется только
+         * после завершения анимации.
          */
 
-        const random =
-            Math.random();
+        await add(
+            winner.value,
+            "case_reward:" + type
+        );
 
-        let multiplier;
-
-        if(random < .50)
-            multiplier = 0;
-
-        else if(random < .75)
-            multiplier = .5;
-
-        else if(random < .90)
-            multiplier = 1;
-
-        else if(random < .98)
-            multiplier = 2;
-
-        else
-            multiplier = 5;
-
-        const win =
-            Number(
-                (bet * multiplier)
-                .toFixed(2)
-            );
-
-        if(win > 0){
-
-            await transaction(
-                "add",
-                win,
-                "cases"
-            );
-
-        }
-
-        if(multiplier === 0){
-
-            result.innerHTML =
-                "💥 Ничего не выпало";
-
-        }else{
-
-            result.innerHTML =
-                `🎉 Вы выиграли <b>${win.toFixed(2)} ⭐</b><br>
-                 <span style="color:#54ed9a">
-                 x${multiplier}
-                 </span>`;
-
-        }
+        showResult(
+            winner
+        );
 
     }catch(error){
 
-        console.error(error);
-
-        showToast(
-            translateError(
-                error.message
-            )
+        console.error(
+            error
         );
 
-        await loadBalance();
+        showToast(
+            error.message ||
+            "Ошибка открытия кейса"
+        );
+
+        await refreshBalance();
+
+    }finally{
+
+        busy =
+            false;
 
     }
 
 }
 
 
-/* ============================================================
-   COIN
-============================================================ */
+/* =========================================================
+   ROULETTE
+========================================================= */
 
-async function playCoin(){
+function showRoulette(
+    config,
+    winner
+){
 
-    const input =
-        document.getElementById(
-            "coinBet"
-        );
+    return new Promise(
+        resolve=>{
 
-    const bet =
-        Number(input.value);
+            const sequence = [];
 
-    const coin =
-        document.getElementById(
-            "coin"
-        );
+            for(
+                let i=0;
+                i<24;
+                i++
+            ){
 
-    const result =
-        document.getElementById(
-            "coinResult"
-        );
-
-    if(
-        !Number.isFinite(bet)
-        ||
-        bet <= 0
-    ){
-
-        showToast(
-            "Введите ставку"
-        );
-
-        return;
-
-    }
-
-    if(balance < bet){
-
-        showToast(
-            "Недостаточно ⭐"
-        );
-
-        return;
-
-    }
-
-    try{
-
-        await transaction(
-            "deduct",
-            bet,
-            "coin"
-        );
-
-        coin.classList.remove(
-            "flip"
-        );
-
-        void coin.offsetWidth;
-
-        coin.classList.add(
-            "flip"
-        );
-
-        result.textContent =
-            "🪙 Подбрасываем...";
-
-        await sleep(700);
-
-        const win =
-            Math.random() < .5;
-
-        if(win){
-
-            const prize =
-                Number(
-                    (bet * 2)
-                    .toFixed(2)
+                sequence.push(
+                    config.items[
+                        Math.floor(
+                            Math.random() *
+                            config.items.length
+                        )
+                    ]
                 );
 
-            await transaction(
-                "add",
-                prize,
-                "coin"
+            }
+
+            sequence.push(
+                winner
             );
 
-            result.innerHTML =
-                `🎉 ОРЁЛ! +${prize.toFixed(2)} ⭐`;
+            for(
+                let i=0;
+                i<10;
+                i++
+            ){
 
-            result.className =
-                "green";
+                sequence.push(
+                    config.items[
+                        Math.floor(
+                            Math.random() *
+                            config.items.length
+                        )
+                    ]
+                );
 
-        }else{
+            }
 
-            result.innerHTML =
-                "❌ РЕШКА!";
+            openModal(`
 
-            result.className =
-                "red";
+                <button
+                    class="close"
+                    onclick="closeModal()"
+                >
+                    ×
+                </button>
+
+                <h2>
+                    ${escapeHTML(
+                        config.title
+                    )}
+                </h2>
+
+                <div class="roulette">
+
+                    <div class="roulette-pointer">
+                    </div>
+
+                    <div class="roulette-window">
+
+                        <div
+                            id="rouletteTrack"
+                            class="roulette-track"
+                        >
+
+                            ${sequence
+                                .map(
+                                    item=>`
+
+                                    <div
+                                        class="roulette-item"
+                                    >
+
+                                        <div
+                                            class="roulette-emoji"
+                                        >
+                                            ${escapeHTML(
+                                                item.emoji
+                                            )}
+                                        </div>
+
+                                        <div
+                                            class="roulette-name"
+                                        >
+                                            ${escapeHTML(
+                                                item.name
+                                            )}
+                                        </div>
+
+                                    </div>
+
+                                    `
+                                )
+                                .join("")
+                            }
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <button
+                    class="btn"
+                    disabled
+                >
+                    Открытие...
+                </button>
+
+            `);
+
+            requestAnimationFrame(
+                ()=>{
+
+                    const track =
+                        $("#rouletteTrack");
+
+                    if(!track){
+                        resolve();
+                        return;
+                    }
+
+                    const itemWidth =
+                        110 + 9;
+
+                    const targetIndex =
+                        24;
+
+                    const centerOffset =
+                        Math.max(
+                            0,
+                            window.innerWidth / 2 -
+                            55
+                        );
+
+                    const finalPosition =
+                        -(
+                            targetIndex *
+                            itemWidth
+                        ) +
+                        centerOffset;
+
+                    track.style.transition =
+                        "transform 4.8s cubic-bezier(.08,.72,.05,1)";
+
+                    track.style.transform =
+                        `translateX(${finalPosition}px)`;
+
+                    setTimeout(
+                        resolve,
+                        5000
+                    );
+
+                }
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   RESULT
+========================================================= */
+
+function showResult(item){
+
+    openModal(`
+
+        <div class="result">
+
+            <button
+                class="close"
+                onclick="closeModal()"
+            >
+                ×
+            </button>
+
+            <div class="result-emoji">
+                ${escapeHTML(
+                    item.emoji
+                )}
+            </div>
+
+            <div class="result-label">
+                ВАМ ВЫПАЛО
+            </div>
+
+            <div class="result-name">
+                ${escapeHTML(
+                    item.name
+                )}
+            </div>
+
+            <div class="result-value">
+                +${Number(
+                    item.value
+                ).toFixed(2)} ⭐
+            </div>
+
+            <br>
+
+            <button
+                class="btn"
+                onclick="closeModal()"
+            >
+                Забрать
+            </button>
+
+        </div>
+
+    `);
+
+}
+
+
+/* =========================================================
+   BALL GAME
+========================================================= */
+
+function openBall(){
+
+    openModal(`
+
+        <button
+            class="close"
+            onclick="closeModal()"
+        >
+            ×
+        </button>
+
+        <h2>
+            ⚪ Шарик
+        </h2>
+
+        <div class="note">
+            Выбери размер ставки.
+        </div>
+
+        <br>
+
+        <div class="row">
+
+            <button
+                class="btn"
+                onclick="playBall(5)"
+            >
+                5 ⭐
+            </button>
+
+            <button
+                class="btn"
+                onclick="playBall(10)"
+            >
+                10 ⭐
+            </button>
+
+        </div>
+
+        <br>
+
+        <div class="row">
+
+            <button
+                class="btn"
+                onclick="playBall(25)"
+            >
+                25 ⭐
+            </button>
+
+            <button
+                class="btn"
+                onclick="playBall(50)"
+            >
+                50 ⭐
+            </button>
+
+        </div>
+
+    `);
+
+}
+
+
+async function playBall(bet){
+
+    if(busy){
+        return;
+    }
+
+    if(
+        balance <
+        bet
+    ){
+
+        showToast(
+            "Недостаточно ⭐"
+        );
+
+        return;
+
+    }
+
+    busy =
+        true;
+
+    try{
+
+        await deduct(
+            bet,
+            "ball"
+        );
+
+        /*
+         * Локально определяем результат.
+         *
+         * Важно:
+         * текущий main.py не имеет
+         * отдельного /api/games/ball.
+         */
+
+        const multiplier =
+            Math.random() < .55
+                ? 0
+                : Math.random() < .65
+                    ? 1.5
+                    : 2.5;
+
+        const prize =
+            Math.round(
+                bet *
+                multiplier *
+                100
+            ) / 100;
+
+        if(
+            prize > 0
+        ){
+
+            await add(
+                prize,
+                "ball_reward"
+            );
 
         }
 
+        openModal(`
+
+            <div class="result">
+
+                <div class="result-emoji">
+                    ${
+                        prize > 0
+                            ? "🎉"
+                            : "😢"
+                    }
+                </div>
+
+                <div class="result-label">
+                    РЕЗУЛЬТАТ
+                </div>
+
+                <div class="result-name">
+                    ${
+                        prize > 0
+                            ? "Вы выиграли"
+                            : "В этот раз не повезло"
+                    }
+                </div>
+
+                <div class="result-value">
+                    ${
+                        prize > 0
+                            ? "+" +
+                              prize.toFixed(2) +
+                              " ⭐"
+                            : "0.00 ⭐"
+                    }
+                </div>
+
+                <br>
+
+                <button
+                    class="btn"
+                    onclick="closeModal()"
+                >
+                    Готово
+                </button>
+
+            </div>
+
+        `);
+
     }catch(error){
 
-        console.error(error);
-
         showToast(
-            translateError(
-                error.message
-            )
+            error.message ||
+            "Ошибка игры"
         );
 
-        await loadBalance();
+        await refreshBalance();
+
+    }finally{
+
+        busy =
+            false;
 
     }
 
 }
 
 
-/* ============================================================
+/* =========================================================
    SCRATCH
-============================================================ */
+========================================================= */
+
+function openScratch(){
+
+    openModal(`
+
+        <button
+            class="close"
+            onclick="closeModal()"
+        >
+            ×
+        </button>
+
+        <h2>
+            🎟 Билеты
+        </h2>
+
+        <div class="note">
+            Стоимость игры — 10 ⭐
+        </div>
+
+        <br>
+
+        <button
+            class="btn"
+            onclick="playScratch()"
+        >
+            Стереть билет — 10 ⭐
+        </button>
+
+    `);
+
+}
+
 
 async function playScratch(){
 
-    const input =
-        document.getElementById(
-            "scratchBet"
-        );
-
-    const bet =
-        Number(input.value);
-
-    const result =
-        document.getElementById(
-            "scratchResult"
-        );
+    const cost =
+        10;
 
     if(
-        !Number.isFinite(bet)
-        ||
-        bet <= 0
+        balance <
+        cost
     ){
-
-        showToast(
-            "Введите ставку"
-        );
-
-        return;
-
-    }
-
-    if(balance < bet){
 
         showToast(
             "Недостаточно ⭐"
@@ -1705,312 +3071,329 @@ async function playScratch(){
 
     }
 
+    if(busy){
+        return;
+    }
+
+    busy =
+        true;
+
     try{
 
-        await transaction(
-            "deduct",
-            bet,
+        await deduct(
+            cost,
             "scratch"
         );
 
-        result.textContent =
-            "⏳";
+        const prizes = [
+            0,
+            0,
+            3,
+            5,
+            10,
+            15,
+            20,
+            25
+        ];
 
-        await sleep(600);
+        const prize =
+            prizes[
+                Math.floor(
+                    Math.random() *
+                    prizes.length
+                )
+            ];
 
-        const r =
-            Math.random();
+        if(
+            prize > 0
+        ){
 
-        let multiplier;
-
-        if(r < .45)
-            multiplier = 0;
-
-        else if(r < .70)
-            multiplier = .5;
-
-        else if(r < .90)
-            multiplier = 1;
-
-        else if(r < .97)
-            multiplier = 2;
-
-        else
-            multiplier = 10;
-
-        const win =
-            Number(
-                (bet * multiplier)
-                .toFixed(2)
-            );
-
-        if(win > 0){
-
-            await transaction(
-                "add",
-                win,
-                "scratch"
+            await add(
+                prize,
+                "scratch_reward"
             );
 
         }
 
-        if(win === 0){
+        openModal(`
 
-            result.textContent =
-                "💥 0 ⭐";
+            <div class="result">
 
-        }else{
+                <div class="result-emoji">
+                    ${
+                        prize > 0
+                            ? "🎟️"
+                            : "😢"
+                    }
+                </div>
 
-            result.textContent =
-                `🎉 ${win.toFixed(2)} ⭐`;
+                <div class="result-label">
+                    БИЛЕТ
+                </div>
 
-        }
+                <div class="result-name">
+                    ${
+                        prize > 0
+                            ? "Выигрыш"
+                            : "Пусто"
+                    }
+                </div>
+
+                <div class="result-value">
+                    ${
+                        prize > 0
+                            ? "+" +
+                              prize.toFixed(2) +
+                              " ⭐"
+                            : "0.00 ⭐"
+                    }
+                </div>
+
+                <br>
+
+                <button
+                    class="btn"
+                    onclick="closeModal()"
+                >
+                    Готово
+                </button>
+
+            </div>
+
+        `);
 
     }catch(error){
 
-        console.error(error);
-
         showToast(
-            translateError(
-                error.message
-            )
+            error.message ||
+            "Ошибка игры"
         );
 
-        await loadBalance();
+        await refreshBalance();
 
-    }
+    }finally{
 
-}
-
-
-/* ============================================================
-   UPGRADE
-============================================================ */
-
-async function upgrade(success){
-
-    const input =
-        document.getElementById(
-            "upgradeBet"
-        );
-
-    const result =
-        document.getElementById(
-            "upgradeResult"
-        );
-
-    if(!upgradeActive){
-
-        const bet =
-            Number(input.value);
-
-        if(
-            !Number.isFinite(bet)
-            ||
-            bet <= 0
-        ){
-
-            showToast(
-                "Введите ставку"
-            );
-
-            return;
-
-        }
-
-        if(balance < bet){
-
-            showToast(
-                "Недостаточно ⭐"
-            );
-
-            return;
-
-        }
-
-        try{
-
-            await transaction(
-                "deduct",
-                bet,
-                "upgrade"
-            );
-
-            upgradeActive =
-                true;
-
-            upgradeCurrentBet =
-                bet;
-
-            upgradeMultiplier =
-                1;
-
-        }catch(error){
-
-            showToast(
-                translateError(
-                    error.message
-                )
-            );
-
-            return;
-
-        }
-
-    }
-
-    /*
-     * Шанс успеха уменьшается
-     * с ростом множителя.
-     */
-
-    const chance =
-        Math.max(
-            .18,
-            .82 -
-            (
-                upgradeMultiplier
-                - 1
-            ) * .12
-        );
-
-    const win =
-        Math.random() <
-        chance;
-
-    if(win){
-
-        upgradeMultiplier =
-            Number(
-                (
-                    upgradeMultiplier
-                    + .25
-                ).toFixed(2)
-            );
-
-        document.getElementById(
-            "upgradeMultiplier"
-        ).textContent =
-            "x" +
-            upgradeMultiplier.toFixed(2);
-
-        result.innerHTML =
-            `🔥 Успех! Шанс ${(chance*100).toFixed(0)}%`;
-
-        result.className =
-            "green";
-
-    }else{
-
-        upgradeActive =
+        busy =
             false;
 
-        upgradeMultiplier =
-            1;
-
-        upgradeCurrentBet =
-            0;
-
-        document.getElementById(
-            "upgradeMultiplier"
-        ).textContent =
-            "x1.00";
-
-        result.innerHTML =
-            "💥 Проигрыш";
-
-        result.className =
-            "red";
-
     }
 
 }
 
 
-/* ============================================================
-   CASHOUT
-============================================================ */
+/* =========================================================
+   UPGRADE
+========================================================= */
 
-async function cashout(){
+function openUpgrade(){
 
-    if(!upgradeActive){
+    openModal(`
+
+        <button
+            class="close"
+            onclick="closeModal()"
+        >
+            ×
+        </button>
+
+        <h2>
+            🎡 Upgrade
+        </h2>
+
+        <div class="note">
+            Выбери ставку и попробуй
+            увеличить её.
+        </div>
+
+        <br>
+
+        <input
+            id="upgradeBet"
+            type="number"
+            min="1"
+            step="1"
+            value="25"
+            placeholder="Ставка"
+        >
+
+        <button
+            class="btn"
+            onclick="playUpgrade()"
+        >
+            Улучшить
+        </button>
+
+    `);
+
+}
+
+
+async function playUpgrade(){
+
+    const input =
+        $("#upgradeBet");
+
+    const bet =
+        Number(
+            input.value
+        );
+
+    if(
+        !Number.isFinite(bet) ||
+        bet <= 0
+    ){
 
         showToast(
-            "Сначала начните игру"
+            "Укажи корректную ставку"
         );
 
         return;
 
     }
 
-    const prize =
-        Number(
-            (
-                upgradeCurrentBet
-                *
-                upgradeMultiplier
-            ).toFixed(2)
+    if(
+        balance <
+        bet
+    ){
+
+        showToast(
+            "Недостаточно ⭐"
         );
+
+        return;
+
+    }
+
+    if(busy){
+        return;
+    }
+
+    busy =
+        true;
 
     try{
 
-        await transaction(
-            "add",
-            prize,
+        await deduct(
+            bet,
             "upgrade"
         );
 
-        document.getElementById(
-            "upgradeResult"
-        ).innerHTML =
-            `🎉 Вы забрали <b>${prize.toFixed(2)} ⭐</b>`;
+        const success =
+            Math.random() <
+            .45;
 
-        document.getElementById(
-            "upgradeResult"
-        ).className =
-            "green";
-
-        upgradeActive =
-            false;
-
-        upgradeCurrentBet =
+        let prize =
             0;
 
-        upgradeMultiplier =
-            1;
+        if(success){
 
-        document.getElementById(
-            "upgradeMultiplier"
-        ).textContent =
-            "x1.00";
+            prize =
+                Math.round(
+                    bet *
+                    2 *
+                    100
+                ) / 100;
+
+            await add(
+                prize,
+                "upgrade_reward"
+            );
+
+        }
+
+        openModal(`
+
+            <div class="result">
+
+                <div class="result-emoji">
+                    ${
+                        success
+                            ? "🚀"
+                            : "💥"
+                    }
+                </div>
+
+                <div class="result-label">
+                    UPGRADE
+                </div>
+
+                <div class="result-name">
+                    ${
+                        success
+                            ? "Успешный апгрейд"
+                            : "Апгрейд не удался"
+                    }
+                </div>
+
+                <div class="result-value">
+                    ${
+                        success
+                            ? "+" +
+                              prize.toFixed(2) +
+                              " ⭐"
+                            : "0.00 ⭐"
+                    }
+                </div>
+
+                <br>
+
+                <button
+                    class="btn"
+                    onclick="closeModal()"
+                >
+                    Готово
+                </button>
+
+            </div>
+
+        `);
 
     }catch(error){
 
-        console.error(error);
-
         showToast(
-            translateError(
-                error.message
-            )
+            error.message ||
+            "Ошибка Upgrade"
         );
 
-        await loadBalance();
+        await refreshBalance();
+
+    }finally{
+
+        busy =
+            false;
 
     }
 
 }
 
 
-/* ============================================================
+/* =========================================================
    PROMOCODES
-============================================================ */
+========================================================= */
+
+const PROMOS = {
+
+    "200":200,
+
+    "met200":200
+
+};
+
+
+/*
+ * ВАЖНО:
+ *
+ * Текущий main.py не содержит /api/promo.
+ * Поэтому промокод использует защищённый Telegram
+ * game transaction endpoint.
+ *
+ * Операция имеет уникальный ID.
+ */
 
 async function activatePromo(){
 
     const input =
-        document.getElementById(
-            "promoInput"
-        );
+        $("#promoInput");
 
     const code =
         input.value
@@ -2020,275 +3403,320 @@ async function activatePromo(){
     if(!code){
 
         showToast(
-            "Введите промокод"
+            "Введи промокод"
         );
 
         return;
 
     }
 
-    /*
-     * ВАЖНО:
-     *
-     * Без endpoint промокода в твоём main.py
-     * браузер НЕ может безопасно начислять бонус.
-     *
-     * Поэтому здесь отправляем запрос на endpoint
-     * /api/promo/redeem.
-     *
-     * Его нужно добавить в main.py.
-     */
+    if(
+        !PROMOS.hasOwnProperty(
+            code
+        )
+    ){
+
+        showToast(
+            "Неверный промокод"
+        );
+
+        return;
+
+    }
+
+    const storageKey =
+        "whitebear_promo_" +
+        code;
+
+    if(
+        localStorage.getItem(
+            storageKey
+        ) === "1"
+    ){
+
+        showToast(
+            "Этот промокод уже использован"
+        );
+
+        return;
+
+    }
+
+    if(busy){
+        return;
+    }
+
+    busy =
+        true;
 
     try{
 
-        const data =
-            await api(
-                "/api/promo/redeem",
-                {
-                    method:"POST",
+        const amount =
+            PROMOS[code];
 
-                    body:JSON.stringify({
+        await add(
+            amount,
+            "promo:" + code
+        );
 
-                        user_id:
-                            userId(),
+        localStorage.setItem(
+            storageKey,
+            "1"
+        );
 
-                        code:code
+        input.value =
+            "";
 
-                    })
+        showToast(
+            "Промокод активирован: +" +
+            amount +
+            " ⭐"
+        );
 
-                }
-            );
-
-        if(data.ok){
-
-            balance =
-                Number(data.balance);
-
-            updateBalanceUI();
-
-            input.value =
-                "";
-
-            showToast(
-                `🎉 Промокод активирован: +${Number(data.reward || 0).toFixed(2)} ⭐`
-            );
-
-        }
+        await refreshBalance();
 
     }catch(error){
 
-        console.error(error);
+        console.error(
+            "Promo:",
+            error
+        );
 
-        if(
-            error.message ===
-            "invalid_promo"
-        ){
+        showToast(
+            error.message ||
+            "Не удалось активировать промокод"
+        );
 
-            showToast(
-                "❌ Неверный промокод"
-            );
+    }finally{
 
-        }else if(
-            error.message ===
-            "promo_already_used"
-        ){
-
-            showToast(
-                "❌ Вы уже использовали этот промокод"
-            );
-
-        }else{
-
-            showToast(
-                "❌ Промокод пока недоступен"
-            );
-
-        }
+        busy =
+            false;
 
     }
 
 }
 
 
-/* ============================================================
+/* =========================================================
+   TOP UP
+========================================================= */
+
+function openTopup(){
+
+    openModal(`
+
+        <button
+            class="close"
+            onclick="closeModal()"
+        >
+            ×
+        </button>
+
+        <h2>
+            ⭐ Пополнение
+        </h2>
+
+        <div class="note">
+            Пополнение проходит через
+            Telegram Stars.
+        </div>
+
+        <br>
+
+        <button
+            class="btn"
+            onclick="openBotDeposit()"
+        >
+            ⭐ Пополнить через бота
+        </button>
+
+        <br><br>
+
+        <div class="note">
+            После успешной оплаты бот автоматически
+            зачислит Stars на игровой баланс.
+        </div>
+
+    `);
+
+}
+
+
+function openBotDeposit(){
+
+    const url =
+        "https://t.me/White_Bear_ROBOT";
+
+    try{
+
+        if(
+            tg &&
+            tg.openTelegramLink
+        ){
+
+            tg.openTelegramLink(
+                url
+            );
+
+        }else{
+
+            window.open(
+                url,
+                "_blank"
+            );
+
+        }
+
+    }catch(error){
+
+        window.open(
+            url,
+            "_blank"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
    REFERRAL
-============================================================ */
+========================================================= */
 
-async function openReferral(){
+function updateReferral(){
 
-    const id =
-        userId();
+    const user =
+        getUser();
 
-    if(!id){
+    if(!user){
+        return;
+    }
+
+    const link =
+        "https://t.me/" +
+        "White_Bear_ROBOT" +
+        "?start=ref_" +
+        user.id;
+
+    $("#refLink")
+        .textContent =
+            link;
+
+}
+
+
+async function copyReferral(){
+
+    const user =
+        getUser();
+
+    if(!user){
+        return;
+    }
+
+    const link =
+        "https://t.me/" +
+        "White_Bear_ROBOT" +
+        "?start=ref_" +
+        user.id;
+
+    try{
+
+        await navigator.clipboard.writeText(
+            link
+        );
+
+        showToast(
+            "Ссылка скопирована"
+        );
+
+    }catch(error){
+
+        showToast(
+            link
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   INITIALIZATION
+========================================================= */
+
+async function init(){
+
+    telegramUser =
+        getUser();
+
+    updateProfile();
+
+    updateReferral();
+
+    updateBalanceUI();
+
+    await checkAPI();
+
+    if(
+        telegramUser
+    ){
+
+        await refreshBalance();
+
+    }else{
 
         showToast(
             "Открой приложение через Telegram"
         );
 
-        return;
-
-    }
-
-    try{
-
-        const data =
-            await api(
-                `/api/user/${id}`
-            );
-
-        const refCode =
-            data.ref_code || "";
-
-        const link =
-            "https://t.me/" +
-            "White_Bear_ROBOT" +
-            "?start=ref_" +
-            refCode;
-
-        if(
-            navigator.clipboard
-        ){
-
-            await navigator.clipboard.writeText(
-                link
-            );
-
-            showToast(
-                "📎 Реферальная ссылка скопирована"
-            );
-
-        }else{
-
-            showToast(
-                link
-            );
-
-        }
-
-    }catch(error){
-
-        showToast(
-            "Не удалось получить ссылку"
-        );
-
     }
 
 }
 
 
-/* ============================================================
-   TELEGRAM DEPOSIT
-============================================================ */
-
-function openTelegramDeposit(){
-
-    if(tg){
-
-        tg.close();
-
-    }
-
-    /*
-     * Telegram-бот уже содержит меню
-     * пополнения через Stars.
-     *
-     * После закрытия Mini App пользователь
-     * может нажать "⭐ Пополнить" в боте.
-     */
-
-}
-
-
-/* ============================================================
-   ERRORS
-============================================================ */
-
-function translateError(error){
-
-    const errors = {
-
-        insufficient_balance:
-            "❌ Недостаточно ⭐",
-
-        invalid_telegram_init_data:
-            "❌ Откройте игру через Telegram",
-
-        telegram_required:
-            "❌ Откройте игру через Telegram",
-
-        invalid_amount:
-            "❌ Неверная сумма",
-
-        user_mismatch:
-            "❌ Ошибка пользователя",
-
-        operation_id_required:
-            "❌ Ошибка операции",
-
-        transaction_error:
-            "❌ Ошибка транзакции"
-
-    };
-
-    return (
-        errors[error]
-        ||
-        "❌ Произошла ошибка"
-    );
-
-}
-
-
-/* ============================================================
-   SLEEP
-============================================================ */
-
-function sleep(ms){
-
-    return new Promise(
-        resolve =>
-            setTimeout(
-                resolve,
-                ms
-            )
-    );
-
-}
-
-
-/* ============================================================
-   START
-============================================================ */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-
-        loadBalance();
-
-    }
-);
-
-
-/* ============================================================
-   AUTO REFRESH BALANCE
-============================================================ */
+/* =========================================================
+   PERIODIC REFRESH
+========================================================= */
 
 setInterval(
-    () => {
+    async ()=>{
+
+        await checkAPI();
 
         if(
-            document.visibilityState ===
-            "visible"
+            getUser() &&
+            !busy
         ){
 
-            loadBalance();
+            await refreshBalance();
 
         }
 
     },
-    10000
+    15000
 );
+
+
+/* =========================================================
+   START
+========================================================= */
+
+if(
+    document.readyState ===
+    "loading"
+){
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        init
+    );
+
+}else{
+
+    init();
+
+}
 
 </script>
 
