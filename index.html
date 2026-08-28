@@ -469,57 +469,174 @@ body{position:fixed;inset:0}button,input{font:inherit}.hidden{display:none!impor
 "use strict";
 
 /* ================= API ================= */
-const API_BASE="https://whitebear.bothost.tech";
-const tg=window.Telegram&&window.Telegram.WebApp?window.Telegram.WebApp:null;
-if(tg){tg.ready();tg.expand();}
-const initData=tg&&tg.initData?tg.initData:"";
-const USER_ID=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user?tg.initDataUnsafe.user.id:null;
-let balance=0;
+const API_ENDPOINTS = [
+ "https://whitebear.bothost.tech",
+ ...(location.protocol === "file:" ? [] : [location.origin])
+].filter((v,i,a)=>v && a.indexOf(v)===i);
 
-function apiHeaders(){
- const h={"Content-Type":"application/json"};
- if(initData)h["X-Telegram-Init-Data"]=initData;
+const tg=window.Telegram&&window.Telegram.WebApp?window.Telegram.WebApp:null;
+if(tg){try{tg.ready();tg.expand();}catch(e){}}
+
+const tgUser=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user
+ ? tg.initDataUnsafe.user
+ : null;
+
+let USER_ID=tgUser&&tgUser.id
+ ? Number(tgUser.id)
+ : Number(localStorage.getItem("wb_user_id")||0);
+
+if(USER_ID>0) localStorage.setItem("wb_user_id",String(USER_ID));
+
+const initData=tg&&tg.initData?tg.initData:"";
+let balance=0;
+let activeApiBase=null;
+
+function apiHeaders(hasBody=false){
+ const h={};
+ if(hasBody) h["Content-Type"]="application/json";
+ if(initData) h["X-Telegram-Init-Data"]=initData;
  return h;
 }
+
 async function api(path,options={}){
- const r=await fetch(API_BASE+path,{...options,headers:{...apiHeaders(),...(options.headers||{})}});
- let d={};try{d=await r.json()}catch(e){}
- if(!r.ok)throw new Error(d.detail||d.message||"Ошибка API");
- return d;
+ let lastError=null;
+
+ const endpoints=activeApiBase
+   ? [activeApiBase,...API_ENDPOINTS.filter(x=>x!==activeApiBase)]
+   : API_ENDPOINTS;
+
+ for(const base of endpoints){
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),10000);
+
+  try{
+   const response=await fetch(base+path,{
+    ...options,
+    signal:controller.signal,
+    headers:{
+     ...apiHeaders(!!options.body),
+     ...(options.headers||{})
+    }
+   });
+
+   let data=null;
+   try{data=await response.json()}catch(e){}
+
+   if(!response.ok){
+    const message=data?.detail||data?.message||data?.error||("HTTP "+response.status);
+    throw new Error(message);
+   }
+
+   activeApiBase=base;
+   return data;
+  }catch(e){
+   lastError=e?.name==="AbortError"
+    ? new Error("API не ответил за 10 секунд")
+    : e;
+  }finally{
+   clearTimeout(timer);
+  }
+ }
+
+ throw new Error(
+  "Не удалось подключиться к API"+(lastError?.message?": "+lastError.message:"")
+ );
 }
+
 function toast(msg){
- const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");
- clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>t.classList.remove("show"),2600);
+ const t=document.getElementById("toast");
+ if(!t)return;
+ t.textContent=msg;
+ t.classList.add("show");
+ clearTimeout(window.__toastTimer);
+ window.__toastTimer=setTimeout(()=>t.classList.remove("show"),2600);
 }
+
 function setBalance(v){
  balance=Math.max(0,Number(v)||0);
  window.balance=balance;
- document.querySelectorAll(".allBalance").forEach(x=>x.textContent=balance.toFixed(2));
- document.getElementById("gameBalance").textContent=balance.toFixed(2);
- document.getElementById("gameMenuBalance").textContent="Баланс: "+balance.toFixed(2)+" ⭐";
- document.getElementById("ticketBalance").textContent=balance.toFixed(2)+" ⭐";
- document.getElementById("ticketBalanceGame").textContent=balance.toFixed(2)+" ⭐";
- const pb=document.getElementById("profileBalance");if(pb)pb.textContent="⭐ "+balance.toFixed(2);
+
+ document.querySelectorAll(".allBalance")
+  .forEach(x=>x.textContent=balance.toFixed(2));
+
+ [
+  ["gameBalance",balance.toFixed(2)],
+  ["gameMenuBalance","Баланс: "+balance.toFixed(2)+" ⭐"],
+  ["ticketBalance",balance.toFixed(2)+" ⭐"],
+  ["ticketBalanceGame",balance.toFixed(2)+" ⭐"],
+  ["profileBalance","⭐ "+balance.toFixed(2)]
+ ].forEach(([id,value])=>{
+  const el=document.getElementById(id);
+  if(el)el.textContent=value;
+ });
 }
-function setApiStatus(ok){
- const a=document.getElementById("apiStatus"),p=document.getElementById("profileApi");
- a.textContent=ok?"API: подключено":"API: ошибка";
- a.className="api-status "+(ok?"api-ok":"api-bad");
- p.textContent=ok?"ПОДКЛЮЧЕН":"ОШИБКА";
- p.className=ok?"ok":"bad";
+
+function setApiStatus(ok,errorText=""){
+ const a=document.getElementById("apiStatus");
+ const p=document.getElementById("profileApi");
+
+ if(a){
+  a.textContent=ok?"API: подключено":"API: ошибка";
+  a.className="api-status "+(ok?"api-ok":"api-bad");
+  if(errorText)a.title=errorText;
+ }
+ if(p){
+  p.textContent=ok?"ПОДКЛЮЧЕН":"ОШИБКА";
+  p.className=ok?"ok":"bad";
+  if(errorText)p.title=errorText;
+ }
 }
+
 async function loadBalance(){
- if(!USER_ID){setApiStatus(false);return false}
- try{const d=await api("/api/balance/"+USER_ID);setBalance(d.balance);setApiStatus(true);return true}
- catch(e){setApiStatus(false);return false}
+ if(!USER_ID){
+  setApiStatus(false,"Telegram user ID не найден");
+  return false;
+ }
+ try{
+  const d=await api("/api/balance/"+encodeURIComponent(USER_ID));
+  setBalance(d.balance);
+  setApiStatus(true);
+  return true;
+ }catch(e){
+  setApiStatus(false,e.message);
+  return false;
+ }
 }
+
+async function checkApiConnection(){
+ try{
+  await api("/health");
+  setApiStatus(true);
+  return true;
+ }catch(e){
+  setApiStatus(false,e.message);
+  return false;
+ }
+}
+
 async function transaction(type,amount,operationId,game){
- return api("/api/game/transaction",{method:"POST",body:JSON.stringify({
-  user_id:Number(USER_ID),operation_id:operationId,type,amount,game
- })});
+ if(!USER_ID)throw new Error("Откройте приложение через Telegram");
+ return api("/api/game/transaction",{
+  method:"POST",
+  body:JSON.stringify({
+   user_id:Number(USER_ID),
+   operation_id:operationId,
+   type,
+   amount,
+   game
+  })
+ });
 }
-function idempotency(prefix){return prefix+":"+USER_ID+":"+Date.now()+":"+Math.random().toString(36).slice(2)}
-function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+
+function idempotency(prefix){
+ return prefix+":"+USER_ID+":"+Date.now()+":"+Math.random().toString(36).slice(2);
+}
+
+function esc(s){
+ return String(s??"").replace(/[&<>"']/g,c=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+ }[c]));
+}
 
 /* ================= NAV / PROFILE / INVENTORY ================= */
 let gamesPlayed=Number(localStorage.getItem("wb_games")||0);
@@ -534,11 +651,17 @@ function saveStats(){
 }
 function setStats(){
  const a=document.getElementById("gamesPlayed"),b=document.getElementById("wins"),c=document.getElementById("losses");
- if(a)a.textContent=gamesPlayed;if(b)b.textContent=wins;if(c)c.textContent=losses;
+ if(a)a.textContent=gamesPlayed;
+ if(b)b.textContent=wins;
+ if(c)c.textContent=losses;
 }
 function renderProfileHistory(){
- const box=document.getElementById("profileHistory");if(!box)return;
- if(!profileHistory.length){box.innerHTML="<div class='muted'>История пуста</div>";return}
+ const box=document.getElementById("profileHistory");
+ if(!box)return;
+ if(!profileHistory.length){
+  box.innerHTML="<div class='muted'>История пуста</div>";
+  return;
+ }
  box.innerHTML=profileHistory.slice(0,20).map(x=>`
   <div class="history-line">
    <div>${esc(x.text)}</div>
@@ -546,7 +669,10 @@ function renderProfileHistory(){
   </div>`).join("");
 }
 function addProfileHistory(text){
- profileHistory.unshift({text:String(text),time:new Date().toLocaleString("ru-RU")});
+ profileHistory.unshift({
+  text:String(text),
+  time:new Date().toLocaleString("ru-RU")
+ });
  profileHistory=profileHistory.slice(0,20);
  localStorage.setItem("wb_profile_history",JSON.stringify(profileHistory));
  renderProfileHistory();
@@ -555,29 +681,57 @@ function updateProfile(){
  const name=document.getElementById("profileName");
  const id=document.getElementById("profileId");
  const pbal=document.getElementById("profileBalance");
- const u=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user?tg.initDataUnsafe.user:null;
- if(name)name.textContent=u?([u.first_name,u.last_name].filter(Boolean).join(" ")||u.username||"Игрок"):"Игрок";
+ const u=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user
+  ? tg.initDataUnsafe.user
+  : null;
+
+ if(name){
+  name.textContent=u
+   ? ([u.first_name,u.last_name].filter(Boolean).join(" ")||u.username||"Игрок")
+   : "Игрок";
+ }
  if(id)id.textContent=USER_ID||"—";
  if(pbal)pbal.textContent="⭐ "+Number(balance||0).toFixed(2);
- setStats();renderProfileHistory();
+ setStats();
+ renderProfileHistory();
 }
+
 async function loadInventory(){
- const box=document.getElementById("inventoryList");if(!box)return;
- if(!USER_ID){window.inventoryItems=[];box.innerHTML="<div class='muted'>Откройте приложение через Telegram.</div>";return}
+ const box=document.getElementById("inventoryList");
+ if(!box)return;
+
+ if(!USER_ID){
+  window.inventoryItems=[];
+  box.innerHTML="<div class='muted'>Откройте приложение через Telegram.</div>";
+  return false;
+ }
+
  try{
   const d=await api("/api/inventory/"+encodeURIComponent(USER_ID));
-  const items=Array.isArray(d.items)?d.items:(Array.isArray(d.inventory)?d.inventory:[]);
+  const items=Array.isArray(d.items)
+   ? d.items
+   : (Array.isArray(d.inventory)?d.inventory:[]);
+
   window.inventoryItems=items.map(x=>({...x}));
   renderInventory();
+  return true;
  }catch(e){
   window.inventoryItems=[];
   box.innerHTML="<div class='bad'>Не удалось загрузить инвентарь.</div>";
+  return false;
  }
 }
+
 function renderInventory(){
- const box=document.getElementById("inventoryList");if(!box)return;
+ const box=document.getElementById("inventoryList");
+ if(!box)return;
+
  const items=Array.isArray(window.inventoryItems)?window.inventoryItems:[];
- if(!items.length){box.innerHTML="<div class='muted'>Инвентарь пуст.</div>";return}
+ if(!items.length){
+  box.innerHTML="<div class='muted'>Инвентарь пуст.</div>";
+  return;
+ }
+
  box.innerHTML=items.map(x=>`
   <div class="item">
    <div>
@@ -586,54 +740,108 @@ function renderInventory(){
    </div>
    <button class="primary sellItem" data-id="${esc(x.id)}" style="width:110px">Продать</button>
   </div>`).join("");
+
  box.querySelectorAll(".sellItem").forEach(btn=>btn.addEventListener("click",async()=>{
   btn.disabled=true;
   try{
-   const d=await api("/api/inventory/sell",{method:"POST",body:JSON.stringify({user_id:Number(USER_ID),item_id:String(btn.dataset.id)})});
+   const d=await api("/api/inventory/sell",{
+    method:"POST",
+    body:JSON.stringify({
+     user_id:Number(USER_ID),
+     item_id:String(btn.dataset.id)
+    })
+   });
    if(d.balance!==undefined)setBalance(d.balance);
-   addProfileHistory(`Продан предмет на ${Number(d.message?.match(/([0-9.]+) ⭐/)?.[1]||0).toFixed(2)} ⭐`);
+   toast(d.message||"Продано");
+   addProfileHistory(d.message||"Продан предмет");
    await loadInventory();
-  }catch(e){btn.disabled=false;toast(e.message)}
+  }catch(e){
+   btn.disabled=false;
+   toast(e.message);
+  }
  }));
 }
-document.getElementById("navMenu").onclick=()=>showPage("home");
-document.getElementById("navInventory").onclick=async()=>{showPage("inventoryScreen");await loadInventory();await loadBalance()};
-document.getElementById("navProfile").onclick=async()=>{showPage("profileScreen");updateProfile();await loadBalance();updateProfile();await checkProfileApi()};
-document.getElementById("refreshProfile").onclick=async()=>{await loadBalance();await loadInventory();updateProfile();await checkProfileApi()};
 
-async function checkProfileApi(){
- const el=document.getElementById("profileApi");if(!el)return false;
- try{await api("/health");el.textContent="ПОДКЛЮЧЕН";el.className="ok";return true}
- catch(e){
-  try{await api("/api/status");el.textContent="ПОДКЛЮЧЕН";el.className="ok";return true}
-  catch(e2){el.textContent="ОШИБКА";el.className="bad";return false}
- }
+function showPage(id){
+ ["home","inventoryScreen","profileScreen"].forEach(x=>{
+  const el=document.getElementById(x);
+  if(el)el.classList.toggle("hidden",x!==id);
+ });
+ document.querySelectorAll(".bottom button").forEach(x=>x.classList.remove("active"));
+ if(id==="home")document.getElementById("navMenu")?.classList.add("active");
+ if(id==="inventoryScreen")document.getElementById("navInventory")?.classList.add("active");
+ if(id==="profileScreen")document.getElementById("navProfile")?.classList.add("active");
 }
+
+document.getElementById("navMenu").onclick=()=>showPage("home");
+
+document.getElementById("navInventory").onclick=async()=>{
+ showPage("inventoryScreen");
+ await loadInventory();
+ await loadBalance();
+};
+
+document.getElementById("navProfile").onclick=async()=>{
+ showPage("profileScreen");
+ updateProfile();
+ await loadBalance();
+ updateProfile();
+ await checkApiConnection();
+};
+
+document.getElementById("refreshProfile").onclick=async()=>{
+ await loadBalance();
+ await loadInventory();
+ updateProfile();
+ await checkApiConnection();
+};
 
 const promoButton=document.getElementById("promoButton");
 if(promoButton)promoButton.addEventListener("click",async()=>{
- const input=document.getElementById("promoInput"),message=document.getElementById("promoMessage");
- const code=(input.value||"").trim().toLowerCase();
- if(!code){message.textContent="Введите промокод";message.style.color="#ef4752";return}
- if(!USER_ID){message.textContent="Откройте приложение через Telegram";message.style.color="#ef4752";return}
+ const input=document.getElementById("promoInput");
+ const message=document.getElementById("promoMessage");
+ const code=(input?.value||"").trim().toLowerCase();
+
+ if(!code){
+  message.textContent="Введите промокод";
+  message.style.color="#ef4752";
+  return;
+ }
+ if(!USER_ID){
+  message.textContent="Откройте приложение через Telegram";
+  message.style.color="#ef4752";
+  return;
+ }
+
  promoButton.disabled=true;
+ const oldBalance=balance;
+
  try{
-  const d=await api("/api/promo/activate",{method:"POST",body:JSON.stringify({user_id:Number(USER_ID),code})});
+  const d=await api("/api/promo/activate",{
+   method:"POST",
+   body:JSON.stringify({
+    user_id:Number(USER_ID),
+    code
+   })
+  });
+
   if(d.balance!==undefined)setBalance(d.balance);
-  message.textContent="✅ "+(d.message||"Промокод активирован");message.style.color="#39e58c";
-  input.value="";addProfileHistory(`Промокод ${code}: +${Number(d.balance||0)-Number(balance||0) || "награда"} ⭐`);
+
+  message.textContent="✅ "+(d.message||"Промокод активирован");
+  message.style.color="#39e58c";
+  input.value="";
+
+  const reward=Math.max(0,Number(balance)-Number(oldBalance));
+  addProfileHistory(`Промокод ${code}: +${reward.toFixed(2)} ⭐`);
   updateProfile();
- }catch(e){message.textContent="❌ "+e.message;message.style.color="#ef4752"}
- finally{promoButton.disabled=false}
+ }catch(e){
+  message.textContent="❌ "+e.message;
+  message.style.color="#ef4752";
+ }finally{
+  promoButton.disabled=false;
+ }
 });
 
-function showPage(id){
- ["home","inventoryScreen","profileScreen"].forEach(x=>document.getElementById(x).classList.toggle("hidden",x!==id));
- document.querySelectorAll(".bottom button").forEach(x=>x.classList.remove("active"));
- if(id==="home")document.getElementById("navMenu").classList.add("active");
- if(id==="inventoryScreen")document.getElementById("navInventory").classList.add("active");
- if(id==="profileScreen")document.getElementById("navProfile").classList.add("active");
-}
 window.renderInventory=renderInventory;
 window.loadInventory=loadInventory;
 window.__UPGRADE_USER_ID=USER_ID;
@@ -641,8 +849,12 @@ window.__UPGRADE_LOAD_INVENTORY=async()=>{
  await loadInventory();
  return Array.isArray(window.inventoryItems)?window.inventoryItems:[];
 };
-window.__UPGRADE_UPDATE_UI=()=>{updateBalanceUI();updateProfile()};
-setStats();renderProfileHistory();
+window.__UPGRADE_UPDATE_UI=()=>{
+ setBalance(balance);
+ updateProfile();
+};
+setStats();
+renderProfileHistory();
 
 /* ================= BALL ================= */
 const canvas=document.getElementById("gameCanvas"),ctx=canvas.getContext("2d");
