@@ -23,10 +23,16 @@ from aiogram.types import Message, LabeledPrice, PreCheckoutQuery
 # НАСТРОЙКИ
 # ============================================================
 
-BOT_TOKEN = os.getenv("BOT_TOKEN", "").strip()
+BOT_TOKEN = os.getenv(
+    "BOT_TOKEN",
+    ""
+).strip()
 
 PORT = int(
-    os.getenv("PORT", "8000")
+    os.getenv(
+        "PORT",
+        "3000"
+    )
 )
 
 DB_PATH = os.getenv(
@@ -39,13 +45,13 @@ WEBAPP_URL = os.getenv(
     "https://whitebear.bothost.tech"
 ).strip()
 
-WEBAPP_ORIGIN = os.getenv(
-    "WEBAPP_ORIGIN",
-    "*"
-).strip()
 
+# ============================================================
+# ПРОВЕРКА TOKEN
+# ============================================================
 
 if not BOT_TOKEN:
+
     raise RuntimeError(
         "BOT_TOKEN не задан в Secrets."
     )
@@ -68,7 +74,7 @@ dp = Dispatcher()
 
 app = FastAPI(
     title="White Bear Drop API",
-    version="1.0.0"
+    version="2.0.0"
 )
 
 app.add_middleware(
@@ -180,6 +186,39 @@ def ensure_user(
         time.time()
     )
 
+    username = ""
+    first_name = ""
+    last_name = ""
+
+    if telegram_user:
+
+        username = (
+            getattr(
+                telegram_user,
+                "username",
+                ""
+            )
+            or ""
+        )
+
+        first_name = (
+            getattr(
+                telegram_user,
+                "first_name",
+                ""
+            )
+            or ""
+        )
+
+        last_name = (
+            getattr(
+                telegram_user,
+                "last_name",
+                ""
+            )
+            or ""
+        )
+
     with closing(db()) as con:
 
         row = con.execute(
@@ -188,43 +227,12 @@ def ensure_user(
             FROM users
             WHERE user_id=?
             """,
-            (user_id,)
+            (
+                user_id,
+            )
         ).fetchone()
 
         if row is None:
-
-            username = ""
-            first_name = ""
-            last_name = ""
-
-            if telegram_user:
-
-                username = (
-                    getattr(
-                        telegram_user,
-                        "username",
-                        ""
-                    )
-                    or ""
-                )
-
-                first_name = (
-                    getattr(
-                        telegram_user,
-                        "first_name",
-                        ""
-                    )
-                    or ""
-                )
-
-                last_name = (
-                    getattr(
-                        telegram_user,
-                        "last_name",
-                        ""
-                    )
-                    or ""
-                )
 
             con.execute(
                 """
@@ -263,24 +271,9 @@ def ensure_user(
                 WHERE user_id=?
                 """,
                 (
-                    getattr(
-                        telegram_user,
-                        "username",
-                        ""
-                    )
-                    or "",
-                    getattr(
-                        telegram_user,
-                        "first_name",
-                        ""
-                    )
-                    or "",
-                    getattr(
-                        telegram_user,
-                        "last_name",
-                        ""
-                    )
-                    or "",
+                    username,
+                    first_name,
+                    last_name,
                     now,
                     user_id
                 )
@@ -305,10 +298,13 @@ def get_balance(
             FROM users
             WHERE user_id=?
             """,
-            (user_id,)
+            (
+                user_id,
+            )
         ).fetchone()
 
         if not row:
+
             return 0.0
 
         return float(
@@ -334,6 +330,7 @@ def balance_transaction(
     )
 
     if amount <= 0:
+
         raise ValueError(
             "Сумма должна быть больше 0"
         )
@@ -342,11 +339,23 @@ def balance_transaction(
         "add",
         "deduct"
     ):
+
         raise ValueError(
             "Неверный тип операции"
         )
 
+    now = int(
+        time.time()
+    )
+
     with closing(db()) as con:
+
+        # ----------------------------------------------------
+        # ВАЖНО:
+        # НЕ вызываем ensure_user() после BEGIN IMMEDIATE.
+        # Иначе создаётся второе соединение SQLite и возможен
+        # database locked.
+        # ----------------------------------------------------
 
         con.execute(
             "BEGIN IMMEDIATE"
@@ -358,7 +367,9 @@ def balance_transaction(
             FROM transactions
             WHERE operation_id=?
             """,
-            (operation_id,)
+            (
+                operation_id,
+            )
         ).fetchone()
 
         if existing:
@@ -369,21 +380,20 @@ def balance_transaction(
                 FROM users
                 WHERE user_id=?
                 """,
-                (user_id,)
+                (
+                    user_id,
+                )
             ).fetchone()
 
             con.commit()
 
             if row:
+
                 return float(
                     row["balance"]
                 )
 
             return 0.0
-
-        ensure_user(
-            user_id
-        )
 
         row = con.execute(
             """
@@ -391,20 +401,45 @@ def balance_transaction(
             FROM users
             WHERE user_id=?
             """,
-            (user_id,)
+            (
+                user_id,
+            )
         ).fetchone()
 
         if not row:
 
-            con.rollback()
-
-            raise ValueError(
-                "Пользователь не найден"
+            con.execute(
+                """
+                INSERT INTO users
+                (
+                    user_id,
+                    balance,
+                    username,
+                    first_name,
+                    last_name,
+                    created_at,
+                    updated_at
+                )
+                VALUES (?,0,'','','',?,?)
+                """,
+                (
+                    user_id,
+                    now,
+                    now
+                )
             )
 
-        balance = float(
-            row["balance"]
-        )
+            balance = 0.0
+
+        else:
+
+            balance = float(
+                row["balance"]
+            )
+
+        # ----------------------------------------------------
+        # DEDUCT
+        # ----------------------------------------------------
 
         if operation_type == "deduct":
 
@@ -421,12 +456,20 @@ def balance_transaction(
                 2
             )
 
+        # ----------------------------------------------------
+        # ADD
+        # ----------------------------------------------------
+
         else:
 
             new_balance = round(
                 balance + amount,
                 2
             )
+
+        # ----------------------------------------------------
+        # UPDATE BALANCE
+        # ----------------------------------------------------
 
         con.execute(
             """
@@ -438,10 +481,14 @@ def balance_transaction(
             """,
             (
                 new_balance,
-                int(time.time()),
+                now,
                 user_id
             )
         )
+
+        # ----------------------------------------------------
+        # TRANSACTION
+        # ----------------------------------------------------
 
         con.execute(
             """
@@ -462,7 +509,7 @@ def balance_transaction(
                 operation_type,
                 amount,
                 reason[:200],
-                int(time.time())
+                now
             )
         )
 
@@ -480,6 +527,7 @@ def verify_init_data(
 ):
 
     if not init_data:
+
         return None
 
     try:
@@ -497,6 +545,7 @@ def verify_init_data(
         )
 
         if not received_hash:
+
             return None
 
         auth_date = int(
@@ -507,13 +556,19 @@ def verify_init_data(
         )
 
         if not auth_date:
+
             return None
 
+        # ----------------------------------------------------
+        # INIT DATA ДЕЙСТВУЕТ 24 ЧАСА
+        # ----------------------------------------------------
+
         if (
-            int(time.time()) -
-            auth_date
+            int(time.time())
+            - auth_date
             > 86400
         ):
+
             return None
 
         data_check_string = "\n".join(
@@ -537,6 +592,7 @@ def verify_init_data(
             calculated_hash,
             received_hash
         ):
+
             return None
 
         user_data = data.get(
@@ -544,6 +600,7 @@ def verify_init_data(
         )
 
         if not user_data:
+
             return None
 
         return json.loads(
@@ -554,6 +611,10 @@ def verify_init_data(
 
         return None
 
+
+# ============================================================
+# RESOLVE USER
+# ============================================================
 
 def resolve_user(
     user_id,
@@ -572,7 +633,8 @@ def resolve_user(
 
         if (
             user_id is not None
-            and int(user_id) != verified_id
+            and int(user_id)
+            != verified_id
         ):
 
             raise HTTPException(
@@ -589,6 +651,13 @@ def resolve_user(
             verified
         )
 
+    # --------------------------------------------------------
+    # Для запросов из Telegram обязательно желательно иметь
+    # initData.
+    #
+    # Оставляем fallback user_id для совместимости.
+    # --------------------------------------------------------
+
     if (
         user_id is None
         or int(user_id) <= 0
@@ -596,15 +665,21 @@ def resolve_user(
 
         raise HTTPException(
             status_code=401,
-            detail="Открой приложение через Telegram"
+            detail=(
+                "Открой приложение через Telegram"
+            )
         )
 
+    uid = int(
+        user_id
+    )
+
     ensure_user(
-        int(user_id)
+        uid
     )
 
     return (
-        int(user_id),
+        uid,
         None
     )
 
@@ -717,7 +792,7 @@ async def health():
 
 
 # ============================================================
-# BALANCE GET
+# BALANCE
 # ============================================================
 
 @app.get(
@@ -755,18 +830,27 @@ async def api_add_balance(
     )
 
     operation_id = (
-        f"add:"
+        f"balance_add:"
         f"{uid}:"
         f"{secrets.token_hex(12)}"
     )
 
-    new_balance = balance_transaction(
-        uid,
-        operation_id,
-        "add",
-        req.amount,
-        req.reason or "balance:add"
-    )
+    try:
+
+        new_balance = balance_transaction(
+            uid,
+            operation_id,
+            "add",
+            req.amount,
+            req.reason or "balance:add"
+        )
+
+    except ValueError as e:
+
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
 
     return {
         "ok": True,
@@ -794,7 +878,7 @@ async def api_deduct_balance(
     )
 
     operation_id = (
-        f"deduct:"
+        f"balance_deduct:"
         f"{uid}:"
         f"{secrets.token_hex(12)}"
     )
@@ -844,18 +928,24 @@ async def api_game_transaction(
     if not req.operation_id:
 
         raise HTTPException(
-            400,
-            "operation_id обязателен"
+            status_code=400,
+            detail="operation_id обязателен"
         )
 
-    if req.type not in (
+    operation_type = (
+        req.type
+        .strip()
+        .lower()
+    )
+
+    if operation_type not in (
         "add",
         "deduct"
     ):
 
         raise HTTPException(
-            400,
-            "Неверный тип операции"
+            status_code=400,
+            detail="Неверный тип операции"
         )
 
     try:
@@ -863,7 +953,7 @@ async def api_game_transaction(
         new_balance = balance_transaction(
             uid,
             req.operation_id,
-            req.type,
+            operation_type,
             req.amount,
             req.game or "game"
         )
@@ -871,8 +961,8 @@ async def api_game_transaction(
     except ValueError as e:
 
         raise HTTPException(
-            400,
-            str(e)
+            status_code=400,
+            detail=str(e)
         )
 
     return {
@@ -888,8 +978,11 @@ async def api_game_transaction(
 CASES = {
 
     "free": {
+
         "price": 0,
+
         "items": [
+
             (
                 "⭐",
                 "3 Stars",
@@ -897,6 +990,7 @@ CASES = {
                 30,
                 ""
             ),
+
             (
                 "⭐",
                 "5 Stars",
@@ -904,6 +998,7 @@ CASES = {
                 25,
                 ""
             ),
+
             (
                 "⭐",
                 "10 Stars",
@@ -911,6 +1006,7 @@ CASES = {
                 20,
                 ""
             ),
+
             (
                 "🐻",
                 "Bear",
@@ -918,6 +1014,7 @@ CASES = {
                 15,
                 ""
             ),
+
             (
                 "🎁",
                 "Gift",
@@ -925,6 +1022,7 @@ CASES = {
                 8,
                 "uncommon"
             ),
+
             (
                 "💎",
                 "Diamond",
@@ -932,12 +1030,17 @@ CASES = {
                 2,
                 "rare"
             )
+
         ]
+
     },
 
     "pepe": {
+
         "price": 0,
+
         "items": [
+
             (
                 "⭐",
                 "1 ⭐",
@@ -945,6 +1048,7 @@ CASES = {
                 30,
                 ""
             ),
+
             (
                 "⭐",
                 "3 ⭐",
@@ -952,6 +1056,7 @@ CASES = {
                 25,
                 ""
             ),
+
             (
                 "⭐",
                 "5 ⭐",
@@ -959,6 +1064,7 @@ CASES = {
                 20,
                 ""
             ),
+
             (
                 "⭐",
                 "10 ⭐",
@@ -966,6 +1072,7 @@ CASES = {
                 15,
                 ""
             ),
+
             (
                 "🎁",
                 "25 ⭐",
@@ -973,6 +1080,7 @@ CASES = {
                 8,
                 "rare"
             ),
+
             (
                 "🐸",
                 "Plush Pepe",
@@ -980,12 +1088,17 @@ CASES = {
                 2,
                 "legendary"
             )
+
         ]
+
     },
 
     "case50": {
+
         "price": 50,
+
         "items": [
+
             (
                 "⭐",
                 "7 ⭐",
@@ -993,6 +1106,7 @@ CASES = {
                 25,
                 ""
             ),
+
             (
                 "⭐",
                 "15 ⭐",
@@ -1000,6 +1114,7 @@ CASES = {
                 20,
                 ""
             ),
+
             (
                 "🎁",
                 "25 ⭐",
@@ -1007,6 +1122,7 @@ CASES = {
                 20,
                 "uncommon"
             ),
+
             (
                 "💎",
                 "50 ⭐",
@@ -1014,6 +1130,7 @@ CASES = {
                 15,
                 "rare"
             ),
+
             (
                 "💎",
                 "100 ⭐",
@@ -1021,6 +1138,7 @@ CASES = {
                 10,
                 "rare"
             ),
+
             (
                 "🏆",
                 "250 ⭐",
@@ -1028,6 +1146,7 @@ CASES = {
                 5,
                 "legendary"
             ),
+
             (
                 "🐻",
                 "500 ⭐",
@@ -1035,6 +1154,7 @@ CASES = {
                 0.5,
                 "legendary"
             ),
+
             (
                 "🖊️",
                 "1000 ⭐",
@@ -1042,12 +1162,17 @@ CASES = {
                 0.5,
                 "legendary"
             )
+
         ]
+
     },
 
     "case250": {
+
         "price": 250,
+
         "items": [
+
             (
                 "⭐",
                 "10 ⭐",
@@ -1055,6 +1180,7 @@ CASES = {
                 10,
                 ""
             ),
+
             (
                 "⭐",
                 "25 ⭐",
@@ -1062,6 +1188,7 @@ CASES = {
                 15,
                 ""
             ),
+
             (
                 "⭐",
                 "50 ⭐",
@@ -1069,6 +1196,7 @@ CASES = {
                 15,
                 "uncommon"
             ),
+
             (
                 "💎",
                 "100 ⭐",
@@ -1076,6 +1204,7 @@ CASES = {
                 15,
                 "rare"
             ),
+
             (
                 "💎",
                 "200 ⭐",
@@ -1083,6 +1212,7 @@ CASES = {
                 12,
                 "rare"
             ),
+
             (
                 "💎",
                 "300 ⭐",
@@ -1090,6 +1220,7 @@ CASES = {
                 10,
                 "rare"
             ),
+
             (
                 "💎",
                 "450 ⭐",
@@ -1097,6 +1228,7 @@ CASES = {
                 7,
                 "legendary"
             ),
+
             (
                 "🐕",
                 "Snoop Dogg",
@@ -1104,6 +1236,7 @@ CASES = {
                 5,
                 "legendary"
             ),
+
             (
                 "🐸",
                 "Plush Pepe",
@@ -1111,32 +1244,40 @@ CASES = {
                 1,
                 "legendary"
             )
+
         ]
+
     }
+
 }
 
+
+# ============================================================
+# WEIGHTED REWARD
+# ============================================================
 
 def weighted_reward(
     items
 ):
 
     total = sum(
-        float(x[3])
-        for x in items
+        float(item[3])
+        for item in items
     )
 
-    value = (
+    random_value = (
         secrets.SystemRandom().random()
         * total
     )
 
     for item in items:
 
-        value -= float(
+        random_value -= float(
             item[3]
         )
 
-        if value <= 0:
+        if random_value <= 0:
+
             return item
 
     return items[-1]
@@ -1168,8 +1309,8 @@ async def api_open_case(
     if not case:
 
         raise HTTPException(
-            404,
-            "Кейс не найден"
+            status_code=404,
+            detail="Кейс не найден"
         )
 
     server_price = float(
@@ -1182,12 +1323,12 @@ async def api_open_case(
     ) > 0.01:
 
         raise HTTPException(
-            400,
-            "Неверная цена кейса"
+            status_code=400,
+            detail="Неверная цена кейса"
         )
 
     # --------------------------------------------------------
-    # FREE CASE
+    # FREE CASE COOLDOWN
     # --------------------------------------------------------
 
     if req.case_id == "free":
@@ -1204,34 +1345,38 @@ async def api_open_case(
                 ORDER BY id DESC
                 LIMIT 1
                 """,
-                (uid,)
+                (
+                    uid,
+                )
             ).fetchone()
 
         if row:
 
             elapsed = (
                 int(time.time())
-                - int(
-                    row["created_at"]
-                )
+                - int(row["created_at"])
             )
 
             if elapsed < 86400:
 
                 remaining = (
-                    86400 -
-                    elapsed
+                    86400
+                    - elapsed
                 )
 
-                hours = remaining // 3600
+                hours = (
+                    remaining
+                    // 3600
+                )
 
                 minutes = (
-                    remaining % 3600
+                    remaining
+                    % 3600
                 ) // 60
 
                 raise HTTPException(
-                    400,
-                    (
+                    status_code=400,
+                    detail=(
                         "FREE кейс уже открыт. "
                         f"Следующее открытие через "
                         f"{hours}ч {minutes}м."
@@ -1239,20 +1384,22 @@ async def api_open_case(
                 )
 
     # --------------------------------------------------------
-    # СНАЧАЛА СПИСЫВАЕМ ПЛАТУ
+    # СНИМАЕМ СТОИМОСТЬ
     # --------------------------------------------------------
 
     if server_price > 0:
+
+        bet_operation = (
+            f"case_bet:"
+            f"{uid}:"
+            f"{secrets.token_hex(12)}"
+        )
 
         try:
 
             balance_transaction(
                 uid,
-                (
-                    f"case_bet:"
-                    f"{uid}:"
-                    f"{secrets.token_hex(12)}"
-                ),
+                bet_operation,
                 "deduct",
                 server_price,
                 f"case:{req.case_id}"
@@ -1261,25 +1408,29 @@ async def api_open_case(
         except ValueError as e:
 
             raise HTTPException(
-                400,
-                str(e)
+                status_code=400,
+                detail=str(e)
             )
 
     # --------------------------------------------------------
     # ВЫБИРАЕМ ПРИЗ
     # --------------------------------------------------------
 
-    emoji, name, reward_value, chance, rarity = (
-        weighted_reward(
-            case["items"]
-        )
+    (
+        emoji,
+        name,
+        reward_value,
+        chance,
+        rarity
+    ) = weighted_reward(
+        case["items"]
     )
 
     # --------------------------------------------------------
     # НАЧИСЛЯЕМ ПРИЗ
     # --------------------------------------------------------
 
-    operation_id = (
+    reward_operation = (
         f"case_reward:"
         f"{uid}:"
         f"{secrets.token_hex(12)}"
@@ -1287,14 +1438,14 @@ async def api_open_case(
 
     new_balance = balance_transaction(
         uid,
-        operation_id,
+        reward_operation,
         "add",
         reward_value,
         f"case_reward:{req.case_id}"
     )
 
     # --------------------------------------------------------
-    # ДОБАВЛЯЕМ В ИНВЕНТАРЬ
+    # ИНВЕНТАРЬ
     # --------------------------------------------------------
 
     with closing(db()) as con:
@@ -1315,7 +1466,7 @@ async def api_open_case(
             """,
             (
                 uid,
-                operation_id,
+                reward_operation,
                 name,
                 emoji,
                 reward_value,
@@ -1328,13 +1479,21 @@ async def api_open_case(
 
     return {
         "ok": True,
+
         "reward": {
+
             "emoji": emoji,
+
             "name": name,
+
             "value": reward_value,
+
             "rarity": rarity,
+
             "chance": chance
+
         },
+
         "balance": new_balance
     }
 
@@ -1377,8 +1536,8 @@ async def api_ball(
     except ValueError as e:
 
         raise HTTPException(
-            400,
-            str(e)
+            status_code=400,
+            detail=str(e)
         )
 
     random_value = (
@@ -1424,16 +1583,23 @@ async def api_ball(
         )
 
     return {
+
         "ok": True,
+
         "result": (
             f"Ставка: {req.bet} ⭐\n"
             f"Множитель: x{multiplier}\n"
             f"Выигрыш: {prize:.2f} ⭐"
         ),
+
         "bet": req.bet,
+
         "multiplier": multiplier,
+
         "prize": prize,
+
         "balance": new_balance
+
     }
 
 
@@ -1475,20 +1641,30 @@ async def api_scratch(
     except ValueError as e:
 
         raise HTTPException(
-            400,
-            str(e)
+            status_code=400,
+            detail=str(e)
         )
 
     prizes = [
+
         0,
+
         0,
+
         0,
+
         3,
+
         5,
+
         10,
+
         15,
+
         20,
+
         25
+
     ]
 
     prize = secrets.choice(
@@ -1516,13 +1692,18 @@ async def api_scratch(
         )
 
     return {
+
         "ok": True,
+
         "result": (
             f"Скретч-карта: {cost} ⭐\n"
             f"Выигрыш: {prize} ⭐"
         ),
+
         "prize": prize,
+
         "balance": new_balance
+
     }
 
 
@@ -1548,8 +1729,8 @@ async def api_upgrade(
     if not req.item_id.strip():
 
         raise HTTPException(
-            400,
-            "Не указан предмет"
+            status_code=400,
+            detail="Не указан предмет"
         )
 
     try:
@@ -1569,8 +1750,8 @@ async def api_upgrade(
     except ValueError as e:
 
         raise HTTPException(
-            400,
-            str(e)
+            status_code=400,
+            detail=str(e)
         )
 
     success = (
@@ -1613,11 +1794,17 @@ async def api_upgrade(
         )
 
     return {
+
         "ok": True,
+
         "result": result,
+
         "success": success,
+
         "prize": prize,
+
         "balance": new_balance
+
     }
 
 
@@ -1626,8 +1813,11 @@ async def api_upgrade(
 # ============================================================
 
 PROMOS = {
+
     "200": 200,
+
     "met200": 200
+
 }
 
 
@@ -1655,8 +1845,8 @@ async def api_promo(
     if code not in PROMOS:
 
         raise HTTPException(
-            400,
-            "Неверный промокод"
+            status_code=400,
+            detail="Неверный промокод"
         )
 
     amount = PROMOS[
@@ -1664,7 +1854,7 @@ async def api_promo(
     ]
 
     # --------------------------------------------------------
-    # Проверяем, использовался ли код
+    # АТОМАРНО ПРОВЕРЯЕМ ПРОМОКОД
     # --------------------------------------------------------
 
     with closing(db()) as con:
@@ -1692,47 +1882,71 @@ async def api_promo(
             con.rollback()
 
             raise HTTPException(
-                400,
-                "Этот промокод уже использован"
+                status_code=400,
+                detail=(
+                    "Этот промокод уже использован"
+                )
             )
 
-        con.execute(
-            """
-            INSERT INTO promo_uses
-            (
-                user_id,
-                code,
-                amount,
-                created_at
-            )
-            VALUES (?,?,?,?)
-            """,
-            (
-                uid,
-                code,
-                amount,
-                int(time.time())
-            )
-        )
+        try:
 
-        con.commit()
+            con.execute(
+                """
+                INSERT INTO promo_uses
+                (
+                    user_id,
+                    code,
+                    amount,
+                    created_at
+                )
+                VALUES (?,?,?,?)
+                """,
+                (
+                    uid,
+                    code,
+                    amount,
+                    int(time.time())
+                )
+            )
+
+            con.commit()
+
+        except sqlite3.IntegrityError:
+
+            con.rollback()
+
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    "Этот промокод уже использован"
+                )
+            )
+
+    # --------------------------------------------------------
+    # НАЧИСЛЯЕМ БАЛАНС
+    # --------------------------------------------------------
+
+    operation_id = (
+        f"promo:"
+        f"{uid}:"
+        f"{code}:"
+        f"{secrets.token_hex(12)}"
+    )
 
     try:
 
         new_balance = balance_transaction(
             uid,
-            (
-                f"promo:"
-                f"{uid}:"
-                f"{code}:"
-                f"{secrets.token_hex(8)}"
-            ),
+            operation_id,
             "add",
             amount,
             f"promo:{code}"
         )
 
     except Exception:
+
+        # Если начисление не получилось,
+        # разрешаем использовать промокод повторно.
 
         with closing(db()) as con:
 
@@ -1754,12 +1968,16 @@ async def api_promo(
         raise
 
     return {
+
         "ok": True,
+
         "message": (
             f"Промокод {code} активирован! "
             f"+{amount} ⭐"
         ),
+
         "balance": new_balance
+
     }
 
 
@@ -1800,16 +2018,19 @@ async def api_inventory(
         ).fetchall()
 
     return {
+
         "ok": True,
+
         "items": [
             dict(row)
             for row in rows
         ]
+
     }
 
 
 # ============================================================
-# SELL ITEM
+# SELL INVENTORY ITEM
 # ============================================================
 
 @app.post(
@@ -1836,8 +2057,8 @@ async def api_sell_item(
     except Exception:
 
         raise HTTPException(
-            400,
-            "Неверный ID предмета"
+            status_code=400,
+            detail="Неверный ID предмета"
         )
 
     with closing(db()) as con:
@@ -1865,17 +2086,20 @@ async def api_sell_item(
             con.rollback()
 
             raise HTTPException(
-                404,
-                "Предмет не найден"
+                status_code=404,
+                detail="Предмет не найден"
             )
 
         con.execute(
             """
             DELETE FROM inventory
-            WHERE id=?
+            WHERE
+                id=?
+                AND user_id=?
             """,
             (
                 item_id,
+                uid
             )
         )
 
@@ -1885,26 +2109,70 @@ async def api_sell_item(
         item["value"]
     )
 
-    new_balance = balance_transaction(
-        uid,
-        (
-            f"sell:"
-            f"{uid}:"
-            f"{item_id}:"
-            f"{secrets.token_hex(8)}"
-        ),
-        "add",
-        value,
-        f"inventory:sell:{item_id}"
+    operation_id = (
+        f"sell:"
+        f"{uid}:"
+        f"{item_id}:"
+        f"{secrets.token_hex(12)}"
     )
 
+    try:
+
+        new_balance = balance_transaction(
+            uid,
+            operation_id,
+            "add",
+            value,
+            f"inventory:sell:{item_id}"
+        )
+
+    except Exception:
+
+        # Возвращаем предмет, если начисление
+        # почему-то не произошло.
+
+        with closing(db()) as con:
+
+            con.execute(
+                """
+                INSERT INTO inventory
+                (
+                    user_id,
+                    item_key,
+                    name,
+                    emoji,
+                    value,
+                    rarity,
+                    created_at
+                )
+                VALUES (?,?,?,?,?,?,?)
+                """,
+                (
+                    uid,
+                    item["item_key"],
+                    item["name"],
+                    item["emoji"],
+                    item["value"],
+                    item["rarity"],
+                    item["created_at"]
+                )
+            )
+
+            con.commit()
+
+        raise
+
     return {
+
         "ok": True,
+
         "message": (
             f"Предмет продан за "
             f"{value:.2f} ⭐"
         ),
+
         "balance": new_balance
+
     }
 
 
@@ -1959,39 +2227,72 @@ async def api_create_payment(
 
         con.commit()
 
-    invoice_link = (
-        await bot.create_invoice_link(
-            title=(
-                f"Пополнение "
-                f"{req.amount} ⭐"
-            ),
-            description=(
-                "Пополнение баланса "
-                "White Bear Drop"
-            ),
-            payload=payload,
-            currency="XTR",
-            prices=[
-                LabeledPrice(
-                    label=(
-                        f"{req.amount} Stars"
-                    ),
-                    amount=req.amount
-                )
-            ]
+    try:
+
+        invoice_link = (
+            await bot.create_invoice_link(
+
+                title=(
+                    f"Пополнение "
+                    f"{req.amount} ⭐"
+                ),
+
+                description=(
+                    "Пополнение баланса "
+                    "White Bear Drop"
+                ),
+
+                payload=payload,
+
+                currency="XTR",
+
+                prices=[
+
+                    LabeledPrice(
+                        label=(
+                            f"{req.amount} Stars"
+                        ),
+                        amount=req.amount
+                    )
+
+                ]
+
+            )
         )
-    )
+
+    except Exception:
+
+        with closing(db()) as con:
+
+            con.execute(
+                """
+                DELETE FROM payments
+                WHERE payload=?
+                """,
+                (
+                    payload,
+                )
+            )
+
+            con.commit()
+
+        raise
 
     return {
+
         "ok": True,
+
         "success": True,
+
         "invoice_link": invoice_link,
+
         "amount": req.amount
+
     }
 
 
 # ============================================================
-# TELEGRAM /START
+# TELEGRAM START
 # ============================================================
 
 @dp.message(
@@ -2002,6 +2303,7 @@ async def start_command(
 ):
 
     if not message.from_user:
+
         return
 
     ensure_user(
@@ -2014,10 +2316,15 @@ async def start_command(
     )
 
     await message.answer(
+
         "🐻‍❄️ <b>White Bear Drop</b>\n\n"
-        f"💰 Баланс: <b>{balance:.2f} ⭐</b>\n\n"
+
+        f"💰 Баланс: "
+        f"<b>{balance:.2f} ⭐</b>\n\n"
+
         "🎮 Открой мини-приложение "
         "через кнопку меню бота."
+
     )
 
 
@@ -2069,9 +2376,11 @@ async def successful_payment(
     )
 
     if not payment:
+
         return
 
     if not message.from_user:
+
         return
 
     if payment.currency != "XTR":
@@ -2095,7 +2404,7 @@ async def successful_payment(
     )
 
     # --------------------------------------------------------
-    # Находим платеж
+    # ПОЛУЧАЕМ ПЛАТЁЖ
     # --------------------------------------------------------
 
     with closing(db()) as con:
@@ -2175,12 +2484,17 @@ async def successful_payment(
             """,
             (
                 charge_id,
+
                 getattr(
                     payment,
                     "provider_payment_charge_id",
                     ""
                 ) or "",
-                int(time.time()),
+
+                int(
+                    time.time()
+                ),
+
                 payload
             )
         )
@@ -2188,7 +2502,7 @@ async def successful_payment(
         con.commit()
 
     # --------------------------------------------------------
-    # Начисление
+    # НАЧИСЛЕНИЕ
     # --------------------------------------------------------
 
     try:
@@ -2217,10 +2531,56 @@ async def successful_payment(
         return
 
     await message.answer(
+
         "✅ <b>Оплата получена!</b>\n\n"
-        f"⭐ Зачислено: <b>+{amount}</b>\n"
-        f"💰 Баланс: <b>{new_balance:.2f} ⭐</b>"
+
+        f"⭐ Зачислено: "
+        f"<b>+{amount}</b>\n"
+
+        f"💰 Баланс: "
+        f"<b>{new_balance:.2f} ⭐</b>"
+
     )
+
+
+# ============================================================
+# API INFO
+# ============================================================
+
+@app.get(
+    "/api/status"
+)
+async def api_status():
+
+    return {
+
+        "ok": True,
+
+        "service": "White Bear Drop",
+
+        "api": "online",
+
+        "games": [
+
+            "cases",
+            "ball",
+            "scratch",
+            "upgrade"
+
+        ],
+
+        "inventory": True,
+
+        "promocodes": [
+
+            "200",
+            "met200"
+
+        ],
+
+        "payments": "telegram_stars"
+
+    }
 
 
 # ============================================================
@@ -2230,10 +2590,15 @@ async def successful_payment(
 async def run_api():
 
     config = uvicorn.Config(
+
         app,
+
         host="0.0.0.0",
+
         port=PORT,
+
         log_level="info"
+
     )
 
     server = uvicorn.Server(
@@ -2241,6 +2606,93 @@ async def run_api():
     )
 
     await server.serve()
+
+
+# ============================================================
+# TELEGRAM POLLING
+# ============================================================
+
+async def run_bot():
+
+    # --------------------------------------------------------
+    # САМОЕ ВАЖНОЕ ИСПРАВЛЕНИЕ
+    #
+    # Если ранее у бота был установлен webhook,
+    # start_polling() будет выдавать:
+    #
+    # TelegramConflictError:
+    # can't use getUpdates method while webhook is active
+    #
+    # Поэтому перед polling удаляем webhook.
+    # --------------------------------------------------------
+
+    print(
+        "📡 Проверяем Telegram webhook..."
+    )
+
+    try:
+
+        webhook_info = (
+            await bot.get_webhook_info()
+        )
+
+        if webhook_info.url:
+
+            print(
+                "⚠️ Найден активный webhook:"
+            )
+
+            print(
+                webhook_info.url
+            )
+
+            print(
+                "🧹 Удаляем webhook..."
+            )
+
+            await bot.delete_webhook(
+                drop_pending_updates=False
+            )
+
+            print(
+                "✅ Старый webhook удалён."
+            )
+
+        else:
+
+            print(
+                "✅ Активного webhook нет."
+            )
+
+    except Exception as e:
+
+        print(
+            "❌ Ошибка при проверке webhook:"
+        )
+
+        print(
+            repr(e)
+        )
+
+        raise
+
+    # --------------------------------------------------------
+    # Запускаем polling
+    # --------------------------------------------------------
+
+    print(
+        "🤖 Запускаем Telegram polling..."
+    )
+
+    await dp.start_polling(
+
+        bot,
+
+        allowed_updates=(
+            dp.resolve_used_update_types()
+        )
+
+    )
 
 
 # ============================================================
@@ -2260,6 +2712,10 @@ async def main():
     )
 
     print(
+        "=========================================="
+    )
+
+    print(
         f"🌐 PORT: {PORT}"
     )
 
@@ -2272,14 +2728,56 @@ async def main():
     )
 
     print(
+        "🎮 CASES: ON"
+    )
+
+    print(
+        "🎯 BALL: ON"
+    )
+
+    print(
+        "🎫 SCRATCH: ON"
+    )
+
+    print(
+        "⬆️ UPGRADE: ON"
+    )
+
+    print(
+        "🎒 INVENTORY: ON"
+    )
+
+    print(
+        "🎟 PROMO 200: ON"
+    )
+
+    print(
+        "🎟 PROMO met200: ON"
+    )
+
+    print(
+        "⭐ STARS PAYMENT: ON"
+    )
+
+    print(
         "=========================================="
     )
 
+    # --------------------------------------------------------
+    # Одновременно:
+    #
+    # 1. FastAPI
+    # 2. Telegram polling
+    #
+    # Но сначала run_bot() удалит старый webhook.
+    # --------------------------------------------------------
+
     await asyncio.gather(
+
         run_api(),
-        dp.start_polling(
-            bot
-        )
+
+        run_bot()
+
     )
 
 
@@ -2298,5 +2796,15 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
 
         print(
-            "Бот остановлен."
+            "🛑 White Bear остановлен."
+        )
+
+    except Exception as e:
+
+        print(
+            "❌ КРИТИЧЕСКАЯ ОШИБКА:"
+        )
+
+        print(
+            repr(e)
         )
