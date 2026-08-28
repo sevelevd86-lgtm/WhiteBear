@@ -1,5 +1,2 @@
-aiogram>=3.0.0
-aiohttp>=3.8.0
-Flask
-python-telegram-bot==20.0
-requests
+aiogram==3.24.0
+aiohttp==3.14.3
