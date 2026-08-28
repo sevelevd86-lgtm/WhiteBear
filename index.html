@@ -26,10 +26,6 @@ body {
   overflow-x:hidden;
 }
 
-/* =====================================================
-   ОСНОВНОЙ СТИЛЬ WHITE BEAR DROP
-===================================================== */
-
 .hidden {
   display:none!important;
 }
@@ -210,9 +206,7 @@ header {
   transform:translate(-50%,-50%);
 }
 
-/* =====================================================
-   CARDS
-===================================================== */
+/* CARDS */
 
 .card {
   width:100%;
@@ -268,9 +262,7 @@ header {
   transform:scale(.98);
 }
 
-/* =====================================================
-   PROFILE
-===================================================== */
+/* PROFILE */
 
 .profile-row {
   display:flex;
@@ -335,9 +327,7 @@ header {
   color:#54df87;
 }
 
-/* =====================================================
-   INVENTORY
-===================================================== */
+/* INVENTORY */
 
 .empty-inventory {
   text-align:center;
@@ -416,9 +406,7 @@ header {
   margin-top:8px;
 }
 
-/* =====================================================
-   BOTTOM NAV
-===================================================== */
+/* BOTTOM NAV */
 
 .bottom-nav {
   position:fixed;
@@ -458,9 +446,7 @@ header {
   margin-bottom:2px;
 }
 
-/* =====================================================
-   ШАРИК
-===================================================== */
+/* ШАРИК */
 
 #gameScreen {
   position:fixed;
@@ -632,257 +618,430 @@ header {
   text-align:center;
   background:#0c1825;
   border:1px solid rgba(255,255,255,.1);
-  box-shadow:0 30px 90px rgba(0,0,0,.8);
+  box-shadow:0 30px 80px rgba(0,0,0,.8);
 }
 
 .result-title {
-  font-size:35px;
-  font-weight:1000;
-}
-
-.result-title.win {
-  color:#53ef9b;
-}
-
-.result-title.lose {
-  color:#ef4752;
-}
-
-.result-info {
-  margin-top:10px;
-  color:#87a0b7;
-  line-height:1.6;
-}
-
-.result-money {
-  margin-top:13px;
   font-size:25px;
   font-weight:1000;
 }
 
-.result-money.win {
-  color:#53ef9b;
+.result-money {
+  color:#ffd84d;
+  font-size:24px;
+  font-weight:1000;
+  margin-top:10px;
 }
 
-.result-money.lose {
-  color:#ef4752;
-}
-
-.result-close {
+.result button {
   width:100%;
-  margin-top:20px;
+  margin-top:15px;
   padding:13px;
   border:0;
   border-radius:12px;
-  background:#1b3857;
+  background:#176fc3;
   color:#fff;
   font-weight:1000;
 }
 
-/* =====================================================
-   SCRATCH
-===================================================== */
+/* CASES */
 
-#ticketGameContainer {
+#casesGameContainer {
   position:fixed;
   inset:0;
-  z-index:210;
-  overflow:auto;
-  background:
-    radial-gradient(circle at 50% -10%,rgba(40,130,255,.2),transparent 40%),
-    linear-gradient(160deg,#07101b,#0b1725,#050a10);
-}
-
-#closeTicketsBtn,
-#closeUpgradeBtn {
-  position:fixed;
   z-index:300;
-  top:12px;
-  left:12px;
-  width:40px;
-  height:40px;
-  border:0;
-  border-radius:12px;
-  background:rgba(10,20,30,.8);
-  color:#fff;
-  font-size:19px;
-  font-weight:1000;
+  background:
+    radial-gradient(circle at 50% 0%,#173a61 0%,#080e18 42%,#05080e 100%);
+  overflow:auto;
 }
 
-.app-inner {
-  max-width:650px;
-  margin:auto;
-  padding:18px 14px 35px;
+.cases-screen {
+  display:none;
+  min-height:100%;
+  padding:18px 14px 40px;
 }
 
-.header-ticket {
+.cases-screen.active {
+  display:block;
+}
+
+.cases-header {
   display:flex;
-  justify-content:space-between;
   align-items:center;
-  height:50px;
+  justify-content:space-between;
+  max-width:700px;
+  margin:auto;
 }
 
-.logo-ticket {
+.cases-title {
+  font-size:25px;
   font-weight:1000;
-  font-size:20px;
 }
 
-.balance-ticket {
+.cases-balance {
+  padding:10px 13px;
+  border-radius:13px;
+  background:#101d2c;
   color:#ffd84d;
   font-weight:1000;
 }
 
-.screen {
-  display:none;
+.case-back {
+  border:0;
+  background:#142537;
+  color:#fff;
+  border-radius:11px;
+  padding:10px 13px;
+  font-weight:900;
 }
 
-.screen.active {
-  display:block;
+.case-main {
+  max-width:700px;
+  margin:20px auto;
 }
 
-.title {
-  margin-top:15px;
-  font-size:28px;
+.case-title {
+  text-align:center;
+  font-size:27px;
   font-weight:1000;
-  text-align:center;
 }
 
-.subtitle {
+.case-subtitle {
   text-align:center;
-  color:#7190ab;
+  color:#6f8ca6;
   margin-top:7px;
   font-size:13px;
 }
 
-.tickets {
-  margin-top:18px;
-  display:grid;
-  gap:10px;
+.roulette-section {
+  margin-top:20px;
 }
 
-.ticket {
-  padding:17px;
+.pointer-case {
+  position:relative;
+  z-index:5;
+  width:0;
+  height:0;
+  margin:0 auto -1px;
+  border-left:10px solid transparent;
+  border-right:10px solid transparent;
+  border-top:18px solid #ffd84d;
+  filter:drop-shadow(0 3px 7px rgba(0,0,0,.6));
+}
+
+.roulette-window {
+  overflow:hidden;
   border-radius:17px;
-  background:#102033;
-  border:1px solid rgba(100,170,230,.13);
+  border:1px solid rgba(120,180,240,.13);
+  background:#08111d;
+  padding:12px;
+  box-shadow:
+    inset 0 0 30px rgba(0,0,0,.5),
+    0 15px 40px rgba(0,0,0,.3);
 }
 
-.ticket.selected {
-  border-color:#4aa7ff;
-  box-shadow:0 0 20px rgba(50,140,255,.16);
-}
-
-.ticket-header {
+.roulette-track {
   display:flex;
-  justify-content:space-between;
+  gap:10px;
+  width:max-content;
+  transform:translateX(0);
 }
 
-.ticket-name {
-  font-weight:1000;
+.roulette-item {
+  flex:0 0 115px;
+  height:105px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  border-radius:13px;
+  background:linear-gradient(145deg,#16283c,#0b1624);
+  border:1px solid rgba(100,160,220,.12);
 }
 
-.ticket-price {
-  color:#ffd84d;
-  font-weight:1000;
+.roulette-emoji {
+  font-size:35px;
 }
 
-.ticket-price.free {
-  color:#53eaa0;
+.roulette-name {
+  max-width:100px;
+  margin-top:5px;
+  text-align:center;
+  font-size:11px;
+  color:#b8d1e8;
+  font-weight:800;
 }
 
-.ticket-description {
-  margin-top:8px;
-  color:#7593ae;
-  font-size:12px;
-  line-height:1.45;
-}
-
-.chance-panel {
-  margin-top:15px;
-  padding:15px;
-  border-radius:16px;
-  background:#0d1b2b;
-}
-
-.start-ticket-button,
-.back-button {
+.open-button {
   width:100%;
+  margin-top:17px;
+  padding:15px;
+  border:0;
+  border-radius:14px;
+  background:linear-gradient(135deg,#2479d6,#14549f);
+  color:#fff;
+  font-size:15px;
+  font-weight:1000;
+  box-shadow:0 10px 30px rgba(20,100,220,.2);
+}
+
+.open-button:disabled {
+  opacity:.55;
+}
+
+.free-open {
+  background:linear-gradient(135deg,#28a96d,#147048);
+}
+
+.items-title {
+  margin-top:25px;
+  margin-bottom:10px;
+  font-size:13px;
+  color:#7594ad;
+  font-weight:900;
+  letter-spacing:1px;
+}
+
+.items-grid {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+
+.item-card {
+  min-height:105px;
+  padding:10px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  border-radius:14px;
+  background:#0c1928;
+  border:1px solid rgba(100,160,220,.1);
+}
+
+.item-emoji {
+  font-size:31px;
+}
+
+.item-name {
+  margin-top:5px;
+  color:#c5dcf0;
+  font-size:11px;
+  font-weight:800;
+}
+
+.item-price {
+  margin-top:4px;
+  color:#ffd84d;
+  font-size:11px;
+  font-weight:900;
+}
+
+.modal-case {
+  position:fixed;
+  inset:0;
+  z-index:500;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.75);
+  backdrop-filter:blur(7px);
+}
+
+.modal-case.show {
+  display:flex;
+}
+
+.modal-box-case {
+  width:min(340px,calc(100% - 30px));
+  padding:25px;
+  border-radius:22px;
+  text-align:center;
+  background:linear-gradient(145deg,#122235,#08121f);
+  border:1px solid rgba(120,180,240,.15);
+  box-shadow:0 30px 90px rgba(0,0,0,.8);
+}
+
+.result-emoji-case {
+  font-size:70px;
+}
+
+.result-label-case {
+  margin-top:5px;
+  color:#7594ad;
+  font-size:12px;
+  font-weight:900;
+}
+
+.result-name-case {
+  margin-top:8px;
+  font-size:21px;
+  font-weight:1000;
+}
+
+.result-value-case {
+  margin-top:8px;
+  color:#ffd84d;
+  font-size:22px;
+  font-weight:1000;
+}
+
+.close-result-case {
+  width:100%;
+  margin-top:18px;
   padding:13px;
   border:0;
   border-radius:12px;
+  background:#176fc3;
+  color:#fff;
   font-weight:1000;
 }
 
-.start-ticket-button {
-  background:#1977d3;
+/* TICKETS */
+
+#ticketGameContainer {
+  position:fixed;
+  inset:0;
+  z-index:350;
+  overflow:auto;
+  background:
+    radial-gradient(circle at 50% 0%,#173c63,#070d15 50%);
   color:#fff;
 }
 
-.back-button {
-  margin-top:12px;
-  background:#192a3c;
-  color:#8ca9c3;
+.ticket-page {
+  min-height:100%;
+  padding:20px 14px 40px;
 }
 
-.chance-title {
-  margin-top:17px;
+.ticket-header {
+  max-width:650px;
+  margin:auto;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.ticket-title {
+  font-size:26px;
   font-weight:1000;
 }
 
-.chance-subtitle {
-  margin-top:5px;
-  color:#68859e;
-  font-size:12px;
+.ticket-balance {
+  padding:10px 13px;
+  border-radius:13px;
+  background:#101d2c;
+  color:#ffd84d;
+  font-weight:1000;
 }
 
-.chance-row {
-  padding:9px 0;
-  color:#8da6bc;
+.ticket-select,
+.ticket-game {
+  max-width:650px;
+  margin:25px auto 0;
+}
+
+.ticket-select.active,
+.ticket-game.active {
+  display:block;
+}
+
+.ticket-select:not(.active),
+.ticket-game:not(.active) {
+  display:none;
+}
+
+.ticket-card {
+  margin-top:12px;
+  padding:18px;
+  border-radius:18px;
+  background:#0e1b29;
+  border:1px solid rgba(120,180,240,.12);
+}
+
+.ticket-card.selected {
+  border-color:#3b9eff;
+  box-shadow:0 0 25px rgba(50,140,255,.15);
+}
+
+.ticket-card-title {
+  font-size:19px;
+  font-weight:1000;
+}
+
+.ticket-card-text {
+  margin-top:6px;
+  color:#6f8ba5;
   font-size:13px;
 }
 
-.game-header-ticket {
-  margin-top:20px;
-  display:flex;
-  justify-content:space-between;
+.ticket-select-button {
+  width:100%;
+  margin-top:13px;
+  padding:13px;
+  border:0;
+  border-radius:12px;
+  background:#176fc3;
+  color:#fff;
   font-weight:1000;
 }
 
-.game-cost-ticket {
-  color:#ffd84d;
+.ticket-chance {
+  display:none;
+  margin-top:13px;
+  padding:12px;
+  border-radius:12px;
+  background:#09131f;
 }
 
-.free-opens-ticket {
-  margin-top:9px;
-  color:#6c91af;
-  font-size:12px;
+.chance-row {
+  padding:5px 0;
+  color:#8ba5bc;
+  font-size:13px;
+}
+
+.ticket-game-title {
   text-align:center;
+  font-size:22px;
+  font-weight:1000;
 }
 
-.card-ticket {
+.ticket-game-cost {
+  text-align:center;
+  margin-top:5px;
+  color:#ffd84d;
+  font-weight:1000;
+}
+
+.ticket-instruction {
+  text-align:center;
+  margin-top:7px;
+  color:#7592aa;
+  font-size:12px;
+}
+
+.ticket-board {
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:10px;
+  gap:9px;
   margin-top:20px;
-  padding:13px;
-  border-radius:19px;
-  background:#0b1521;
-  border:1px solid rgba(100,170,230,.1);
 }
 
 .cell-ticket {
   position:relative;
-  aspect-ratio:1;
-  border-radius:14px;
+  height:105px;
+  border-radius:16px;
   overflow:hidden;
-  background:#14263a;
-  border:1px solid rgba(100,170,230,.13);
   cursor:pointer;
+  background:linear-gradient(145deg,#243c55,#101d2b);
+  border:1px solid rgba(120,180,240,.12);
 }
 
 .symbol-ticket {
-  position:absolute;
-  inset:0;
+  width:100%;
+  height:100%;
   display:flex;
   justify-content:center;
   align-items:center;
@@ -893,50 +1052,68 @@ header {
   position:absolute;
   inset:0;
   background:
-    linear-gradient(135deg,#7f93a7,#4c6074);
+    repeating-linear-gradient(
+      135deg,
+      #8a96a3 0px,
+      #8a96a3 5px,
+      #626c78 5px,
+      #626c78 10px
+    );
   transition:.35s;
 }
 
 .cell-ticket.opened .scratch-ticket {
-  opacity:0;
-  transform:scale(1.3);
+  transform:translateY(-100%);
 }
 
-.game-bottom-ticket {
-  margin-top:15px;
-}
-
-.game-button-ticket {
+.ticket-start {
   width:100%;
-  padding:13px;
+  margin-top:17px;
+  padding:14px;
   border:0;
-  border-radius:12px;
-  background:#182c42;
-  color:#91aac1;
+  border-radius:13px;
+  background:#1a76cf;
+  color:#fff;
   font-weight:1000;
 }
 
-.modal-ticket {
+.ticket-start:disabled {
+  opacity:.5;
+}
+
+.ticket-back {
+  width:100%;
+  margin-top:9px;
+  padding:12px;
+  border:0;
+  border-radius:12px;
+  background:#17283a;
+  color:#91a9bf;
+  font-weight:900;
+}
+
+.ticket-result {
   position:fixed;
   inset:0;
-  z-index:400;
+  z-index:500;
   display:none;
   align-items:center;
   justify-content:center;
-  padding:20px;
-  background:rgba(0,0,0,.8);
+  background:rgba(0,0,0,.76);
+  backdrop-filter:blur(7px);
 }
 
-.modal-ticket.show {
+.ticket-result.show {
   display:flex;
 }
 
-.modal-box-ticket {
-  width:min(350px,100%);
+.ticket-result-box {
+  width:min(340px,calc(100% - 30px));
   padding:25px;
   border-radius:22px;
-  background:#0e1b2b;
   text-align:center;
+  background:#0c1825;
+  border:1px solid rgba(255,255,255,.1);
 }
 
 .result-icon-ticket {
@@ -944,408 +1121,62 @@ header {
 }
 
 .result-title-ticket {
-  margin-top:8px;
-  font-size:28px;
+  margin-top:5px;
+  font-size:25px;
   font-weight:1000;
 }
 
 .result-title-ticket.win {
-  color:#52e89c;
+  color:#42e78c;
 }
 
 .result-title-ticket.lose {
-  color:#ef4752;
+  color:#ff5875;
 }
 
 .result-text-ticket {
   margin-top:8px;
-  color:#87a3ba;
-  line-height:1.5;
+  color:#8aa4ba;
+  font-size:13px;
 }
 
 .result-money-ticket {
-  margin-top:13px;
-  font-size:25px;
+  margin-top:10px;
   color:#ffd84d;
+  font-size:23px;
   font-weight:1000;
 }
 
-.result-ticket-button {
+.ticket-result button {
   width:100%;
   margin-top:16px;
   padding:13px;
   border:0;
   border-radius:12px;
-  background:#1977d3;
+  background:#176fc3;
   color:#fff;
   font-weight:1000;
 }
 
-/* =====================================================
-   CASES
-===================================================== */
-
-#casesGameContainer {
-  position:fixed;
-  inset:0;
-  z-index:205;
-  overflow:auto;
-  padding:12px 12px 35px;
-  background:
-    radial-gradient(circle at 50% -10%,rgba(50,90,255,.22),transparent 38%),
-    linear-gradient(160deg,#090c14,#101522,#080b12);
-}
-
-#casesGameContainer .topbar {
-  height:52px;
-  display:flex;
-  justify-content:flex-end;
-  align-items:center;
-}
-
-.balance-case {
-  padding:10px 16px;
-  border-radius:14px;
-  background:#171d2a;
-  border:1px solid rgba(255,255,255,.08);
-  font-size:18px;
-  font-weight:900;
-}
-
-.balance-case span {
-  color:#ffd84d;
-}
-
-.screen-case {
-  display:none;
-  min-height:calc(100vh - 73px);
-}
-
-.screen-case.active {
-  display:flex;
-  flex-direction:column;
-}
-
-.main-screen {
-  align-items:center;
-  padding-top:15px;
-  gap:13px;
-}
-
-.main-case-button {
-  width:min(520px,96vw);
-  height:105px;
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:20px;
-  color:#fff;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  position:relative;
-  overflow:hidden;
-  box-shadow:0 12px 35px rgba(0,0,0,.3);
-  transition:.15s;
-}
-
-.main-case-button:active {
-  transform:scale(.97);
-}
-
-.main-case-button span {
-  position:relative;
-  z-index:2;
-  font-size:24px;
-  font-weight:1000;
-  text-shadow:0 4px 15px rgba(0,0,0,.7);
-}
-
-.free-case-button {
-  background:linear-gradient(135deg,#164f53,#0b272c);
-}
-
-.pls-pepe-button {
-  background:linear-gradient(135deg,#183e3c,#0b2427);
-}
-
-.case-250-button {
-  background:linear-gradient(135deg,#38245c,#1e1533);
-}
-
-.case-screen {
-  padding-top:8px;
-}
-
-.case-title-row {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:18px;
-}
-
-.case-title {
-  font-size:24px;
-  font-weight:1000;
-}
-
-.back-case {
-  padding:10px 14px;
-  border-radius:11px;
-  border:1px solid rgba(255,255,255,.08);
-  background:#171d2a;
-  color:#c4cada;
-  font-weight:800;
-}
-
-.roulette-section {
-  position:relative;
-}
-
-.pointer-case {
-  position:absolute;
-  top:-1px;
-  left:50%;
-  transform:translateX(-50%);
-  z-index:10;
-  width:0;
-  height:0;
-  border-left:16px solid transparent;
-  border-right:16px solid transparent;
-  border-top:25px solid #a78bfa;
-  filter:drop-shadow(0 0 8px rgba(167,139,250,.7));
-}
-
-.roulette-window {
-  width:100%;
-  height:160px;
-  overflow:hidden;
-  border-radius:17px;
-  background:#0d121e;
-  border:1px solid rgba(255,255,255,.08);
-  box-shadow:inset 0 0 40px rgba(0,0,0,.5);
-}
-
-.roulette-track {
-  height:100%;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:10px;
-}
-
-.roulette-item {
-  min-width:125px;
-  height:125px;
-  flex-shrink:0;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  border-radius:14px;
-  background:#171d2a;
-  border:1px solid rgba(255,255,255,.08);
-  text-align:center;
-}
-
-.roulette-emoji {
-  font-size:44px;
-}
-
-.roulette-name {
-  margin-top:8px;
-  padding:0 5px;
-  font-size:11px;
-  font-weight:800;
-  color:#b8c2d4;
-}
-
-.open-button {
-  width:100%;
-  margin-top:17px;
-  padding:17px;
-  border:0;
-  border-radius:15px;
-  background:linear-gradient(135deg,#7957ff,#5332d6);
-  color:#fff;
-  font-size:18px;
-  font-weight:1000;
-}
-
-.open-button.free-open {
-  background:linear-gradient(135deg,#28bd9c,#14866f);
-}
-
-.open-button:disabled {
-  opacity:.5;
-}
-
-.items-title {
-  margin:27px 0 13px;
-  text-align:center;
-  font-size:18px;
-  font-weight:1000;
-}
-
-.items-grid {
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:9px;
-}
-
-.item-card {
-  min-height:125px;
-  padding:10px 6px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  border-radius:14px;
-  background:#141a27;
-  border:1px solid rgba(255,255,255,.07);
-}
-
-.item-emoji {
-  font-size:38px;
-}
-
-.item-name {
-  margin-top:9px;
-  font-size:11px;
-  font-weight:800;
-  color:#aeb8ca;
-}
-
-.item-price {
-  margin-top:7px;
-  color:#ffd84d;
-  font-size:13px;
-  font-weight:1000;
-}
-
-.legendary {
-  border-color:rgba(255,215,70,.5);
-}
-
-.rare {
-  border-color:rgba(100,150,255,.4);
-}
-
-.uncommon {
-  border-color:rgba(60,190,165,.35);
-}
-
-.modal-case {
-  position:fixed;
-  inset:0;
-  z-index:400;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-  background:rgba(0,0,0,.8);
-}
-
-.modal-case.show {
-  display:flex;
-}
-
-.modal-box-case {
-  width:100%;
-  max-width:360px;
-  padding:28px 20px 23px;
-  text-align:center;
-  border-radius:23px;
-  background:linear-gradient(145deg,#1a2131,#0d121e);
-  border:1px solid rgba(255,255,255,.1);
-}
-
-.result-emoji-case {
-  font-size:78px;
-}
-
-.result-label-case {
-  color:#8e99ad;
-  font-size:13px;
-  font-weight:800;
-}
-
-.result-name-case {
-  margin-top:8px;
-  font-size:25px;
-  font-weight:1000;
-}
-
-.result-value-case {
-  margin-top:12px;
-  font-size:24px;
-  color:#a78bfa;
-  font-weight:1000;
-}
-
-.result-buttons {
-  display:flex;
-  gap:10px;
-  margin-top:23px;
-}
-
-.result-button {
-  flex:1;
-  padding:14px 8px;
-  border:0;
-  border-radius:13px;
-  color:#fff;
-  font-weight:900;
-}
-
-.sell-button {
-  background:linear-gradient(135deg,#7957ff,#5332d6);
-}
-
-.back-result-button {
-  background:#1b2232;
-  color:#aeb8ca;
-}
-
-.message-case {
-  position:fixed;
-  left:50%;
-  bottom:25px;
-  z-index:500;
-  transform:translateX(-50%) translateY(100px);
-  padding:13px 18px;
-  border-radius:13px;
-  background:#d24761;
-  color:#fff;
-  font-weight:800;
-  transition:.3s;
-}
-
-.message-case.show {
-  transform:translateX(-50%) translateY(0);
-}
-
-/* =====================================================
-   UPGRADE
-===================================================== */
+/* UPGRADE */
 
 #upgradeGameContainer {
   position:fixed;
   inset:0;
-  z-index:210;
+  z-index:340;
   overflow:auto;
   background:
-    radial-gradient(circle at 50% 0%,rgba(30,110,220,.18),transparent 40%),
-    #06101b;
+    radial-gradient(circle at 50% 0%,#243d5c,#060a10 55%);
 }
 
-.app-inner-upgrade {
-  width:min(700px,100%);
+.upgrade-page {
+  min-height:100%;
+  padding:18px 14px 40px;
+}
+
+.upgrade-header {
+  max-width:700px;
   margin:auto;
-  padding:15px;
-}
-
-.header-upgrade {
   display:flex;
   justify-content:space-between;
   align-items:center;
@@ -1354,41 +1185,34 @@ header {
 .logo-upgrade {
   font-size:24px;
   font-weight:1000;
-}
-
-.logo-upgrade span {
-  color:#6ab0ff;
+  letter-spacing:2px;
 }
 
 .balance-box-upgrade {
-  min-width:125px;
-  padding:9px 13px;
-  border-radius:13px;
-  background:#102236;
-  text-align:center;
+  text-align:right;
 }
 
 .balance-label-upgrade {
-  color:#62829f;
-  font-size:9px;
-  text-transform:uppercase;
+  color:#63809a;
+  font-size:10px;
 }
 
 .balance-upgrade {
   color:#ffd84d;
   font-weight:1000;
-  font-size:17px;
+  margin-top:2px;
 }
 
 .main-upgrade {
-  margin-top:18px;
+  max-width:700px;
+  margin:15px auto;
 }
 
 .game-panel {
-  padding:18px;
-  border-radius:22px;
-  background:linear-gradient(145deg,#0d1c2b,#08121e);
-  border:1px solid rgba(90,160,230,.12);
+  padding:17px;
+  border-radius:20px;
+  background:rgba(9,18,29,.9);
+  border:1px solid rgba(120,180,240,.12);
 }
 
 .wheel-area {
@@ -1396,99 +1220,110 @@ header {
 }
 
 .upgrade-title {
-  font-size:22px;
+  font-size:26px;
   font-weight:1000;
-  letter-spacing:3px;
+  letter-spacing:2px;
 }
 
 .wheel-wrapper {
   position:relative;
-  width:min(420px,90vw);
+  width:min(90vw,420px);
   aspect-ratio:1;
-  margin:15px auto;
+  margin:15px auto 0;
 }
 
 #wheel {
   width:100%;
   height:100%;
+  display:block;
 }
 
 .pointer-rotator {
   position:absolute;
   inset:0;
   pointer-events:none;
+  transform-origin:50% 50%;
 }
 
 .pointer-upgrade {
   position:absolute;
   left:50%;
-  top:0;
+  top:5px;
   transform:translateX(-50%);
   width:0;
   height:0;
-  border-left:13px solid transparent;
-  border-right:13px solid transparent;
-  border-top:28px solid #fff;
-  filter:drop-shadow(0 0 10px rgba(255,255,255,.5));
+  border-left:11px solid transparent;
+  border-right:11px solid transparent;
+  border-top:25px solid #ffd84d;
+  filter:drop-shadow(0 3px 7px rgba(0,0,0,.7));
 }
 
 .center-info {
   position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  text-align:center;
+  inset:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  pointer-events:none;
 }
 
 .win-percent {
-  font-size:35px;
+  font-size:32px;
   font-weight:1000;
 }
 
 .chance-text {
-  color:#7392ab;
-  font-size:10px;
+  margin-top:2px;
+  color:#7f9ab2;
+  font-size:11px;
+  font-weight:900;
   letter-spacing:2px;
 }
 
 .status-upgrade {
-  min-height:22px;
-  margin-top:6px;
-  font-weight:900;
-  color:#83a3bc;
+  text-align:center;
+  margin-top:12px;
+  min-height:20px;
+  color:#7793aa;
+  font-size:13px;
+  font-weight:800;
 }
 
 .status-upgrade.win {
-  color:#54e69c;
+  color:#42e78c;
 }
 
 .status-upgrade.lose {
-  color:#ef4752;
+  color:#ff5875;
+}
+
+.controls {
+  margin-top:20px;
 }
 
 .control-label {
-  margin-top:17px;
-  color:#6f8da7;
-  font-size:11px;
-  text-transform:uppercase;
+  color:#7290a8;
+  font-size:12px;
+  font-weight:900;
+  margin-bottom:7px;
 }
 
 .bet-row {
-  display:flex;
+  display:grid;
+  grid-template-columns:1fr auto;
   gap:8px;
-  margin-top:7px;
 }
 
 .bet-input-wrap {
-  flex:1;
   position:relative;
 }
 
 .bet-input-upgrade {
   width:100%;
-  padding:13px 45px 13px 13px;
+  padding:13px 42px 13px 13px;
   border-radius:12px;
-  border:1px solid rgba(100,170,230,.2);
+  border:1px solid rgba(100,160,220,.18);
   background:#07111d;
   color:#fff;
   outline:none;
@@ -1499,161 +1334,125 @@ header {
   right:13px;
   top:50%;
   transform:translateY(-50%);
+  color:#ffd84d;
 }
 
 .multiplier-buttons {
   display:flex;
-  gap:6px;
+  gap:5px;
 }
 
 .multiplier-upgrade {
-  min-width:58px;
+  min-width:52px;
+  padding:10px;
   border:0;
-  border-radius:11px;
-  background:#14263a;
-  color:#7994aa;
+  border-radius:10px;
+  background:#152637;
+  color:#7592a9;
   font-weight:1000;
 }
 
 .multiplier-upgrade.active {
-  background:#1e6fbc;
+  background:#1d6db8;
   color:#fff;
-}
-
-.multiplier-upgrade:disabled {
-  opacity:.5;
-}
-
-.item-select-area,
-.item-select-dropdown {
-  display:none;
 }
 
 .spin-button-upgrade {
   width:100%;
-  margin-top:14px;
-  padding:15px;
+  margin-top:10px;
+  padding:14px;
   border:0;
-  border-radius:14px;
-  background:linear-gradient(135deg,#267edb,#1551a0);
+  border-radius:13px;
+  background:#1b77d0;
   color:#fff;
-  font-size:17px;
   font-weight:1000;
+  font-size:15px;
 }
 
 .spin-button-upgrade:disabled {
-  opacity:.45;
+  opacity:.5;
 }
 
 .history-upgrade {
-  margin-top:18px;
+  margin-top:20px;
 }
 
 .history-title {
-  color:#6f8da7;
-  font-size:11px;
-  text-transform:uppercase;
+  color:#6e8aa3;
+  font-size:12px;
+  font-weight:900;
 }
 
 .history-list {
-  margin-top:8px;
+  margin-top:7px;
 }
 
 .history-item {
   display:flex;
   justify-content:space-between;
-  padding:10px;
-  margin-top:5px;
+  align-items:center;
+  padding:10px 12px;
+  margin-top:6px;
   border-radius:10px;
-  background:#0b1826;
+  background:#09131f;
 }
 
 .history-left {
-  color:#5a8aaa;
+  color:#7e99b0;
   font-size:12px;
 }
 
 .history-left strong {
-  color:#e8f0fe;
+  color:#cfe4f5;
+  margin-left:4px;
 }
 
 .history-result {
-  font-size:13px;
-  font-weight:900;
+  font-weight:1000;
 }
 
 .history-result.win {
-  color:#6ab0ff;
+  color:#42e78c;
 }
 
 .history-result.lose {
-  color:#ef4752;
+  color:#ff5875;
 }
 
-.bg-glow {
-  position:absolute;
-  width:300px;
-  height:300px;
-  border-radius:50%;
-  filter:blur(100px);
-  opacity:.1;
+.flash-upgrade {
+  position:fixed;
+  inset:0;
   pointer-events:none;
+  z-index:600;
 }
 
-.bg-glow.one {
-  left:-180px;
-  top:10%;
-  background:#2a7ad8;
-}
-
-.bg-glow.two {
-  right:-180px;
-  bottom:5%;
-  background:#1a5aaa;
-}
-
-.flash-upgrade,
 .toast-upgrade {
+  position:fixed;
+  left:50%;
+  bottom:100px;
+  transform:translateX(-50%);
+  z-index:700;
   display:none;
+  padding:11px 15px;
+  border-radius:12px;
+  background:#16283a;
+  color:#fff;
+  font-size:13px;
+  font-weight:800;
 }
 
-/* =====================================================
-   MOBILE
-===================================================== */
+.toast-upgrade.show {
+  display:block;
+}
 
-@media(max-width:500px) {
-  .page {
-    padding:12px 10px 100px;
-  }
+@media(max-width:420px) {
 
-  .page-title {
-    font-size:25px;
-  }
-
-  .main-case-button {
-    width:100%;
-    height:98px;
-  }
-
-  .main-case-button span {
-    font-size:21px;
-  }
-
-  .roulette-window {
-    height:145px;
-  }
-
-  .roulette-item {
-    min-width:110px;
-    height:115px;
-  }
-
-  .item-card {
-    min-height:115px;
+  .items-grid {
+    grid-template-columns:repeat(2,1fr);
   }
 
   .bet-row {
-    flex-direction:column;
+    grid-template-columns:1fr;
   }
 
   .multiplier-buttons {
@@ -1662,7 +1461,44 @@ header {
 
   .multiplier-upgrade {
     flex:1;
-    padding:12px;
+  }
+
+}
+
+/* =====================================================
+   ДОПОЛНИТЕЛЬНЫЕ СТИЛИ
+===================================================== */
+
+.section-page {
+  display:none;
+}
+
+.section-page.active {
+  display:block;
+}
+
+.deposit-buttons {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  margin-top:10px;
+}
+
+.deposit-btn {
+  margin-top:0;
+}
+
+.api-status-good {
+  color:#39e58c;
+}
+
+.api-status-bad {
+  color:#ef4752;
+}
+
+@media(max-width:380px) {
+  .deposit-buttons {
+    grid-template-columns:repeat(2,1fr);
   }
 }
 </style>
@@ -1670,155 +1506,344 @@ header {
 
 <body>
 
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<div
+  id="menuPage"
+  class="page section-page active"
+>
+
 <header>
-  <div class="logo">🐻‍❄️ DROP</div>
-  <div class="header-balance">
-    ⭐ <span id="headerBalance">0.00</span>
+  <div class="logo">
+    🐻‍❄️ DROP
   </div>
+
+  <div class="header-balance">
+    <span id="headerBalance">0.00</span> ⭐
+  </div>
+</header>
+
+<div class="content">
+
+  <div class="menu-title-row">
+
+    <div>
+      <div class="page-title">
+        ИГРЫ
+      </div>
+
+      <div class="page-subtitle">
+        Испытай удачу и выигрывай ⭐
+      </div>
+    </div>
+
+    <div id="menuAnimation">
+
+      <div id="menuMachine">
+
+        <div class="mm-body"></div>
+
+        <div class="mm-lid"></div>
+
+        <div class="panel">
+          <div class="disp"></div>
+          <div class="btn-sm"></div>
+          <div class="btn-lg"></div>
+        </div>
+
+        <div class="window">
+          <div class="glass">
+            <div class="drum"></div>
+          </div>
+        </div>
+
+        <div class="mm-feet">
+          <span></span>
+          <span></span>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ШАРИК -->
+
+  <div class="card game-card">
+
+    <div class="game-icon">
+      🟢
+    </div>
+
+    <div class="card-title">
+      ESCAPE
+    </div>
+
+    <div class="card-text">
+      Управляй шариком, делай отскоки
+      и постарайся попасть в WIN-зону.
+    </div>
+
+    <button
+      class="game-button"
+      id="openBallButton"
+    >
+      ИГРАТЬ
+    </button>
+
+  </div>
+
+
+  <!-- БИЛЕТЫ -->
+
+  <div class="card game-card">
+
+    <div class="game-icon">
+      🎫
+    </div>
+
+    <div class="card-title">
+      SCRATCH
+    </div>
+
+    <div class="card-text">
+      Открой ячейки и найди
+      три одинаковых символа.
+    </div>
+
+    <button
+      class="game-button"
+      id="openTicketsButton"
+    >
+      ИГРАТЬ
+    </button>
+
+  </div>
+
+
+  <!-- КЕЙСЫ -->
+
+  <div class="card game-card">
+
+    <div class="game-icon">
+      🎁
+    </div>
+
+    <div class="card-title">
+      КЕЙСЫ
+    </div>
+
+    <div class="card-text">
+      Открывай кейсы и получай
+      награды в свой инвентарь.
+    </div>
+
+    <button
+      class="game-button"
+      id="openCasesButton"
+    >
+      ОТКРЫТЬ КЕЙСЫ
+    </button>
+
+  </div>
+
+
+  <!-- UPGRADE -->
+
+  <div class="card game-card">
+
+    <div class="game-icon">
+      ⬆️
+    </div>
+
+    <div class="card-title">
+      UPGRADE
+    </div>
+
+    <div class="card-text">
+      Сделай ставку и попробуй
+      увеличить её в несколько раз.
+    </div>
+
+    <button
+      class="game-button"
+      id="openUpgradeButton"
+    >
+      ИГРАТЬ
+    </button>
+
+  </div>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     INVENTORY
+===================================================== -->
+
+<div
+  id="inventoryPage"
+  class="page section-page"
+>
+
+<header>
+
+  <div class="logo">
+    ИНВЕНТАРЬ
+  </div>
+
+  <div class="header-balance">
+    <span id="balanceTicket">0.00</span> ⭐
+  </div>
+
+</header>
+
+<div class="content">
+
+  <div
+    id="inventoryList"
+  >
+  </div>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     PROFILE
+===================================================== -->
+
+<div
+  id="profilePage"
+  class="page section-page"
+>
+
+<header>
+
+  <div class="logo">
+    ПРОФИЛЬ
+  </div>
+
+  <div class="header-balance">
+    <span id="balanceCase">0.00</span> ⭐
+  </div>
+
 </header>
 
 <main class="content">
 
-<section id="menuPage" class="page">
-
-  <div class="menu-title-row">
-    <div class="page-title">Меню</div>
-
-    <div id="menuAnimation">
-      <div id="menuMachine">
-        <div class="mm-body">
-          <div class="mm-lid"></div>
-          <div class="panel">
-            <div class="disp"></div>
-            <div class="btn-sm"></div>
-            <div class="btn-lg"></div>
-          </div>
-          <div class="window">
-            <div class="glass">
-              <div class="drum"></div>
-            </div>
-          </div>
-          <div class="mm-feet">
-            <span></span>
-            <span></span>
-          </div>
-        </div>
-      </div>
-
-      <div id="menuLetters"></div>
-    </div>
-  </div>
-
-  <div class="page-subtitle">
-    Выберите игру и испытайте удачу.
-  </div>
-
-  <div class="card game-card">
-    <div class="game-icon">⚪</div>
-    <div class="card-title">Шарик</div>
-    <div class="card-text">
-      Управляйте ставкой и наблюдайте, как шарик проходит через отверстие.
-    </div>
-    <button class="game-button" id="openGameButton">
-      ИГРАТЬ
-    </button>
-  </div>
-
-  <div class="card game-card">
-    <div class="game-icon">🎟️</div>
-    <div class="card-title">Билеты</div>
-    <div class="card-text">
-      Scratch & Win — выбирайте билет и открывайте ячейки.
-    </div>
-    <button class="game-button" id="openTicketsButton">
-      ИГРАТЬ
-    </button>
-  </div>
-
-  <div class="card game-card">
-    <div class="game-icon">📦</div>
-    <div class="card-title">Кейсы</div>
-    <div class="card-text">
-      Открывайте кейсы с предметами и сохраняйте их в инвентарь.
-    </div>
-    <button class="game-button" id="openCasesButton">
-      ИГРАТЬ
-    </button>
-  </div>
-
-  <div class="card game-card">
-    <div class="game-icon">🎡</div>
-    <div class="card-title">UPGRADE</div>
-    <div class="card-text">
-      Колесо удачи с множителями x2, x5, x10.
-    </div>
-    <button class="game-button" id="openUpgradeButton">
-      ИГРАТЬ
-    </button>
-  </div>
-
-</section>
-
-
-<section id="inventoryPage" class="page hidden">
-
-  <div class="page-title">Инвентарь</div>
-
-  <div class="page-subtitle">
-    Предметы из кейсов, которые вы получили.
-  </div>
-
-  <button class="sell-all" id="sellAllButton">
-    ПРОДАТЬ ВСЕ
-  </button>
-
-  <div id="inventoryContainer"></div>
-
-</section>
-
-
-<section id="profilePage" class="page hidden">
-
-  <div class="page-title">Профиль</div>
-
-  <div class="page-subtitle">
-    Управляйте аккаунтом, промокодами и балансом.
-  </div>
-
   <div class="card">
 
+    <div class="card-title">
+      👤 Профиль
+    </div>
+
     <div class="profile-row">
-      <div class="profile-label">Имя</div>
-      <div class="profile-value" id="profileName">
+
+      <div class="profile-label">
+        Имя
+      </div>
+
+      <div
+        class="profile-value"
+        id="profileName"
+      >
         Игрок
       </div>
+
     </div>
 
     <div class="profile-row">
-      <div class="profile-label">ID игрока</div>
-      <div class="profile-value" id="profileId">
+
+      <div class="profile-label">
+        Telegram ID
+      </div>
+
+      <div
+        class="profile-value"
+        id="profileId"
+      >
         —
       </div>
+
     </div>
 
     <div class="profile-row">
-      <div class="profile-label">Баланс</div>
-      <div class="profile-value" id="profileBalance">
+
+      <div class="profile-label">
+        Баланс
+      </div>
+
+      <div
+        class="profile-value"
+        id="balanceProfile"
+      >
         0.00 ⭐
       </div>
+
+    </div>
+
+    <div class="profile-row">
+
+      <div class="profile-label">
+        Игр сыграно
+      </div>
+
+      <div
+        class="profile-value"
+        id="gamesPlayed"
+      >
+        0
+      </div>
+
+    </div>
+
+    <div class="profile-row">
+
+      <div class="profile-label">
+        Побед
+      </div>
+
+      <div
+        class="profile-value"
+        id="wins"
+      >
+        0
+      </div>
+
+    </div>
+
+    <div class="profile-row">
+
+      <div class="profile-label">
+        Поражений
+      </div>
+
+      <div
+        class="profile-value"
+        id="losses"
+      >
+        0
+      </div>
+
     </div>
 
   </div>
 
+
+  <!-- ПРОМОКОД -->
 
   <div class="card">
 
     <div class="card-title">
-      Промокод
-    </div>
-
-    <div class="card-text">
-      Доступные промокоды: <b>200</b> и <b>met200</b>.
+      🎟 Промокод
     </div>
 
     <input
@@ -1830,38 +1855,40 @@ header {
     >
 
     <button
-      class="promo-button"
       id="promoButton"
+      class="promo-button"
     >
       АКТИВИРОВАТЬ
     </button>
 
     <div
-      class="promo-message"
       id="promoMessage"
+      class="promo-message"
     ></div>
 
   </div>
 
 
+  <!-- ПОПОЛНЕНИЕ -->
+
   <div class="card">
 
     <div class="card-title">
-      Пополнить баланс
+      ⭐ Пополнение
     </div>
 
     <div class="card-text">
-      Оплата через Telegram Stars.
+      Выберите количество Stars для пополнения баланса.
     </div>
 
-    <div
-      style="
-        display:grid;
-        grid-template-columns:repeat(3,1fr);
-        gap:8px;
-        margin-top:10px;
-      "
-    >
+    <div class="deposit-buttons">
+
+      <button
+        class="promo-button deposit-btn"
+        data-amount="1"
+      >
+        ⭐ 1
+      </button>
 
       <button
         class="promo-button deposit-btn"
@@ -1887,62 +1914,14 @@ header {
     </div>
 
     <div
-      class="promo-message"
       id="paymentMessage"
+      class="promo-message"
     ></div>
 
   </div>
 
 
-  <div class="card">
-
-    <div class="card-title">
-      Статистика
-    </div>
-
-    <div class="profile-row">
-      <div class="profile-label">
-        Игр сыграно
-      </div>
-
-      <div
-        class="profile-value"
-        id="gamesPlayed"
-      >
-        0
-      </div>
-    </div>
-
-    <div class="profile-row">
-      <div class="profile-label">
-        Побед
-      </div>
-
-      <div
-        class="profile-value"
-        id="wins"
-      >
-        0
-      </div>
-    </div>
-
-    <div class="profile-row">
-      <div class="profile-label">
-        Поражений
-      </div>
-
-      <div
-        class="profile-value"
-        id="losses"
-      >
-        0
-      </div>
-    </div>
-
-  </div>
-
-
-  <!-- В САМОМ НИЗУ ПРОФИЛЯ -->
+  <!-- API -->
 
   <div class="card">
 
@@ -1969,10 +1948,14 @@ header {
 
   </div>
 
-</section>
-
 </main>
 
+</div>
+
+
+<!-- =====================================================
+     NAVIGATION
+===================================================== -->
 
 <nav class="bottom-nav">
 
@@ -1980,24 +1963,47 @@ header {
     class="nav-button"
     data-page="inventoryPage"
   >
-    <span class="nav-icon">🎒</span>
-    <span>Инвентарь</span>
+
+    <span class="nav-icon">
+      🎒
+    </span>
+
+    <span>
+      Инвентарь
+    </span>
+
   </button>
+
 
   <button
     class="nav-button active"
     data-page="menuPage"
   >
-    <span class="nav-icon">⌂</span>
-    <span>Меню</span>
+
+    <span class="nav-icon">
+      ⌂
+    </span>
+
+    <span>
+      Меню
+    </span>
+
   </button>
+
 
   <button
     class="nav-button"
     data-page="profilePage"
   >
-    <span class="nav-icon">👤</span>
-    <span>Профиль</span>
+
+    <span class="nav-icon">
+      👤
+    </span>
+
+    <span>
+      Профиль
+    </span>
+
   </button>
 
 </nav>
@@ -2007,396 +2013,185 @@ header {
      ШАРИК
 ===================================================== -->
 
-<div id="gameScreen" class="hidden">
+<div
+  id="gameScreen"
+  class="hidden"
+>
 
-  <canvas id="gameCanvas"></canvas>
-
-  <div class="game-top">
-
-    <div class="game-stat">
-      <div class="game-stat-label">
-        Баланс
-      </div>
-      <div
-        class="game-stat-value"
-        id="gameBalance"
-      >
-        0.00
-      </div>
-    </div>
-
-    <div class="game-stat">
-      <div class="game-stat-label">
-        Отскоки
-      </div>
-      <div
-        class="game-stat-value"
-        id="gameBounces"
-      >
-        0
-      </div>
-    </div>
-
-    <div class="game-stat">
-      <div class="game-stat-label">
-        Множитель
-      </div>
-      <div
-        class="game-stat-value"
-        id="gameMultiplier"
-      >
-        1.00x
-      </div>
-    </div>
-
-  </div>
+<canvas
+  id="gameCanvas"
+></canvas>
 
 
-  <div class="bottom-zones">
-    <div
-      id="greenZone"
-      class="green-zone"
-    >
-      WIN
+<div class="game-top">
+
+  <div class="game-stat">
+
+    <div class="game-stat-label">
+      Баланс
     </div>
 
     <div
-      id="redZone"
-      class="red-zone"
-    >
-      LOSE
-    </div>
-  </div>
-
-
-  <div
-    id="gameMenu"
-    class="game-menu"
-  >
-
-    <div class="game-menu-title">
-      ESCAPE
-    </div>
-
-    <div
-      class="game-menu-balance"
-      id="gameMenuBalance"
+      class="game-stat-value"
+      id="gameBalance"
     >
       0.00
     </div>
 
-    <input
-      id="gameBet"
-      class="bet-input"
-      type="number"
-      min="25"
-      step="1"
-      value="100"
-    >
+  </div>
 
-    <div
-      id="gameBetError"
-      class="bet-error"
-    ></div>
 
-    <div class="difficulty">
+  <div class="game-stat">
 
-      <button
-        data-difficulty="easy"
-        class="active"
-      >
-        Легко
-      </button>
-
-      <button
-        data-difficulty="medium"
-      >
-        Средне
-      </button>
-
-      <button
-        data-difficulty="hard"
-      >
-        Сложно
-      </button>
-
+    <div class="game-stat-label">
+      Отскоки
     </div>
 
-    <button
-      class="start-game"
-      id="startGame"
+    <div
+      class="game-stat-value"
+      id="gameBounces"
     >
-      ИГРАТЬ
-    </button>
-
-    <button
-      class="exit-game"
-      id="exitGame"
-    >
-      НАЗАД
-    </button>
+      0
+    </div>
 
   </div>
 
 
-  <div
-    id="gameResult"
-    class="result hidden"
-  >
+  <div class="game-stat">
 
-    <div
-      id="resultTitle"
-      class="result-title win"
-    >
-      WIN
+    <div class="game-stat-label">
+      Множитель
     </div>
 
     <div
-      id="resultInfo"
-      class="result-info"
-    ></div>
-
-    <div
-      id="resultMoney"
-      class="result-money win"
-    ></div>
-
-    <button
-      id="resultClose"
-      class="result-close"
+      class="game-stat-value"
+      id="gameMultiplier"
     >
-      ЗАКРЫТЬ
-    </button>
+      1.00x
+    </div>
 
   </div>
 
 </div>
 
 
-<!-- =====================================================
-     SCRATCH
-===================================================== -->
+<div class="bottom-zones">
+
+  <div
+    id="greenZone"
+    class="green-zone"
+  >
+    WIN
+  </div>
+
+  <div
+    id="redZone"
+    class="red-zone"
+  >
+    LOSE
+  </div>
+
+</div>
+
 
 <div
-  id="ticketGameContainer"
-  class="hidden"
+  id="gameMenu"
+  class="game-menu"
 >
 
-  <button id="closeTicketsBtn">
-    ✕
-  </button>
+  <div class="game-menu-title">
+    ESCAPE
+  </div>
 
-  <div class="app-inner">
+  <div
+    class="game-menu-balance"
+    id="gameMenuBalance"
+  >
+    0.00
+  </div>
 
-    <div class="header-ticket">
+  <input
+    id="gameBet"
+    class="bet-input"
+    type="number"
+    min="25"
+    step="1"
+    value="100"
+  >
 
-      <div class="logo-ticket">
-        🎟️ SCRATCH
-      </div>
+  <div
+    id="gameBetError"
+    class="bet-error"
+  ></div>
 
-      <div class="balance-ticket">
-        ⭐
-        <span id="balanceTicket">
-          0.00
-        </span>
-      </div>
+  <div class="difficulty">
 
-    </div>
-
-
-    <section
-      id="selectScreen"
-      class="screen active"
+    <button
+      data-difficulty="easy"
+      class="active"
     >
+      Легко
+    </button>
 
-      <div class="title">
-        SCRATCH &amp; WIN!
-      </div>
-
-      <div class="subtitle">
-        Выберите билет и попробуйте получить выигрыш
-      </div>
-
-
-      <div class="tickets">
-
-        <div
-          class="ticket"
-          id="paidTicket"
-        >
-
-          <div class="ticket-header">
-
-            <div class="ticket-name">
-              💎 MEGA SCRATCH
-            </div>
-
-            <div class="ticket-price">
-              10 ⭐
-            </div>
-
-          </div>
-
-          <div class="ticket-description">
-            Открытие билета — 10 ⭐.
-            Сервер определяет выигрыш.
-          </div>
-
-        </div>
-
-
-        <div
-          class="ticket"
-          id="freeTicket"
-        >
-
-          <div class="ticket-header">
-
-            <div class="ticket-name">
-              🎫 FREE SCRATCH
-            </div>
-
-            <div class="ticket-price free">
-              10 ⭐
-            </div>
-
-          </div>
-
-          <div class="ticket-description">
-            Скретч-билет с открытием ячеек.
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <div
-        id="chancePanel"
-        class="chance-panel"
-        style="display:none;"
-      >
-
-        <button
-          class="start-ticket-button"
-          id="startTicketButton"
-        >
-          🎟️ ИГРАТЬ В ЭТОТ БИЛЕТ
-        </button>
-
-        <div class="chance-title">
-          Шансы и выигрыши
-        </div>
-
-        <div class="chance-subtitle">
-          Результат определяется сервером.
-        </div>
-
-        <div id="chanceList"></div>
-
-        <button
-          class="back-button"
-          id="closeChance"
-          onclick="document.getElementById('chancePanel').style.display='none'"
-        >
-          НАЗАД К БИЛЕТАМ
-        </button>
-
-      </div>
-
-    </section>
-
-
-    <section
-      id="gameScreenTicket"
-      class="screen"
+    <button
+      data-difficulty="medium"
     >
+      Средне
+    </button>
 
-      <div class="game-header-ticket">
-
-        <div
-          class="game-name-ticket"
-          id="gameNameTicket"
-        >
-          SCRATCH
-        </div>
-
-        <div
-          class="game-cost-ticket"
-          id="gameCostTicket"
-        >
-          10 ⭐
-        </div>
-
-      </div>
-
-      <div
-        class="free-opens-ticket"
-        id="freeOpensTicket"
-      ></div>
-
-      <div
-        class="card-ticket"
-        id="cardTicket"
-      ></div>
-
-      <div class="game-bottom-ticket">
-
-        <button
-          class="game-button-ticket"
-          id="backToTicketsTicket"
-        >
-          ← БИЛЕТЫ
-        </button>
-
-      </div>
-
-    </section>
-
-
-    <div
-      class="modal-ticket"
-      id="resultModalTicket"
+    <button
+      data-difficulty="hard"
     >
-
-      <div class="modal-box-ticket">
-
-        <div
-          class="result-icon-ticket"
-          id="resultIconTicket"
-        >
-          🎁
-        </div>
-
-        <div
-          class="result-title-ticket"
-          id="resultTitleTicket"
-        >
-          ПОБЕДА!
-        </div>
-
-        <div
-          class="result-text-ticket"
-          id="resultTextTicket"
-        ></div>
-
-        <div
-          class="result-money-ticket"
-          id="resultMoneyTicket"
-        ></div>
-
-        <button
-          class="result-ticket-button"
-          id="newTicketTicket"
-        >
-          НОВЫЙ БИЛЕТ
-        </button>
-
-      </div>
-
-    </div>
+      Сложно
+    </button>
 
   </div>
+
+  <button
+    class="start-game"
+    id="startGame"
+  >
+    ИГРАТЬ
+  </button>
+
+  <button
+    class="exit-game"
+    id="exitGame"
+  >
+    НАЗАД
+  </button>
+
+</div>
+
+
+<div
+  id="gameResult"
+  class="result hidden"
+>
+
+  <div
+    id="resultTitle"
+    class="result-title"
+  >
+    ПОБЕДА
+  </div>
+
+  <div
+    id="resultMoney"
+    class="result-money"
+  >
+    +0.00 ⭐
+  </div>
+
+  <button id="resultAgain">
+    ИГРАТЬ СНОВА
+  </button>
+
+  <button id="resultBack">
+    НАЗАД
+  </button>
+
+</div>
 
 </div>
 
@@ -2410,91 +2205,48 @@ header {
   class="hidden"
 >
 
-  <div class="topbar">
+<div
+  id="casesScreen"
+  class="cases-screen active"
+>
 
-    <div class="balance-case">
-      ⭐
-      <span id="balanceCase">
-        0.00
-      </span>
-    </div>
+<div class="cases-header">
 
+  <button
+    class="case-back"
+    id="closeCasesBtn"
+  >
+    ← НАЗАД
+  </button>
+
+  <div class="cases-title">
+    🎁 CASES
   </div>
 
+  <div class="cases-balance">
+    <span id="headerCaseBalance">
+      0.00
+    </span>
+    ⭐
+  </div>
 
-  <section
-    id="mainScreenCase"
-    class="screen-case main-screen active"
-  >
+</div>
 
-    <button
-      class="main-case-button free-case-button"
-      id="freeCaseBox"
+
+<div class="case-main">
+
+  <div class="card">
+
+    <div
+      class="case-title"
+      id="caseTitle"
     >
-      <span>
-        CASE FREE
-      </span>
-    </button>
-
-
-    <button
-      class="main-case-button pls-pepe-button"
-      id="plsPepeBox"
-    >
-      <span>
-        PLS PEPE 🐸
-      </span>
-    </button>
-
-
-    <button
-      class="main-case-button"
-      id="caseBox"
-      style="
-        background:linear-gradient(135deg,#3b3018,#211b0e);
-      "
-    >
-      <span>
-        CASE 50 ⭐
-      </span>
-    </button>
-
-
-    <button
-      class="main-case-button case-250-button"
-      id="case250Box"
-    >
-      <span>
-        CASE 250 ⭐
-      </span>
-    </button>
-
-  </section>
-
-
-  <section
-    id="caseScreenCase"
-    class="screen-case case-screen"
-  >
-
-    <div class="case-title-row">
-
-      <div
-        class="case-title"
-        id="caseTitle"
-      >
-        CASE 50 ⭐
-      </div>
-
-      <button
-        class="back-case"
-        id="backButtonCase"
-      >
-        ← Назад
-      </button>
-
+      Кейс
     </div>
 
+    <div class="case-subtitle">
+      Открой кейс и получи награду
+    </div>
 
     <div class="roulette-section">
 
@@ -2529,68 +2281,246 @@ header {
       id="itemsGrid"
     ></div>
 
-  </section>
-
-
-  <div
-    class="modal-case"
-    id="resultModalCase"
-  >
-
-    <div class="modal-box-case">
-
-      <div
-        class="result-emoji-case"
-        id="resultEmoji"
-      >
-        💎
-      </div>
-
-      <div class="result-label-case">
-        ВАМ ВЫПАЛО
-      </div>
-
-      <div
-        class="result-name-case"
-        id="resultName"
-      >
-        Diamond
-      </div>
-
-      <div
-        class="result-value-case"
-        id="resultValue"
-      >
-        +100 ⭐
-      </div>
-
-      <div class="result-buttons">
-
-        <button
-          class="result-button sell-button"
-          id="sellResult"
-        >
-          ПРОДАТЬ
-        </button>
-
-        <button
-          class="result-button back-result-button"
-          id="backResult"
-        >
-          В ИНВЕНТАРЬ
-        </button>
-
-      </div>
-
-    </div>
-
   </div>
 
+</div>
+
+</div>
+
+
+<div
+  class="modal-case"
+  id="resultModalCase"
+>
+
+<div class="modal-box-case">
 
   <div
-    class="message-case"
-    id="messageCase"
+    class="result-emoji-case"
+    id="resultEmoji"
+  >
+    💎
+  </div>
+
+  <div class="result-label-case">
+    ВАМ ВЫПАЛО
+  </div>
+
+  <div
+    class="result-name-case"
+    id="resultName"
+  >
+    Награда
+  </div>
+
+  <div
+    class="result-value-case"
+    id="resultValue"
+  >
+    +0.00 ⭐
+  </div>
+
+  <button
+    class="close-result-case"
+    id="closeResultCase"
+  >
+    ЗАБРАТЬ
+  </button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     TICKETS
+===================================================== -->
+
+<div
+  id="ticketGameContainer"
+  class="hidden"
+>
+
+<div class="ticket-page">
+
+<div class="ticket-header">
+
+  <div class="ticket-title">
+    🎫 SCRATCH
+  </div>
+
+  <div class="ticket-balance">
+    <span id="balanceTicketGame">
+      0.00
+    </span>
+    ⭐
+  </div>
+
+</div>
+
+
+<div
+  class="ticket-select active"
+  id="ticketSelect"
+>
+
+<div class="ticket-card">
+
+  <div class="ticket-card-title">
+    💎 MEGA SCRATCH
+  </div>
+
+  <div class="ticket-card-text">
+    Стоимость игры — 10 ⭐
+  </div>
+
+  <button
+    class="ticket-select-button"
+    id="paidTicket"
+  >
+    ВЫБРАТЬ
+  </button>
+
+</div>
+
+
+<div class="ticket-card">
+
+  <div class="ticket-card-title">
+    🎫 FREE SCRATCH
+  </div>
+
+  <div class="ticket-card-text">
+    Бесплатная игра
+  </div>
+
+  <button
+    class="ticket-select-button"
+    id="freeTicket"
+  >
+    ВЫБРАТЬ
+  </button>
+
+</div>
+
+
+<div
+  class="ticket-chance"
+  id="chanceTicket"
+>
+
+  <div id="chanceList"></div>
+
+</div>
+
+
+<button
+  class="ticket-start"
+  id="startTicket"
+>
+  НАЧАТЬ ИГРУ
+</button>
+
+
+<button
+  class="ticket-back"
+  id="closeTicketsBtn"
+>
+  НАЗАД
+</button>
+
+</div>
+
+
+<div
+  class="ticket-game"
+  id="ticketGame"
+>
+
+<div
+  class="ticket-game-title"
+  id="gameNameTicket"
+>
+  SCRATCH
+</div>
+
+<div
+  class="ticket-game-cost"
+  id="gameCostTicket"
+>
+  10 ⭐
+</div>
+
+<div
+  class="ticket-instruction"
+  id="freeOpensTicket"
+>
+  Откройте ячейки и найдите 3 одинаковых символа
+</div>
+
+
+<div
+  class="ticket-board"
+  id="ticketBoard"
+></div>
+
+
+<button
+  class="ticket-back"
+  id="backToTicketsTicket"
+>
+  НАЗАД
+</button>
+
+</div>
+
+</div>
+
+
+<div
+  class="ticket-result"
+  id="ticketResult"
+>
+
+<div class="ticket-result-box">
+
+  <div
+    class="result-icon-ticket"
+    id="resultIconTicket"
+  >
+    🎉
+  </div>
+
+  <div
+    class="result-title-ticket"
+    id="resultTitleTicket"
+  >
+    ПОБЕДА!
+  </div>
+
+  <div
+    class="result-text-ticket"
+    id="resultTextTicket"
   ></div>
+
+  <div
+    class="result-money-ticket"
+    id="resultMoneyTicket"
+  >
+    +0.00 ⭐
+  </div>
+
+  <button
+    id="newTicketTicket"
+  >
+    НОВАЯ ИГРА
+  </button>
+
+</div>
+
+</div>
 
 </div>
 
@@ -2604,194 +2534,188 @@ header {
   class="hidden"
 >
 
-  <button id="closeUpgradeBtn">
-    ✕
-  </button>
+<div class="upgrade-page">
 
-  <div class="bg-glow one"></div>
-  <div class="bg-glow two"></div>
+<header class="upgrade-header">
 
-  <div class="app-inner-upgrade">
+  <div class="logo-upgrade">
+    UPGRADE
+  </div>
 
-    <header class="header-upgrade">
+  <div class="balance-box-upgrade">
 
-      <div class="logo-upgrade">
-        UPGRADE
+    <div class="balance-label-upgrade">
+      Ваш баланс
+    </div>
+
+    <div
+      class="balance-upgrade"
+      id="balanceUpgrade"
+    >
+      0
+    </div>
+
+  </div>
+
+</header>
+
+
+<main class="main-upgrade">
+
+<section class="game-panel">
+
+<div class="wheel-area">
+
+  <div class="upgrade-title">
+    UPGRADE
+  </div>
+
+  <div class="wheel-wrapper">
+
+    <canvas
+      id="wheel"
+      width="700"
+      height="700"
+    ></canvas>
+
+    <div
+      class="pointer-rotator"
+      id="pointerRotator"
+    >
+
+      <div class="pointer-upgrade"></div>
+
+    </div>
+
+    <div class="center-info">
+
+      <div
+        class="win-percent"
+        id="winPercent"
+      >
+        50%
       </div>
 
-      <div class="balance-box-upgrade">
-
-        <div class="balance-label-upgrade">
-          Ваш баланс
-        </div>
-
-        <div
-          class="balance-upgrade"
-          id="balanceUpgrade"
-        >
-          0
-        </div>
-
+      <div class="chance-text">
+        CHANCE
       </div>
 
-    </header>
-
-
-    <main class="main-upgrade">
-
-      <section class="game-panel">
-
-        <div class="wheel-area">
-
-          <div class="upgrade-title">
-            UPGRADE
-          </div>
-
-          <div class="wheel-wrapper">
-
-            <canvas
-              id="wheel"
-              width="700"
-              height="700"
-            ></canvas>
-
-            <div
-              class="pointer-rotator"
-              id="pointerRotator"
-            >
-
-              <div class="pointer-upgrade"></div>
-
-            </div>
-
-            <div class="center-info">
-
-              <div
-                class="win-percent"
-                id="winPercent"
-              >
-                50%
-              </div>
-
-              <div class="chance-text">
-                CHANCE
-              </div>
-
-            </div>
-
-          </div>
-
-
-          <div
-            class="status-upgrade"
-            id="statusUpgrade"
-          >
-            Выберите множитель и сделайте ставку
-          </div>
-
-        </div>
-
-
-        <div class="controls">
-
-          <div class="control-label">
-            Сумма ставки
-          </div>
-
-          <div class="bet-row">
-
-            <div class="bet-input-wrap">
-
-              <input
-                class="bet-input-upgrade"
-                id="betInputUpgrade"
-                type="number"
-                min="1"
-                step="1"
-                value="100"
-              >
-
-              <span class="currency-upgrade">
-                ⭐
-              </span>
-
-            </div>
-
-
-            <div class="multiplier-buttons">
-
-              <button
-                class="multiplier-upgrade active"
-                data-multiplier="2"
-              >
-                x2
-              </button>
-
-              <button
-                class="multiplier-upgrade"
-                data-multiplier="5"
-              >
-                x5
-              </button>
-
-              <button
-                class="multiplier-upgrade"
-                data-multiplier="10"
-              >
-                x10
-              </button>
-
-            </div>
-
-          </div>
-
-
-          <button
-            class="spin-button-upgrade"
-            id="spinButtonUpgrade"
-          >
-            SPIN
-          </button>
-
-        </div>
-
-
-        <div class="history-upgrade">
-
-          <div class="history-title">
-            Последние спины
-          </div>
-
-          <div
-            class="history-list"
-            id="historyListUpgrade"
-          >
-
-            <div class="history-item">
-              <div class="history-left">
-                История пуста
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-    </main>
+    </div>
 
   </div>
 
   <div
-    class="flash-upgrade"
-    id="flashUpgrade"
-  ></div>
+    class="status-upgrade"
+    id="statusUpgrade"
+  >
+    Выберите множитель и сделайте ставку
+  </div>
+
+</div>
+
+
+<div class="controls">
+
+  <div class="control-label">
+    Сумма ставки
+  </div>
+
+  <div class="bet-row">
+
+    <div class="bet-input-wrap">
+
+      <input
+        class="bet-input-upgrade"
+        id="betInputUpgrade"
+        type="number"
+        min="1"
+        step="1"
+        value="100"
+      >
+
+      <span class="currency-upgrade">
+        ⭐
+      </span>
+
+    </div>
+
+    <div class="multiplier-buttons">
+
+      <button
+        class="multiplier-upgrade active"
+        data-multiplier="2"
+      >
+        x2
+      </button>
+
+      <button
+        class="multiplier-upgrade"
+        data-multiplier="5"
+      >
+        x5
+      </button>
+
+      <button
+        class="multiplier-upgrade"
+        data-multiplier="10"
+      >
+        x10
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <button
+    class="spin-button-upgrade"
+    id="spinButtonUpgrade"
+  >
+    SPIN
+  </button>
+
+</div>
+
+
+<div class="history-upgrade">
+
+  <div class="history-title">
+    Последние спины
+  </div>
 
   <div
-    class="toast-upgrade"
-    id="toastUpgrade"
-  ></div>
+    class="history-list"
+    id="historyListUpgrade"
+  >
+
+    <div class="history-item">
+
+      <div class="history-left">
+        История пуста
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+</section>
+
+</main>
+
+</div>
+
+
+<div
+  class="flash-upgrade"
+  id="flashUpgrade"
+></div>
+
+<div
+  class="toast-upgrade"
+  id="toastUpgrade"
+></div>
 
 </div>
 
@@ -2803,32 +2727,45 @@ header {
 ========================================================== */
 
 const API_BASE =
-  location.protocol === 'file:'
-    ? 'https://whitebear.bothost.tech'
-    : location.origin;
+  'https://whitebear.bothost.tech';
+
 
 const tg =
   window.Telegram?.WebApp || null;
 
+
 if (tg) {
+
   tg.ready();
+
   tg.expand();
+
 }
+
 
 let tgUser =
   tg?.initDataUnsafe?.user || null;
 
+
 let userId =
   tgUser?.id
     ? Number(tgUser.id)
-    : Number(localStorage.getItem('wb_user_id') || 0);
+    : Number(
+        localStorage.getItem(
+          'wb_user_id'
+        ) || 0
+      );
+
 
 if (userId) {
+
   localStorage.setItem(
     'wb_user_id',
     String(userId)
   );
+
 }
+
 
 const initData =
   tg?.initData || '';
@@ -2842,19 +2779,28 @@ let balance = 0;
 
 let inventoryItems = [];
 
+
 let gamesPlayed =
   Number(
-    localStorage.getItem('wb_games') || 0
+    localStorage.getItem(
+      'wb_games'
+    ) || 0
   );
+
 
 let wins =
   Number(
-    localStorage.getItem('wb_wins') || 0
+    localStorage.getItem(
+      'wb_wins'
+    ) || 0
   );
+
 
 let losses =
   Number(
-    localStorage.getItem('wb_losses') || 0
+    localStorage.getItem(
+      'wb_losses'
+    ) || 0
   );
 
 
@@ -2864,17 +2810,18 @@ let losses =
 
 function esc(value) {
 
-  return String(value ?? '')
-    .replace(
-      /[&<>'"]/g,
-      char => ({
-        '&':'&amp;',
-        '<':'&lt;',
-        '>':'&gt;',
-        "'":'&#39;',
-        '"':'&quot;'
-      }[char])
-    );
+  return String(
+    value ?? ''
+  ).replace(
+    /[&<>'"]/g,
+    char => ({
+      '&':'&amp;',
+      '<':'&lt;',
+      '>':'&gt;',
+      "'":'&#39;',
+      '"':'&quot;'
+    }[char])
+  );
 
 }
 
@@ -2884,13 +2831,17 @@ function headers(json = false) {
   const h = {};
 
   if (json) {
+
     h['Content-Type'] =
       'application/json';
+
   }
 
   if (initData) {
+
     h['X-Telegram-Init-Data'] =
       initData;
+
   }
 
   return h;
@@ -2903,30 +2854,82 @@ async function api(
   options = {}
 ) {
 
-  const response =
-    await fetch(
-      API_BASE + path,
-      {
-        ...options,
+  const controller =
+    new AbortController();
 
-        headers: {
-          ...headers(
-            !!options.body
-          ),
-
-          ...(options.headers || {})
-        }
-      }
+  const timeout =
+    setTimeout(
+      () => controller.abort(),
+      12000
     );
+
+  let response;
+
+  try {
+
+    response =
+      await fetch(
+        API_BASE + path,
+        {
+          ...options,
+
+          signal:
+            controller.signal,
+
+          headers: {
+
+            ...headers(
+              !!options.body
+            ),
+
+            ...(options.headers || {})
+
+          }
+
+        }
+      );
+
+  }
+
+  catch(error) {
+
+    if (
+      error?.name ===
+      'AbortError'
+    ) {
+
+      throw new Error(
+        'API не отвечает'
+      );
+
+    }
+
+    throw new Error(
+      'Не удалось подключиться к API'
+    );
+
+  }
+
+  finally {
+
+    clearTimeout(
+      timeout
+    );
+
+  }
+
 
   let data = null;
 
   try {
+
     data =
       await response.json();
+
   }
 
   catch {}
+
 
   if (!response.ok) {
 
@@ -2938,10 +2941,15 @@ async function api(
 
   }
 
+
   return data;
 
 }
 
+
+/* ==========================================================
+   STATS
+========================================================== */
 
 function saveStats() {
 
@@ -2980,6 +2988,7 @@ function setStats() {
       'losses'
     );
 
+
   if (a)
     a.textContent =
       gamesPlayed;
@@ -2995,143 +3004,354 @@ function setStats() {
 }
 
 
+/* ==========================================================
+   BALANCE
+========================================================== */
+
 function updateBalanceUI() {
 
   const value =
-    Number(balance || 0)
-      .toFixed(2);
+    Number(
+      balance || 0
+    ).toFixed(2);
+
 
   [
     'headerBalance',
     'gameBalance',
     'gameMenuBalance',
     'balanceTicket',
+    'balanceTicketGame',
     'balanceCase',
-    'balanceUpgrade'
+    'headerCaseBalance',
+    'balanceUpgrade',
+    'balanceProfile'
   ]
-  .forEach(id => {
+  .forEach(
+    id => {
 
-    const el =
-      document.getElementById(id);
+      const el =
+        document.getElementById(
+          id
+        );
 
-    if (el)
-      el.textContent =
-        value;
-
-  });
+      if (!el)
+        return;
 
 
-  const profile =
-    document.getElementById(
-      'profileBalance'
-    );
+      if (
+        id ===
+        'balanceProfile'
+      ) {
 
-  if (profile)
-    profile.textContent =
-      value + ' ⭐';
+        el.textContent =
+          value +
+          ' ⭐';
 
-  setStats();
+      }
+
+      else {
+
+        el.textContent =
+          value;
+
+      }
+
+    }
+  );
 
 }
 
+
+/* ==========================================================
+   BALANCE API
+========================================================== */
 
 async function refreshBalance() {
 
   if (!userId)
     return;
 
+
   const data =
     await api(
       '/api/balance/' +
-      encodeURIComponent(userId)
+      userId
     );
 
+
   balance =
-    Number(data.balance || 0);
+    Number(
+      data.balance ??
+      0
+    );
+
 
   updateBalanceUI();
 
 }
 
 
+/* ==========================================================
+   INVENTORY
+========================================================== */
+
 async function refreshInventory() {
 
   if (!userId)
     return;
 
+
   const data =
     await api(
       '/api/inventory/' +
-      encodeURIComponent(userId)
+      userId
     );
 
+
   inventoryItems =
-    Array.isArray(data.items)
+    Array.isArray(
+      data.items
+    )
       ? data.items
       : [];
+
 
   renderInventory();
 
 }
 
 
-function showApiStatus(
-  connected,
-  errorText = ''
-) {
+function renderInventory() {
 
-  const el =
+  const container =
     document.getElementById(
-      'apiStatus'
+      'inventoryList'
     );
 
-  if (!el)
+
+  if (!container)
     return;
 
-  if (connected) {
 
-    el.innerHTML =
-      '<span style="color:#39e58c;font-weight:900">● Подключен</span>';
+  if (
+    !inventoryItems.length
+  ) {
+
+    container.innerHTML = `
+
+      <div class="card empty-inventory">
+
+        <div class="empty-icon">
+          🎒
+        </div>
+
+        <div class="empty-title">
+          Инвентарь пуст
+        </div>
+
+        <div class="empty-text">
+          Открывайте кейсы,
+          чтобы получить предметы.
+        </div>
+
+      </div>
+
+    `;
+
+    return;
 
   }
 
-  else {
 
-    el.innerHTML =
-      '<span style="color:#ef4752;font-weight:900">● Не подключен</span>';
+  container.innerHTML = `
 
-  }
+    <div class="card">
 
-  if (errorText)
-    el.title =
-      errorText;
+      <div class="card-title">
+        🎒 Ваши предметы
+      </div>
+
+      ${
+        inventoryItems
+          .map(
+            (item,index) => `
+
+              <div class="inventory-item">
+
+                <div class="inventory-item-left">
+
+                  <div class="inventory-item-emoji">
+                    ${esc(item.emoji || '🎁')}
+                  </div>
+
+                  <div>
+
+                    <div class="inventory-item-name">
+                      ${esc(item.name || 'Предмет')}
+                    </div>
+
+                    <div class="inventory-item-value">
+                      +${Number(item.value || 0).toFixed(2)} ⭐
+                    </div>
+
+                  </div>
+
+                </div>
+
+                <button
+                  class="inventory-sell-btn"
+                  data-index="${index}"
+                >
+                  ПРОДАТЬ
+                </button>
+
+              </div>
+
+            `
+          )
+          .join('')
+      }
+
+      <button
+        class="sell-all"
+        id="sellAllButton"
+      >
+        ПРОДАТЬ ВСЁ
+      </button>
+
+    </div>
+
+  `;
+
+
+  container
+    .querySelectorAll(
+      '.inventory-sell-btn'
+    )
+    .forEach(
+      button => {
+
+        button.addEventListener(
+          'click',
+          () =>
+            sellItem(
+              Number(
+                button.dataset.index
+              )
+            )
+        );
+
+      }
+    );
+
+
+  document
+    .getElementById(
+      'sellAllButton'
+    )
+    ?.addEventListener(
+      'click',
+      sellAll
+    );
 
 }
 
 
-async function checkApi() {
+async function sellItem(
+  index
+) {
+
+  const item =
+    inventoryItems[index];
+
+  if (!item)
+    return;
+
 
   try {
 
     const data =
-      await api('/health');
+      await api(
+        '/api/inventory/sell',
+        {
+          method:'POST',
 
-    showApiStatus(
-      !!data.ok
-    );
+          body:
+            JSON.stringify({
 
-    return true;
+              user_id:
+                userId,
+
+              item_id:
+                item.id ??
+                item.item_id
+
+            })
+
+        }
+      );
+
+
+    balance =
+      Number(
+        data.balance
+      );
+
+
+    updateBalanceUI();
+
+    await refreshInventory();
 
   }
 
-  catch (error) {
+  catch(error) {
 
-    showApiStatus(
-      false,
+    alert(
       error.message
     );
 
-    return false;
+  }
+
+}
+
+
+async function sellAll() {
+
+  try {
+
+    const data =
+      await api(
+        '/api/inventory/sell-all',
+        {
+          method:'POST',
+
+          body:
+            JSON.stringify({
+              user_id:
+                userId
+            })
+        }
+      );
+
+
+    balance =
+      Number(
+        data.balance
+      );
+
+
+    updateBalanceUI();
+
+    await refreshInventory();
+
+  }
+
+  catch(error) {
+
+    alert(
+      error.message
+    );
 
   }
 
@@ -3139,13 +3359,8 @@ async function checkApi() {
 
 
 /* ==========================================================
-   NAVIGATION
+   PAGE NAVIGATION
 ========================================================== */
-
-const navButtons =
-  document.querySelectorAll(
-    '.nav-button'
-  );
 
 const pages = {
 
@@ -3172,99 +3387,131 @@ function goMenu() {
   Object.values(pages)
     .forEach(
       page =>
-        page.classList.add(
-          'hidden'
+        page.classList.remove(
+          'active'
         )
     );
 
+
   pages.menuPage
-    .classList.remove(
-      'hidden'
+    .classList.add(
+      'active'
     );
 
-  navButtons
+
+  document
+    .querySelectorAll(
+      '.nav-button'
+    )
     .forEach(
-      button =>
+      button => {
+
         button.classList.toggle(
           'active',
           button.dataset.page ===
           'menuPage'
-        )
+        );
+
+      }
     );
+
+
+  updateBalanceUI();
 
 }
 
 
-navButtons.forEach(button => {
+document
+  .querySelectorAll(
+    '.nav-button'
+  )
+  .forEach(
+    button => {
 
-  button.addEventListener(
-    'click',
-    async () => {
+      button.addEventListener(
+        'click',
+        async () => {
 
-      Object.values(pages)
-        .forEach(
-          page =>
-            page.classList.add(
-              'hidden'
+          const page =
+            button.dataset.page;
+
+
+          Object.values(pages)
+            .forEach(
+              p =>
+                p.classList.remove(
+                  'active'
+                )
+            );
+
+
+          if (
+            pages[page]
+          ) {
+
+            pages[page]
+              .classList.add(
+                'active'
+              );
+
+          }
+
+
+          document
+            .querySelectorAll(
+              '.nav-button'
             )
-        );
+            .forEach(
+              b =>
+                b.classList.remove(
+                  'active'
+                )
+            );
 
-      const page =
-        pages[
-          button.dataset.page
-        ];
 
-      if (page)
-        page.classList.remove(
-          'hidden'
-        );
+          button.classList.add(
+            'active'
+          );
 
-      navButtons
-        .forEach(
-          b =>
-            b.classList.remove(
-              'active'
-            )
-        );
 
-      button.classList.add(
-        'active'
+          if (
+            page ===
+            'inventoryPage'
+          ) {
+
+            try {
+
+              await refreshInventory();
+
+            }
+
+            catch {}
+
+          }
+
+
+          if (
+            page ===
+            'profilePage'
+          ) {
+
+            try {
+
+              await refreshBalance();
+
+            }
+
+            catch {}
+
+            checkApi();
+
+          }
+
+        }
       );
-
-
-      if (
-        button.dataset.page ===
-        'inventoryPage'
-      ) {
-
-        try {
-          await refreshInventory();
-        }
-
-        catch {}
-
-      }
-
-
-      if (
-        button.dataset.page ===
-        'profilePage'
-      ) {
-
-        try {
-          await refreshBalance();
-        }
-
-        catch {}
-
-        checkApi();
-
-      }
 
     }
   );
-
-});
 
 
 /* ==========================================================
@@ -3283,6 +3530,7 @@ function updateProfile() {
       'profileId'
     );
 
+
   if (name) {
 
     name.textContent =
@@ -3299,12 +3547,21 @@ function updateProfile() {
 
   }
 
-  if (id)
+
+  if (id) {
+
     id.textContent =
-      userId || '—';
+      userId ||
+      '—';
+
+  }
 
 }
 
+
+/* ==========================================================
+   PROMO
+========================================================== */
 
 const promoButton =
   document.getElementById(
@@ -3328,9 +3585,11 @@ if (promoButton) {
           'promoMessage'
         );
 
+
       const code =
         (
-          input.value || ''
+          input.value ||
+          ''
         )
         .trim()
         .toLowerCase();
@@ -3376,16 +3635,27 @@ if (promoButton) {
 
               body:
                 JSON.stringify({
-                  user_id:userId,
-                  code:code
+
+                  user_id:
+                    userId,
+
+                  code:
+                    code
+
                 })
+
             }
           );
 
+
         balance =
-          Number(data.balance);
+          Number(
+            data.balance
+          );
+
 
         updateBalanceUI();
+
 
         message.textContent =
           '✅ ' +
@@ -3394,10 +3664,13 @@ if (promoButton) {
             'Промокод активирован'
           );
 
+
         message.style.color =
           '#39e58c';
 
-        input.value = '';
+
+        input.value =
+          '';
 
       }
 
@@ -3433,153 +3706,37 @@ document
   .querySelectorAll(
     '.deposit-btn'
   )
-  .forEach(button => {
+  .forEach(
+    button => {
 
-    button.addEventListener(
-      'click',
-      async () => {
+      button.addEventListener(
+        'click',
+        async () => {
 
-        const amount =
-          Number(
-            button.dataset.amount
-          );
-
-        const message =
-          document.getElementById(
-            'paymentMessage'
-          );
-
-
-        if (!userId) {
-
-          message.textContent =
-            'Откройте приложение через Telegram';
-
-          message.style.color =
-            '#ef4752';
-
-          return;
-
-        }
-
-
-        document
-          .querySelectorAll(
-            '.deposit-btn'
-          )
-          .forEach(
-            b =>
-              b.disabled = true
-          );
-
-
-        try {
-
-          const data =
-            await api(
-              '/api/payments/stars',
-              {
-                method:'POST',
-
-                body:
-                  JSON.stringify({
-                    user_id:userId,
-                    amount:amount
-                  })
-              }
+          const amount =
+            Number(
+              button.dataset.amount
             );
 
 
-          if (
-            data.invoice_link &&
-            tg &&
-            tg.openInvoice
-          ) {
-
-            tg.openInvoice(
-              data.invoice_link,
-              status => {
-
-                if (
-                  status ===
-                  'paid'
-                ) {
-
-                  setTimeout(
-                    refreshBalance,
-                    1000
-                  );
-
-                  message.textContent =
-                    '✅ Оплата получена';
-
-                  message.style.color =
-                    '#39e58c';
-
-                }
-
-                else if (
-                  status ===
-                  'cancelled'
-                ) {
-
-                  message.textContent =
-                    'Оплата отменена';
-
-                  message.style.color =
-                    '#ffd84d';
-
-                }
-
-                else if (
-                  status ===
-                  'failed'
-                ) {
-
-                  message.textContent =
-                    '❌ Оплата не прошла';
-
-                  message.style.color =
-                    '#ef4752';
-
-                }
-
-              }
+          const message =
+            document.getElementById(
+              'paymentMessage'
             );
 
-          }
 
-          else if (
-            data.invoice_link
-          ) {
-
-            window.open(
-              data.invoice_link,
-              '_blank'
-            );
+          if (!userId) {
 
             message.textContent =
-              'Откройте счёт для оплаты';
+              'Откройте приложение через Telegram';
 
             message.style.color =
-              '#ffd84d';
+              '#ef4752';
+
+            return;
 
           }
 
-        }
-
-        catch(error) {
-
-          message.textContent =
-            '❌ ' +
-            error.message;
-
-          message.style.color =
-            '#ef4752';
-
-        }
-
-        finally {
 
           document
             .querySelectorAll(
@@ -3587,258 +3744,173 @@ document
             )
             .forEach(
               b =>
-                b.disabled = false
+                b.disabled =
+                  true
             );
 
-        }
-
-      }
-    );
-
-  });
-
-
-/* ==========================================================
-   INVENTORY
-========================================================== */
-
-function renderInventory() {
-
-  const container =
-    document.getElementById(
-      'inventoryContainer'
-    );
-
-  const sellAll =
-    document.getElementById(
-      'sellAllButton'
-    );
-
-  if (!container)
-    return;
-
-
-  container.innerHTML =
-    '';
-
-
-  if (
-    inventoryItems.length ===
-    0
-  ) {
-
-    container.innerHTML =
-      `
-      <div class="empty-inventory">
-
-        <div class="empty-icon">
-          📦
-        </div>
-
-        <div class="empty-title">
-          Инвентарь пуст
-        </div>
-
-        <div class="empty-text">
-          Предметы из кейсов появятся здесь.
-        </div>
-
-      </div>
-      `;
-
-    if (sellAll)
-      sellAll.disabled =
-        true;
-
-    return;
-
-  }
-
-
-  if (sellAll)
-    sellAll.disabled =
-      false;
-
-
-  inventoryItems
-    .forEach(item => {
-
-      const div =
-        document.createElement(
-          'div'
-        );
-
-      div.className =
-        'inventory-item';
-
-
-      div.innerHTML =
-        `
-        <div class="inventory-item-left">
-
-          <div class="inventory-item-emoji">
-            ${esc(item.emoji)}
-          </div>
-
-          <div>
-
-            <div class="inventory-item-name">
-              ${esc(item.name)}
-            </div>
-
-            <div class="inventory-item-value">
-              ${Number(item.value).toFixed(2)} ⭐
-            </div>
-
-          </div>
-
-        </div>
-
-        <button
-          class="inventory-sell-btn"
-          data-id="${item.id}"
-        >
-          ПРОДАТЬ
-        </button>
-        `;
-
-
-      container.appendChild(
-        div
-      );
-
-    });
-
-
-  container
-    .querySelectorAll(
-      '.inventory-sell-btn'
-    )
-    .forEach(button => {
-
-      button.addEventListener(
-        'click',
-        async () => {
-
-          button.disabled =
-            true;
 
           try {
 
             const data =
               await api(
-                '/api/inventory/sell',
+                '/api/payments/stars',
                 {
                   method:'POST',
 
                   body:
                     JSON.stringify({
-                      user_id:userId,
-                      item_id:String(
-                        button.dataset.id
-                      )
+
+                      user_id:
+                        userId,
+
+                      amount:
+                        amount
+
                     })
+
                 }
               );
 
-            balance =
-              Number(data.balance);
 
-            updateBalanceUI();
+            if (
+              data.invoice_link &&
+              tg &&
+              tg.openInvoice
+            ) {
 
-            await refreshInventory();
+              tg.openInvoice(
+                data.invoice_link,
+                status => {
+
+                  if (
+                    status ===
+                    'paid'
+                  ) {
+
+                    setTimeout(
+                      refreshBalance,
+                      1000
+                    );
+
+
+                    message.textContent =
+                      '✅ Оплата получена';
+
+                    message.style.color =
+                      '#39e58c';
+
+                  }
+
+                  else if (
+                    status ===
+                    'cancelled'
+                  ) {
+
+                    message.textContent =
+                      'Оплата отменена';
+
+                    message.style.color =
+                      '#ffd84d';
+
+                  }
+
+                  else if (
+                    status ===
+                    'failed'
+                  ) {
+
+                    message.textContent =
+                      '❌ Ошибка оплаты';
+
+                    message.style.color =
+                      '#ef4752';
+
+                  }
+
+                }
+              );
+
+            }
+
+            else {
+
+              message.textContent =
+                '❌ Telegram Invoice не получен';
+
+              message.style.color =
+                '#ef4752';
+
+            }
 
           }
 
           catch(error) {
 
-            button.disabled =
-              false;
+            message.textContent =
+              '❌ ' +
+              error.message;
 
-            alert(
-              error.message
-            );
+            message.style.color =
+              '#ef4752';
+
+          }
+
+          finally {
+
+            document
+              .querySelectorAll(
+                '.deposit-btn'
+              )
+              .forEach(
+                b =>
+                  b.disabled =
+                    false
+              );
 
           }
 
         }
       );
 
-    });
-
-}
-
-
-const sellAllButton =
-  document.getElementById(
-    'sellAllButton'
-  );
-
-
-if (sellAllButton) {
-
-  sellAllButton.addEventListener(
-    'click',
-    async () => {
-
-      if (
-        inventoryItems.length ===
-        0
-      )
-        return;
-
-      sellAllButton.disabled =
-        true;
-
-
-      try {
-
-        for (
-          const item of
-          [...inventoryItems]
-        ) {
-
-          await api(
-            '/api/inventory/sell',
-            {
-              method:'POST',
-
-              body:
-                JSON.stringify({
-                  user_id:userId,
-                  item_id:String(
-                    item.id
-                  )
-                })
-            }
-          );
-
-        }
-
-        await refreshBalance();
-        await refreshInventory();
-
-      }
-
-      catch(error) {
-
-        alert(
-          error.message
-        );
-
-        await refreshInventory();
-
-      }
-
-      finally {
-
-        sellAllButton.disabled =
-          false;
-
-      }
-
     }
   );
+
+
+/* ==========================================================
+   API STATUS
+========================================================== */
+
+async function checkApi() {
+
+  const el =
+    document.getElementById(
+      'apiStatus'
+    );
+
+
+  if (!el)
+    return;
+
+
+  try {
+
+    const data =
+      await api(
+        '/health'
+      );
+
+
+    el.innerHTML =
+      '<span class="api-status-good">● Подключен</span>';
+
+  }
+
+  catch(error) {
+
+    el.innerHTML =
+      '<span class="api-status-bad">● Ошибка API</span>';
+
+  }
 
 }
 
@@ -3849,18 +3921,20 @@ if (sellAllButton) {
 
 (function() {
 
-  const main =
+  const container =
     document.getElementById(
-      'mainScreenCase'
+      'casesGameContainer'
     );
+
+
+  if (!container)
+    return;
+
 
   const screen =
     document.getElementById(
-      'caseScreenCase'
+      'casesScreen'
     );
-
-  if (!main)
-    return;
 
 
   const title =
@@ -3868,52 +3942,62 @@ if (sellAllButton) {
       'caseTitle'
     );
 
+
   const open =
     document.getElementById(
       'openButton'
     );
 
-  const track =
-    document.getElementById(
-      'rouletteTrack'
-    );
 
   const grid =
     document.getElementById(
       'itemsGrid'
     );
 
+
+  const track =
+    document.getElementById(
+      'rouletteTrack'
+    );
+
+
   const modal =
     document.getElementById(
       'resultModalCase'
     );
+
 
   const resultEmoji =
     document.getElementById(
       'resultEmoji'
     );
 
+
   const resultName =
     document.getElementById(
       'resultName'
     );
+
 
   const resultValue =
     document.getElementById(
       'resultValue'
     );
 
-  const message =
+
+  const closeResult =
     document.getElementById(
-      'messageCase'
+      'closeResultCase'
     );
 
 
   let current =
-    'case50';
+    null;
+
 
   let opening =
     false;
+
 
   let currentWinner =
     null;
@@ -3924,17 +4008,23 @@ if (sellAllButton) {
     free: {
 
       title:
-        'CASE FREE',
+        '🎁 CASE FREE',
 
-      price:0,
+      price:
+        0,
 
-      items:[
-        ['⭐','3 Stars',3,30,''],
-        ['⭐','5 Stars',5,25,''],
-        ['⭐','10 Stars',10,20,''],
-        ['🐻','Bear',15,15,''],
-        ['🎁','Gift',25,8,'uncommon'],
-        ['💎','Diamond',50,2,'rare']
+      items: [
+
+        ['🎁','FREE REWARD',5,'common'],
+
+        ['⭐','STAR DROP',10,'common'],
+
+        ['💎','DIAMOND',25,'rare'],
+
+        ['🐻','WHITE BEAR',50,'epic'],
+
+        ['💖','HEART',100,'legendary']
+
       ]
 
     },
@@ -3943,17 +4033,23 @@ if (sellAllButton) {
     pepe: {
 
       title:
-        'PLS PEPE 🐸',
+        '🐸 PLS PEPE',
 
-      price:0,
+      price:
+        0,
 
-      items:[
-        ['⭐','1 ⭐',1,30,''],
-        ['⭐','3 ⭐',3,25,''],
-        ['⭐','5 ⭐',5,20,''],
-        ['⭐','10 ⭐',10,15,''],
-        ['🎁','25 ⭐',25,8,'rare'],
-        ['🐸','Plush Pepe',100,2,'legendary']
+      items: [
+
+        ['🐸','PEPE',10,'common'],
+
+        ['💚','GREEN PEPE',20,'common'],
+
+        ['💎','PEPE DIAMOND',40,'rare'],
+
+        ['💜','PURPLE PEPE',75,'epic'],
+
+        ['👑','KING PEPE',150,'legendary']
+
       ]
 
     },
@@ -3962,19 +4058,23 @@ if (sellAllButton) {
     case50: {
 
       title:
-        'CASE 50 ⭐',
+        '🎁 CASE 50',
 
-      price:50,
+      price:
+        50,
 
-      items:[
-        ['⭐','7 ⭐',7,25,''],
-        ['⭐','15 ⭐',15,20,''],
-        ['🎁','25 ⭐',25,20,'uncommon'],
-        ['💎','50 ⭐',50,15,'rare'],
-        ['💎','100 ⭐',100,10,'rare'],
-        ['🏆','250 ⭐',250,5,'legendary'],
-        ['🐻','500 ⭐',500,.5,'legendary'],
-        ['🖊️','1000 ⭐',1000,.5,'legendary']
+      items: [
+
+        ['⭐','STAR',25,'common'],
+
+        ['💎','DIAMOND',50,'common'],
+
+        ['🐻','BEAR',75,'rare'],
+
+        ['💜','PURPLE DROP',125,'epic'],
+
+        ['👑','LEGENDARY',250,'legendary']
+
       ]
 
     },
@@ -3983,20 +4083,23 @@ if (sellAllButton) {
     case250: {
 
       title:
-        'CASE 250 ⭐',
+        '💎 CASE 250',
 
-      price:250,
+      price:
+        250,
 
-      items:[
-        ['⭐','10 ⭐',10,10,''],
-        ['⭐','25 ⭐',25,15,''],
-        ['⭐','50 ⭐',50,15,'uncommon'],
-        ['💎','100 ⭐',100,15,'rare'],
-        ['💎','200 ⭐',200,12,'rare'],
-        ['💎','300 ⭐',300,10,'rare'],
-        ['💎','450 ⭐',450,7,'legendary'],
-        ['🐕','Snoop Dogg',550,5,'legendary'],
-        ['🐸','Plush Pepe',1000,1,'legendary']
+      items: [
+
+        ['💎','DIAMOND',125,'common'],
+
+        ['🐻','BEAR',250,'rare'],
+
+        ['💜','PURPLE BEAR',500,'rare'],
+
+        ['👑','KING DROP',1000,'epic'],
+
+        ['🔥','MEGA DROP',2500,'legendary']
+
       ]
 
     }
@@ -4011,11 +4114,20 @@ if (sellAllButton) {
     return items.map(
       item => ({
 
-        emoji:item[0],
-        name:item[1],
-        value:item[2],
-        chance:item[3],
-        rarity:item[4]
+        emoji:
+          item[0],
+
+        name:
+          item[1],
+
+        value:
+          item[2],
+
+        chance:
+          item[2],
+
+        rarity:
+          item[3]
 
       })
     );
@@ -4032,13 +4144,14 @@ if (sellAllButton) {
         'div'
       );
 
+
     div.className =
       'roulette-item ' +
       item.rarity;
 
 
-    div.innerHTML =
-      `
+    div.innerHTML = `
+
       <div class="roulette-emoji">
         ${item.emoji}
       </div>
@@ -4046,7 +4159,8 @@ if (sellAllButton) {
       <div class="roulette-name">
         ${esc(item.name)}
       </div>
-      `;
+
+    `;
 
 
     return div;
@@ -4061,44 +4175,50 @@ if (sellAllButton) {
     grid.innerHTML =
       '';
 
+
     [...items]
       .sort(
         (a,b) =>
-          b[2] - a[2]
+          b[2] -
+          a[2]
       )
-      .forEach(item => {
+      .forEach(
+        item => {
 
-        const div =
-          document.createElement(
-            'div'
-          );
-
-        div.className =
-          'item-card ' +
-          item[4];
+          const div =
+            document.createElement(
+              'div'
+            );
 
 
-        div.innerHTML =
-          `
-          <div class="item-emoji">
-            ${item[0]}
-          </div>
+          div.className =
+            'item-card ' +
+            item[3];
 
-          <div class="item-name">
-            ${esc(item[1])}
-          </div>
 
-          <div class="item-price">
-            +${item[2]} ⭐
-          </div>
+          div.innerHTML = `
+
+            <div class="item-emoji">
+              ${item[0]}
+            </div>
+
+            <div class="item-name">
+              ${esc(item[1])}
+            </div>
+
+            <div class="item-price">
+              +${item[2]} ⭐
+            </div>
+
           `;
 
 
-        grid.appendChild(
-          div
-        );
+          grid.appendChild(
+            div
+          );
 
-      });
+        }
+      );
 
   }
 
@@ -4115,6 +4235,7 @@ if (sellAllButton) {
 
     track.innerHTML =
       '';
+
 
     for (
       let i=0;
@@ -4138,33 +4259,6 @@ if (sellAllButton) {
   }
 
 
-  function toast(
-    text
-  ) {
-
-    message.textContent =
-      text;
-
-    message.classList.add(
-      'show'
-    );
-
-    clearTimeout(
-      message._timer
-    );
-
-    message._timer =
-      setTimeout(
-        () =>
-          message.classList.remove(
-            'show'
-          ),
-        2500
-      );
-
-  }
-
-
   function showCase(
     type
   ) {
@@ -4172,9 +4266,11 @@ if (sellAllButton) {
     current =
       type;
 
+
     main.classList.remove(
       'active'
     );
+
 
     screen.classList.add(
       'active'
@@ -4208,6 +4304,7 @@ if (sellAllButton) {
       config.items
     );
 
+
     resetRoulette(
       convert(
         config.items
@@ -4226,19 +4323,19 @@ if (sellAllButton) {
       'show'
     );
 
+
     screen.classList.remove(
       'active'
     );
 
-    main.classList.add(
-      'active'
-    );
 
     currentWinner =
       null;
 
+
     opening =
       false;
+
 
     open.disabled =
       false;
@@ -4251,9 +4348,10 @@ if (sellAllButton) {
     if (opening)
       return;
 
+
     if (!userId) {
 
-      toast(
+      alert(
         'Откройте приложение через Telegram'
       );
 
@@ -4268,6 +4366,7 @@ if (sellAllButton) {
 
     opening =
       true;
+
 
     open.disabled =
       true;
@@ -4294,6 +4393,7 @@ if (sellAllButton) {
                   config.price
 
               })
+
           }
         );
 
@@ -4303,7 +4403,9 @@ if (sellAllButton) {
           data.balance
         );
 
+
       updateBalanceUI();
+
 
       await refreshInventory();
 
@@ -4321,8 +4423,10 @@ if (sellAllButton) {
       track.innerHTML =
         '';
 
+
       track.style.transition =
         'none';
+
 
       track.style.transform =
         'translateX(0)';
@@ -4330,6 +4434,7 @@ if (sellAllButton) {
 
       const winnerIndex =
         36;
+
 
       const total =
         45;
@@ -4361,12 +4466,11 @@ if (sellAllButton) {
         track.parentElement
           .clientWidth;
 
+
       const cardWidth =
-        track
-          .querySelector(
-            '.roulette-item'
-          )
-          ?.offsetWidth ||
+        track.querySelector(
+          '.roulette-item'
+        )?.offsetWidth ||
         125;
 
 
@@ -4374,7 +4478,8 @@ if (sellAllButton) {
         -(
           winnerIndex *
           (
-            cardWidth + 10
+            cardWidth +
+            10
           )
           -
           (
@@ -4415,8 +4520,10 @@ if (sellAllButton) {
           resultEmoji.textContent =
             currentWinner.emoji;
 
+
           resultName.textContent =
             currentWinner.name;
+
 
           resultValue.textContent =
             '+' +
@@ -4425,12 +4532,15 @@ if (sellAllButton) {
             ).toFixed(2) +
             ' ⭐';
 
+
           modal.classList.add(
             'show'
           );
 
+
           opening =
             false;
+
 
           open.disabled =
             false;
@@ -4443,12 +4553,14 @@ if (sellAllButton) {
 
     catch(error) {
 
-      toast(
+      alert(
         error.message
       );
 
+
       opening =
         false;
+
 
       open.disabled =
         false;
@@ -4458,183 +4570,9 @@ if (sellAllButton) {
   }
 
 
-  document
-    .getElementById(
-      'freeCaseBox'
-    )
-    ?.addEventListener(
-      'click',
-      () =>
-        showCase(
-          'free'
-        )
-    );
-
-
-  document
-    .getElementById(
-      'plsPepeBox'
-    )
-    ?.addEventListener(
-      'click',
-      () =>
-        showCase(
-          'pepe'
-        )
-    );
-
-
-  document
-    .getElementById(
-      'caseBox'
-    )
-    ?.addEventListener(
-      'click',
-      () =>
-        showCase(
-          'case50'
-        )
-    );
-
-
-  document
-    .getElementById(
-      'case250Box'
-    )
-    ?.addEventListener(
-      'click',
-      () =>
-        showCase(
-          'case250'
-        )
-    );
-
-
-  open.addEventListener(
-    'click',
-    openCase
-  );
-
-
-  document
-    .getElementById(
-      'backButtonCase'
-    )
-    ?.addEventListener(
-      'click',
-      closeCaseScreen
-    );
-
-
-  document
-    .getElementById(
-      'backResult'
-    )
-    ?.addEventListener(
-      'click',
-      async () => {
-
-        modal.classList.remove(
-          'show'
-        );
-
-        await refreshInventory();
-
-      }
-    );
-
-
-  document
-    .getElementById(
-      'sellResult'
-    )
-    ?.addEventListener(
-      'click',
-      async () => {
-
-        try {
-
-          await refreshInventory();
-
-
-          const item =
-            inventoryItems.find(
-              i =>
-                i.name ===
-                currentWinner?.name
-                &&
-                Math.abs(
-                  Number(i.value) -
-                  Number(
-                    currentWinner?.value
-                  )
-                ) < .001
-            );
-
-
-          if (!item) {
-
-            toast(
-              'Предмет уже отсутствует в инвентаре'
-            );
-
-          }
-
-          else {
-
-            const data =
-              await api(
-                '/api/inventory/sell',
-                {
-                  method:'POST',
-
-                  body:
-                    JSON.stringify({
-
-                      user_id:
-                        userId,
-
-                      item_id:
-                        String(
-                          item.id
-                        )
-
-                    })
-                }
-              );
-
-
-            balance =
-              Number(
-                data.balance
-              );
-
-            updateBalanceUI();
-
-            await refreshInventory();
-
-            toast(
-              'Предмет продан ⭐'
-            );
-
-          }
-
-        }
-
-        catch(error) {
-
-          toast(
-            error.message
-          );
-
-        }
-
-
-        modal.classList.remove(
-          'show'
-        );
-
-      }
+  const main =
+    document.getElementById(
+      'menuPage'
     );
 
 
@@ -4646,88 +4584,62 @@ if (sellAllButton) {
       'click',
       () => {
 
-        Object.values(pages)
-          .forEach(
-            p =>
-              p.classList.add(
-                'hidden'
-              )
-          );
-
-        document
-          .getElementById(
-            'casesGameContainer'
-          )
-          .classList.remove(
-            'hidden'
-          );
-
-        main.classList.add(
-          'active'
+        container.classList.remove(
+          'hidden'
         );
 
-        screen.classList.remove(
-          'active'
+        showCase(
+          'free'
         );
-
-        updateBalanceUI();
 
       }
     );
 
 
-  const closeButton =
-    document.createElement(
-      'button'
-    );
-
-  closeButton.type =
-    'button';
-
-  closeButton.textContent =
-    '✕';
-
-  closeButton.style.cssText =
-    `
-    position:absolute;
-    top:14px;
-    left:14px;
-    z-index:20;
-    border:0;
-    border-radius:12px;
-    background:rgba(10,15,25,.75);
-    color:#fff;
-    padding:9px 12px;
-    font-weight:900;
-    `;
-
   document
     .getElementById(
-      'casesGameContainer'
+      'closeCasesBtn'
     )
-    .prepend(
-      closeButton
-    );
+    ?.addEventListener(
+      'click',
+      () => {
 
+        closeCaseScreen();
 
-  closeButton.addEventListener(
-    'click',
-    () => {
-
-      closeCaseScreen();
-
-      document
-        .getElementById(
-          'casesGameContainer'
-        )
-        .classList.add(
+        container.classList.add(
           'hidden'
         );
 
-      goMenu();
+        goMenu();
 
-    }
+      }
+    );
+
+
+  document
+    .getElementById(
+      'closeResultCase'
+    )
+    ?.addEventListener(
+      'click',
+      () => {
+
+        modal.classList.remove(
+          'show'
+        );
+
+      }
+    );
+
+
+  open.addEventListener(
+    'click',
+    openCase
   );
+
+
+  window.showCase =
+    showCase;
 
 })();
 
@@ -4743,6 +4655,7 @@ if (sellAllButton) {
       'gameCanvas'
     );
 
+
   if (!canvas)
     return;
 
@@ -4754,65 +4667,115 @@ if (sellAllButton) {
 
 
   let W=0;
+
   let H=0;
 
 
   const circle = {
+
     x:0,
+
     y:0,
+
     radius:205,
+
     wallWidth:10
+
   };
 
 
   const ball = {
+
     x:0,
+
     y:0,
+
     vx:0,
+
     vy:0,
+
     radius:13
+
   };
 
 
-  const GRAVITY=.20;
-  const MAX_SPEED=6.2;
-  const MAX_X=3.8;
-  const SIDE=7;
-  const ZONE=90;
-  const HOLE_SPEED=.018;
+  const GRAVITY =
+    .20;
+
+
+  const MAX_SPEED =
+    6.2;
+
+
+  const MAX_X =
+    3.8;
+
+
+  const SIDE =
+    7;
+
+
+  const ZONE =
+    90;
+
+
+  const HOLE_SPEED =
+    .018;
 
 
   let hole=0;
+
   let running=false;
+
   let finished=false;
+
   let bounce=0;
+
   let mult=1;
+
   let bet=0;
+
   let diff='easy';
+
   let serverResult=null;
 
 
-  const difficulties={
+  const difficulties = {
 
-    easy:{
+    easy: {
+
       green:70,
+
       red:30,
+
       hole:50,
+
       step:.05
+
     },
 
-    medium:{
+    medium: {
+
       green:50,
+
       red:50,
+
       hole:50,
+
       step:.15
+
     },
 
-    hard:{
+    hard: {
+
       green:25,
+
       red:75,
+
       hole:61,
+
       step:.25
+
     }
 
   };
@@ -4837,11 +4800,14 @@ if (sellAllButton) {
     canvas.width =
       W*d;
 
+
     canvas.height =
       H*d;
 
+
     canvas.style.width =
       W+'px';
+
 
     canvas.style.height =
       H+'px';
@@ -4864,8 +4830,10 @@ if (sellAllButton) {
         H*.30
       );
 
+
     circle.x =
       W/2;
+
 
     circle.y =
       H*.39;
@@ -4898,12 +4866,14 @@ if (sellAllButton) {
         diff
       ];
 
+
     document
       .getElementById(
         'greenZone'
       )
       .style.width =
       s.green+'%';
+
 
     document
       .getElementById(
@@ -4917,7 +4887,9 @@ if (sellAllButton) {
 
   function norm(a) {
 
-    a %= Math.PI*2;
+    a %=
+      Math.PI*2;
+
 
     return a<0
       ? a+Math.PI*2
@@ -4937,622 +4909,25 @@ if (sellAllButton) {
         norm(b)
       );
 
+
     if (
       d >
       Math.PI
-    )
+    ) {
+
       d =
         Math.PI*2 -
         d;
+
+    }
+
 
     return d;
 
   }
 
 
-  function isHole(a) {
-
-    return (
-      angleDifference(
-        a,
-        hole
-      )
-      <=
-      difficulties[
-        diff
-      ].hole *
-      Math.PI /
-      360
-    );
-
-  }
-
-
-  function limit() {
-
-    ball.vx =
-      Math.max(
-        -MAX_X,
-        Math.min(
-          MAX_X,
-          ball.vx
-        )
-      );
-
-
-    const speed =
-      Math.hypot(
-        ball.vx,
-        ball.vy
-      );
-
-
-    if (
-      speed >
-      MAX_SPEED
-    ) {
-
-      const k =
-        MAX_SPEED /
-        speed;
-
-      ball.vx *= k;
-      ball.vy *= k;
-
-    }
-
-  }
-
-
-  function updateUI() {
-
-    document
-      .getElementById(
-        'gameBounces'
-      )
-      .textContent =
-      bounce;
-
-    document
-      .getElementById(
-        'gameMultiplier'
-      )
-      .textContent =
-      mult.toFixed(2) +
-      'x';
-
-    updateBalanceUI();
-
-  }
-
-
-  function startRound() {
-
-    if (running)
-      return;
-
-
-    let value =
-      Number(
-        document
-          .getElementById(
-            'gameBet'
-          )
-          .value
-      );
-
-
-    if (
-      !Number.isFinite(
-        value
-      )
-      ||
-      value < 25
-    ) {
-
-      document
-        .getElementById(
-          'gameBetError'
-        )
-        .textContent =
-        'Минимальная ставка 25 ⭐';
-
-      return;
-
-    }
-
-
-    if (
-      value >
-      balance
-    ) {
-
-      document
-        .getElementById(
-          'gameBetError'
-        )
-        .textContent =
-        'Недостаточно средств.';
-
-      return;
-
-    }
-
-
-    bet =
-      Math.round(
-        value*100
-      )/100;
-
-
-    document
-      .getElementById(
-        'gameBetError'
-      )
-      .textContent =
-      '';
-
-
-    document
-      .getElementById(
-        'startGame'
-      )
-      .disabled =
-      true;
-
-
-    api(
-      '/api/games/ball',
-      {
-        method:'POST',
-
-        body:
-          JSON.stringify({
-
-            user_id:
-              userId,
-
-            bet:
-              bet
-
-          })
-
-      }
-    )
-
-    .then(data => {
-
-      serverResult =
-        data;
-
-      balance =
-        Number(
-          data.balance
-        );
-
-
-      running =
-        true;
-
-      finished =
-        false;
-
-      bounce =
-        0;
-
-      mult =
-        1;
-
-
-      ball.x =
-        circle.x;
-
-      ball.y =
-        circle.y -
-        circle.radius*.35;
-
-
-      const dir =
-        Math.random()<.5
-          ? -1
-          : 1;
-
-
-      ball.vx =
-        dir *
-        (
-          1 +
-          Math.random()*1.3
-        );
-
-
-      ball.vy =
-        1.8 +
-        Math.random()*1.2;
-
-
-      document
-        .getElementById(
-          'gameMenu'
-        )
-        .classList.add(
-          'hidden'
-        );
-
-
-      document
-        .getElementById(
-          'gameResult'
-        )
-        .classList.add(
-          'hidden'
-        );
-
-
-      updateUI();
-
-    })
-
-    .catch(error => {
-
-      alert(
-        error.message
-      );
-
-      document
-        .getElementById(
-          'startGame'
-        )
-        .disabled =
-        false;
-
-    });
-
-  }
-
-
-  function finish() {
-
-    if (finished)
-      return;
-
-
-    finished =
-      true;
-
-    running =
-      false;
-
-
-    const win =
-      Number(
-        serverResult?.prize ||
-        0
-      ) > 0;
-
-
-    const prize =
-      Number(
-        serverResult?.prize ||
-        0
-      );
-
-
-    if (win)
-      wins++;
-    else
-      losses++;
-
-
-    gamesPlayed++;
-
-    saveStats();
-    setStats();
-
-
-    const title =
-      document.getElementById(
-        'resultTitle'
-      );
-
-    const money =
-      document.getElementById(
-        'resultMoney'
-      );
-
-    const info =
-      document.getElementById(
-        'resultInfo'
-      );
-
-
-    title.textContent =
-      win
-        ? 'WIN'
-        : 'LOSE';
-
-
-    title.className =
-      'result-title ' +
-      (
-        win
-          ? 'win'
-          : 'lose'
-      );
-
-
-    money.textContent =
-      (
-        win
-          ? '+'
-          : '-'
-      )
-      +
-      Math.abs(
-        win
-          ? prize
-          : bet
-      ).toFixed(2)
-      +
-      ' ⭐';
-
-
-    money.className =
-      'result-money ' +
-      (
-        win
-          ? 'win'
-          : 'lose'
-      );
-
-
-    info.innerHTML =
-      `
-      Ставка:
-      ${bet.toFixed(2)} ⭐
-      <br>
-
-      Множитель сервера:
-      x${Number(
-        serverResult?.multiplier || 0
-      ).toFixed(2)}
-
-      <br>
-
-      ${
-        win
-          ? 'Выигрыш: '+
-            prize.toFixed(2)+
-            ' ⭐'
-          : 'Ставка проиграна.'
-      }
-      `;
-
-
-    balance =
-      Number(
-        serverResult?.balance ??
-        balance
-      );
-
-
-    updateUI();
-
-
-    document
-      .getElementById(
-        'gameResult'
-      )
-      .classList.remove(
-        'hidden'
-      );
-
-
-    document
-      .getElementById(
-        'startGame'
-      )
-      .disabled =
-      false;
-
-  }
-
-
-  function physics() {
-
-    hole =
-      norm(
-        hole +
-        HOLE_SPEED
-      );
-
-
-    if (!running)
-      return;
-
-
-    ball.vy +=
-      GRAVITY;
-
-    ball.x +=
-      ball.vx;
-
-    ball.y +=
-      ball.vy;
-
-
-    limit();
-
-
-    const dx =
-      ball.x -
-      circle.x;
-
-    const dy =
-      ball.y -
-      circle.y;
-
-
-    const distance =
-      Math.hypot(
-        dx,
-        dy
-      );
-
-
-    const safe =
-      circle.radius -
-      circle.wallWidth/2 -
-      ball.radius;
-
-
-    if (
-      distance >= safe
-      &&
-      distance > 0
-    ) {
-
-      const nx =
-        dx/distance;
-
-      const ny =
-        dy/distance;
-
-      const angle =
-        Math.atan2(
-          dy,
-          dx
-        );
-
-
-      if (
-        isHole(angle)
-        &&
-        ball.vx*nx +
-        ball.vy*ny >= 0
-      ) {
-
-        ball.x =
-          circle.x +
-          nx *
-          (
-            circle.radius +
-            ball.radius +
-            5
-          );
-
-        ball.y =
-          circle.y +
-          ny *
-          (
-            circle.radius +
-            ball.radius +
-            5
-          );
-
-        return;
-
-      }
-
-
-      ball.x =
-        circle.x +
-        nx*safe;
-
-      ball.y =
-        circle.y +
-        ny*safe;
-
-
-      const dot =
-        ball.vx*nx +
-        ball.vy*ny;
-
-
-      if (
-        dot > 0
-      ) {
-
-        ball.vx -=
-          2*dot*nx;
-
-        ball.vy -=
-          2*dot*ny;
-
-      }
-
-
-      bounce++;
-
-      mult =
-        Math.round(
-          (
-            1 +
-            bounce *
-            difficulties[
-              diff
-            ].step
-          ) *
-          100
-        )/100;
-
-
-      ball.vy =
-        ball.vy < 0
-          ? 3.5 +
-            Math.random()*2.2
-          : -(
-              4.2 +
-              Math.random()*1.7
-            );
-
-
-      ball.vx +=
-        Math.random()*5.6 -
-        2.8;
-
-
-      limit();
-
-      updateUI();
-
-    }
-
-
-    if (
-      ball.x < 0 ||
-      ball.x > W
-    ) {
-
-      ball.x =
-        Math.max(
-          13,
-          Math.min(
-            W-13,
-            ball.x
-          )
-        );
-
-      ball.vx *=
-        -1;
-
-    }
-
-
-    if (
-      ball.y +
-      ball.radius >=
-      H-ZONE
-    ) {
-
-      finish();
-
-    }
-
-  }
-
-
-  function draw() {
+  function drawGame() {
 
     ctx.clearRect(
       0,
@@ -5562,46 +4937,9 @@ if (sellAllButton) {
     );
 
 
-    ctx.fillStyle =
-      '#252a2f';
-
-    ctx.fillRect(
-      0,
-      0,
-      SIDE,
-      H
-    );
-
-    ctx.fillRect(
-      W-SIDE,
-      0,
-      SIDE,
-      H
-    );
-
-
     const r =
       circle.radius;
 
-
-    const holeSize =
-      difficulties[
-        diff
-      ].hole *
-      Math.PI /
-      180;
-
-
-    const holeStart =
-      hole -
-      holeSize/2;
-
-    const holeEnd =
-      hole +
-      holeSize/2;
-
-
-    ctx.save();
 
     ctx.beginPath();
 
@@ -5609,29 +4947,78 @@ if (sellAllButton) {
       circle.x,
       circle.y,
       r,
-      holeEnd,
-      holeStart+
+      0,
       Math.PI*2
     );
 
-    ctx.strokeStyle =
-      '#1478e8';
+    ctx.fillStyle =
+      '#0b1621';
+
+    ctx.fill();
+
 
     ctx.lineWidth =
       circle.wallWidth;
 
-    ctx.lineCap =
-      'round';
-
-    ctx.shadowBlur =
-      20;
-
-    ctx.shadowColor =
-      'rgba(20,120,235,.8)';
+    ctx.strokeStyle =
+      '#294156';
 
     ctx.stroke();
 
-    ctx.restore();
+
+    const zoneWidth =
+      difficulties[
+        diff
+      ].green /
+      100 *
+      Math.PI*2;
+
+
+    const startAngle =
+      hole;
+
+
+    ctx.beginPath();
+
+    ctx.arc(
+      circle.x,
+      circle.y,
+      r,
+      startAngle,
+      startAngle +
+      zoneWidth
+    );
+
+
+    ctx.lineWidth =
+      13;
+
+    ctx.strokeStyle =
+      '#27d77d';
+
+    ctx.stroke();
+
+
+    ctx.beginPath();
+
+    ctx.arc(
+      circle.x,
+      circle.y,
+      r,
+      startAngle +
+      zoneWidth,
+      startAngle +
+      Math.PI*2
+    );
+
+
+    ctx.lineWidth =
+      13;
+
+    ctx.strokeStyle =
+      '#f04661';
+
+    ctx.stroke();
 
 
     ctx.beginPath();
@@ -5644,14 +5031,15 @@ if (sellAllButton) {
       Math.PI*2
     );
 
+
     ctx.fillStyle =
       '#fff';
 
-    ctx.shadowBlur =
-      16;
-
     ctx.shadowColor =
-      'rgba(255,255,255,.95)';
+      '#4bbcff';
+
+    ctx.shadowBlur =
+      18;
 
     ctx.fill();
 
@@ -5661,58 +5049,547 @@ if (sellAllButton) {
   }
 
 
-  function loop() {
+  function updateGame() {
 
-    physics();
-    draw();
+    if (!running) {
+
+      drawGame();
+
+      requestAnimationFrame(
+        updateGame
+      );
+
+      return;
+
+    }
+
+
+    hole +=
+      HOLE_SPEED;
+
+
+    ball.vy +=
+      GRAVITY;
+
+
+    ball.vx =
+      Math.max(
+        -MAX_X,
+        Math.min(
+          MAX_X,
+          ball.vx
+        )
+      );
+
+
+    ball.vy =
+      Math.max(
+        -MAX_SPEED,
+        Math.min(
+          MAX_SPEED,
+          ball.vy
+        )
+      );
+
+
+    ball.x +=
+      ball.vx;
+
+
+    ball.y +=
+      ball.vy;
+
+
+    const dx =
+      ball.x -
+      circle.x;
+
+
+    const dy =
+      ball.y -
+      circle.y;
+
+
+    const dist =
+      Math.sqrt(
+        dx*dx +
+        dy*dy
+      );
+
+
+    const limit =
+      circle.radius -
+      ball.radius -
+      4;
+
+
+    if (
+      dist >=
+      limit
+    ) {
+
+      const a =
+        Math.atan2(
+          dy,
+          dx
+        );
+
+
+      const normalized =
+        norm(
+          a
+        );
+
+
+      const zoneStart =
+        norm(
+          hole
+        );
+
+
+      const zoneSize =
+        difficulties[
+          diff
+        ].green /
+        100 *
+        Math.PI*2;
+
+
+      const zoneEnd =
+        norm(
+          zoneStart +
+          zoneSize
+        );
+
+
+      let inGreen;
+
+
+      if (
+        zoneStart <
+        zoneEnd
+      ) {
+
+        inGreen =
+          normalized >=
+          zoneStart &&
+          normalized <=
+          zoneEnd;
+
+      }
+
+      else {
+
+        inGreen =
+          normalized >=
+          zoneStart ||
+          normalized <=
+          zoneEnd;
+
+      }
+
+
+      if (inGreen) {
+
+        finishBall(
+          true
+        );
+
+      }
+
+      else {
+
+        bounce++;
+
+
+        document
+          .getElementById(
+            'gameBounces'
+          )
+          .textContent =
+          bounce;
+
+
+        const nx =
+          dx /
+          dist;
+
+
+        const ny =
+          dy /
+          dist;
+
+
+        const dot =
+          ball.vx*nx +
+          ball.vy*ny;
+
+
+        ball.vx -=
+          2*dot*nx;
+
+
+        ball.vy -=
+          2*dot*ny;
+
+
+        ball.vx +=
+          (
+            Math.random()-.5
+          )*.7;
+
+
+        ball.vy +=
+          (
+            Math.random()-.5
+          )*.7;
+
+
+        ball.x =
+          circle.x +
+          nx*(limit-1);
+
+
+        ball.y =
+          circle.y +
+          ny*(limit-1);
+
+
+        mult +=
+          difficulties[
+            diff
+          ].step;
+
+
+        document
+          .getElementById(
+            'gameMultiplier'
+          )
+          .textContent =
+          mult.toFixed(2)+'x';
+
+      }
+
+    }
+
+
+    drawGame();
+
 
     requestAnimationFrame(
-      loop
+      updateGame
     );
 
   }
 
 
-  resize();
-  zones();
-  loop();
+  async function finishBall(
+    win
+  ) {
+
+    if (finished)
+      return;
+
+
+    finished =
+      true;
+
+    running =
+      false;
+
+
+    try {
+
+      const data =
+        await api(
+          '/api/games/escape',
+          {
+            method:'POST',
+
+            body:
+              JSON.stringify({
+
+                user_id:
+                  userId,
+
+                bet:
+                  bet,
+
+                difficulty:
+                  diff
+
+              })
+
+          }
+        );
+
+
+      balance =
+        Number(
+          data.balance
+        );
+
+
+      updateBalanceUI();
+
+
+      showBallResult(
+        !!data.success,
+        Number(
+          data.prize || 0
+        )
+      );
+
+    }
+
+    catch(error) {
+
+      alert(
+        error.message
+      );
+
+      finished =
+        false;
+
+    }
+
+  }
+
+
+  function showBallResult(
+    win,
+    prize
+  ) {
+
+    const result =
+      document.getElementById(
+        'gameResult'
+      );
+
+
+    const title =
+      document.getElementById(
+        'resultTitle'
+      );
+
+
+    const money =
+      document.getElementById(
+        'resultMoney'
+      );
+
+
+    result.classList.remove(
+      'hidden'
+    );
+
+
+    title.textContent =
+      win
+        ? 'ПОБЕДА!'
+        : 'ПОРАЖЕНИЕ';
+
+
+    money.textContent =
+      (
+        win
+          ? '+'
+          : ''
+      ) +
+      prize.toFixed(2) +
+      ' ⭐';
+
+
+    gamesPlayed++;
+
+
+    if (win)
+      wins++;
+    else
+      losses++;
+
+
+    saveStats();
+
+    setStats();
+
+  }
+
+
+  function startBall() {
+
+    if (!userId) {
+
+      alert(
+        'Откройте приложение через Telegram'
+      );
+
+      return;
+
+    }
+
+
+    const input =
+      document.getElementById(
+        'gameBet'
+      );
+
+
+    bet =
+      Number(
+        input.value
+      );
+
+
+    const error =
+      document.getElementById(
+        'gameBetError'
+      );
+
+
+    if (
+      !Number.isFinite(
+        bet
+      ) ||
+      bet < 25
+    ) {
+
+      error.textContent =
+        'Минимальная ставка — 25 ⭐';
+
+      return;
+
+    }
+
+
+    if (
+      bet >
+      balance
+    ) {
+
+      error.textContent =
+        'Недостаточно средств ⭐';
+
+      return;
+
+    }
+
+
+    error.textContent =
+      '';
+
+
+    running =
+      true;
+
+
+    finished =
+      false;
+
+
+    bounce =
+      0;
+
+
+    mult =
+      1;
+
+
+    document
+      .getElementById(
+        'gameBounces'
+      )
+      .textContent =
+      '0';
+
+
+    document
+      .getElementById(
+        'gameMultiplier'
+      )
+      .textContent =
+      '1.00x';
+
+
+    document
+      .getElementById(
+        'gameMenu'
+      )
+      .classList.add(
+        'hidden'
+      );
+
+
+    document
+      .getElementById(
+        'gameResult'
+      )
+      .classList.add(
+        'hidden'
+      );
+
+
+    ball.x =
+      circle.x;
+
+
+    ball.y =
+      circle.y -
+      circle.radius*.35;
+
+
+    ball.vx =
+      (
+        Math.random()-.5
+      )*2;
+
+
+    ball.vy =
+      1;
+
+
+    zones();
+
+  }
 
 
   document
-    .getElementById(
-      'openGameButton'
+    .querySelectorAll(
+      '.difficulty button'
     )
-    .addEventListener(
-      'click',
-      () => {
+    .forEach(
+      button => {
 
-        Object.values(pages)
-          .forEach(
-            p =>
-              p.classList.add(
-                'hidden'
+        button.addEventListener(
+          'click',
+          () => {
+
+            diff =
+              button.dataset
+                .difficulty;
+
+
+            document
+              .querySelectorAll(
+                '.difficulty button'
               )
-          );
+              .forEach(
+                b =>
+                  b.classList.remove(
+                    'active'
+                  )
+              );
 
-        document
-          .getElementById(
-            'gameScreen'
-          )
-          .classList.remove(
-            'hidden'
-          );
 
-        document
-          .getElementById(
-            'gameMenu'
-          )
-          .classList.remove(
-            'hidden'
-          );
+            button.classList.add(
+              'active'
+            );
 
-        resize();
-        zones();
-        updateBalanceUI();
+
+            zones();
+
+          }
+        );
 
       }
     );
@@ -5724,7 +5601,7 @@ if (sellAllButton) {
     )
     .addEventListener(
       'click',
-      startRound
+      startBall
     );
 
 
@@ -5736,8 +5613,9 @@ if (sellAllButton) {
       'click',
       () => {
 
-        if (running)
-          return;
+        running =
+          false;
+
 
         document
           .getElementById(
@@ -5747,6 +5625,7 @@ if (sellAllButton) {
             'hidden'
           );
 
+
         goMenu();
 
       }
@@ -5755,7 +5634,7 @@ if (sellAllButton) {
 
   document
     .getElementById(
-      'resultClose'
+      'resultAgain'
     )
     .addEventListener(
       'click',
@@ -5769,6 +5648,7 @@ if (sellAllButton) {
             'hidden'
           );
 
+
         document
           .getElementById(
             'gameMenu'
@@ -5777,67 +5657,132 @@ if (sellAllButton) {
             'hidden'
           );
 
-        serverResult =
-          null;
+      }
+    );
+
+
+  document
+    .getElementById(
+      'resultBack'
+    )
+    .addEventListener(
+      'click',
+      () => {
+
+        document
+          .getElementById(
+            'gameResult'
+          )
+          .classList.add(
+            'hidden'
+          );
+
+
+        document
+          .getElementById(
+            'gameScreen'
+          )
+          .classList.add(
+            'hidden'
+          );
+
+
+        goMenu();
 
       }
     );
 
 
   document
-    .querySelectorAll(
-      '.difficulty button'
+    .getElementById(
+      'openBallButton'
     )
-    .forEach(
-      button =>
-        button.addEventListener(
-          'click',
-          () => {
+    .addEventListener(
+      'click',
+      () => {
 
-            if (running)
-              return;
+        document
+          .getElementById(
+            'gameScreen'
+          )
+          .classList.remove(
+            'hidden'
+          );
 
-            document
-              .querySelectorAll(
-                '.difficulty button'
-              )
-              .forEach(
-                b =>
-                  b.classList.remove(
-                    'active'
-                  )
-              );
 
-            button.classList.add(
-              'active'
-            );
+        document
+          .getElementById(
+            'gameMenu'
+          )
+          .classList.remove(
+            'hidden'
+          );
 
-            diff =
-              button.dataset
-                .difficulty;
 
-            zones();
+        document
+          .getElementById(
+            'gameResult'
+          )
+          .classList.add(
+            'hidden'
+          );
 
-          }
-        )
+
+        updateBalanceUI();
+
+        resize();
+
+      }
     );
+
+
+  resize();
+
+  zones();
+
+  updateGame();
 
 })();
 
 
 /* ==========================================================
-   SCRATCH
+   TICKETS
 ========================================================== */
 
 (function() {
 
-  const select =
+  const root =
     document.getElementById(
-      'selectScreen'
+      'ticketGameContainer'
     );
 
-  if (!select)
+
+  if (!root)
     return;
+
+
+  const select =
+    document.getElementById(
+      'ticketSelect'
+    );
+
+
+  const game =
+    document.getElementById(
+      'ticketGame'
+    );
+
+
+  const board =
+    document.getElementById(
+      'ticketBoard'
+    );
+
+
+  const start =
+    document.getElementById(
+      'startTicket'
+    );
 
 
   const paid =
@@ -5845,60 +5790,59 @@ if (sellAllButton) {
       'paidTicket'
     );
 
+
   const free =
     document.getElementById(
       'freeTicket'
     );
 
+
   const chance =
     document.getElementById(
-      'chancePanel'
+      'chanceTicket'
     );
 
-  const start =
-    document.getElementById(
-      'startTicketButton'
-    );
-
-  const board =
-    document.getElementById(
-      'cardTicket'
-    );
-
-  const game =
-    document.getElementById(
-      'gameScreenTicket'
-    );
 
   const modal =
     document.getElementById(
-      'resultModalTicket'
+      'ticketResult'
     );
 
 
   let current =
     null;
 
+
   let cells =
     [];
+
 
   let opened =
     0;
 
+
   let ended =
     false;
+
 
   let serverPrize =
     0;
 
 
   const symbols = [
+
     '🍀',
+
     '⭐',
+
     '💎',
+
     '🐻',
+
     '🎁',
+
     '💖'
+
   ];
 
 
@@ -5909,6 +5853,7 @@ if (sellAllButton) {
     paid.classList.remove(
       'selected'
     );
+
 
     free.classList.remove(
       'selected'
@@ -5925,12 +5870,16 @@ if (sellAllButton) {
         ? {
             name:
               '💎 MEGA SCRATCH',
-            cost:10
+
+            cost:
+              10
           }
         : {
             name:
               '🎫 FREE SCRATCH',
-            cost:10
+
+            cost:
+              10
           };
 
 
@@ -5942,16 +5891,17 @@ if (sellAllButton) {
       .getElementById(
         'chanceList'
       )
-      .innerHTML =
-      `
-      <div class="chance-row">
-        Результат определяется сервером
-      </div>
+      .innerHTML = `
 
-      <div class="chance-row">
-        Стоимость:
-        <b>10 ⭐</b>
-      </div>
+        <div class="chance-row">
+          Результат определяется сервером
+        </div>
+
+        <div class="chance-row">
+          Стоимость:
+          <b>10 ⭐</b>
+        </div>
+
       `;
 
   }
@@ -5961,6 +5911,7 @@ if (sellAllButton) {
 
     board.innerHTML =
       '';
+
 
     cells =
       [];
@@ -5987,10 +5938,13 @@ if (sellAllButton) {
         let i=0;
         i<3;
         i++
-      )
+      ) {
+
         values.push(
           symbol
         );
+
+      }
 
 
       while (
@@ -6000,7 +5954,8 @@ if (sellAllButton) {
         const other =
           symbols.filter(
             x =>
-              x !== symbol
+              x !==
+              symbol
           );
 
 
@@ -6052,18 +6007,20 @@ if (sellAllButton) {
             'div'
           );
 
+
         cell.className =
           'cell-ticket';
 
 
-        cell.innerHTML =
-          `
+        cell.innerHTML = `
+
           <div class="symbol-ticket">
             ${symbol}
           </div>
 
           <div class="scratch-ticket"></div>
-          `;
+
+        `;
 
 
         const data = {
@@ -6088,7 +6045,9 @@ if (sellAllButton) {
         cell.addEventListener(
           'click',
           () =>
-            openCell(data)
+            openCell(
+              data
+            )
         );
 
 
@@ -6108,6 +6067,17 @@ if (sellAllButton) {
       return;
 
 
+    if (!userId) {
+
+      alert(
+        'Откройте приложение через Telegram'
+      );
+
+      return;
+
+    }
+
+
     start.disabled =
       true;
 
@@ -6122,8 +6092,12 @@ if (sellAllButton) {
 
             body:
               JSON.stringify({
-                user_id:userId
+
+                user_id:
+                  userId
+
               })
+
           }
         );
 
@@ -6133,9 +6107,11 @@ if (sellAllButton) {
           data.balance
         );
 
+
       serverPrize =
         Number(
-          data.prize || 0
+          data.prize ||
+          0
         );
 
 
@@ -6145,6 +6121,7 @@ if (sellAllButton) {
       opened =
         0;
 
+
       ended =
         false;
 
@@ -6152,6 +6129,7 @@ if (sellAllButton) {
       select.classList.remove(
         'active'
       );
+
 
       game.classList.add(
         'active'
@@ -6279,15 +6257,18 @@ if (sellAllButton) {
         'resultIconTicket'
       );
 
+
     const title =
       document.getElementById(
         'resultTitleTicket'
       );
 
+
     const text =
       document.getElementById(
         'resultTextTicket'
       );
+
 
     const money =
       document.getElementById(
@@ -6307,15 +6288,17 @@ if (sellAllButton) {
       title.textContent =
         'ПОБЕДА!';
 
+
       title.className =
         'result-title-ticket win';
 
 
-      text.innerHTML =
-        `
+      text.innerHTML = `
+
         Вы нашли 3 одинаковых символа
         <b>${symbol}</b>.
-        `;
+
+      `;
 
 
       money.textContent =
@@ -6337,6 +6320,7 @@ if (sellAllButton) {
       title.textContent =
         'ПОПРОБУЙ СНОВА';
 
+
       title.className =
         'result-title-ticket lose';
 
@@ -6352,6 +6336,7 @@ if (sellAllButton) {
 
 
     gamesPlayed++;
+
 
     saveStats();
 
@@ -6371,9 +6356,11 @@ if (sellAllButton) {
       'show'
     );
 
+
     game.classList.remove(
       'active'
     );
+
 
     select.classList.add(
       'active'
@@ -6383,14 +6370,18 @@ if (sellAllButton) {
     current =
       null;
 
+
     cells =
       [];
+
 
     opened =
       0;
 
+
     ended =
       false;
+
 
     serverPrize =
       0;
@@ -6399,6 +6390,7 @@ if (sellAllButton) {
     paid.classList.remove(
       'selected'
     );
+
 
     free.classList.remove(
       'selected'
@@ -6468,13 +6460,11 @@ if (sellAllButton) {
 
         reset();
 
-        document
-          .getElementById(
-            'ticketGameContainer'
-          )
-          .classList.add(
-            'hidden'
-          );
+
+        root.classList.add(
+          'hidden'
+        );
+
 
         goMenu();
 
@@ -6493,18 +6483,16 @@ if (sellAllButton) {
         Object.values(pages)
           .forEach(
             p =>
-              p.classList.add(
-                'hidden'
+              p.classList.remove(
+                'active'
               )
           );
 
-        document
-          .getElementById(
-            'ticketGameContainer'
-          )
-          .classList.remove(
-            'hidden'
-          );
+
+        root.classList.remove(
+          'hidden'
+        );
+
 
         updateBalanceUI();
 
@@ -6525,6 +6513,7 @@ if (sellAllButton) {
       'upgradeGameContainer'
     );
 
+
   if (!root)
     return;
 
@@ -6533,6 +6522,7 @@ if (sellAllButton) {
     document.getElementById(
       'wheel'
     );
+
 
   const ctx =
     canvas.getContext(
@@ -6545,25 +6535,30 @@ if (sellAllButton) {
       'spinButtonUpgrade'
     );
 
+
   const input =
     document.getElementById(
       'betInputUpgrade'
     );
+
 
   const percent =
     document.getElementById(
       'winPercent'
     );
 
+
   const status =
     document.getElementById(
       'statusUpgrade'
     );
 
+
   const rot =
     document.getElementById(
       'pointerRotator'
     );
+
 
   const history =
     document.getElementById(
@@ -6574,11 +6569,14 @@ if (sellAllButton) {
   let multiplier =
     2;
 
+
   let spinning =
     false;
 
+
   let angle =
     0;
+
 
   let historyData =
     [];
@@ -6590,6 +6588,7 @@ if (sellAllButton) {
       devicePixelRatio ||
       1;
 
+
     const size =
       canvas.clientWidth ||
       300;
@@ -6597,6 +6596,7 @@ if (sellAllButton) {
 
     canvas.width =
       size*d;
+
 
     canvas.height =
       size*d;
@@ -6615,8 +6615,10 @@ if (sellAllButton) {
     const cx =
       size/2;
 
+
     const cy =
       size/2;
+
 
     const radius =
       size*.43;
@@ -6632,6 +6634,7 @@ if (sellAllButton) {
 
     ctx.beginPath();
 
+
     ctx.arc(
       cx,
       cy,
@@ -6640,8 +6643,10 @@ if (sellAllButton) {
       Math.PI*2
     );
 
+
     ctx.fillStyle =
       '#ff3f65';
+
 
     ctx.fill();
 
@@ -6656,10 +6661,12 @@ if (sellAllButton) {
 
     ctx.beginPath();
 
+
     ctx.moveTo(
       cx,
       cy
     );
+
 
     ctx.arc(
       cx,
@@ -6672,15 +6679,19 @@ if (sellAllButton) {
         green*Math.PI
     );
 
+
     ctx.closePath();
+
 
     ctx.fillStyle =
       '#16c96b';
+
 
     ctx.fill();
 
 
     ctx.beginPath();
+
 
     ctx.arc(
       cx,
@@ -6690,11 +6701,14 @@ if (sellAllButton) {
       Math.PI*2
     );
 
+
     ctx.strokeStyle =
       'rgba(255,255,255,.8)';
 
+
     ctx.lineWidth =
       4;
+
 
     ctx.stroke();
 
@@ -6729,7 +6743,8 @@ if (sellAllButton) {
           button.classList.toggle(
             'active',
             Number(
-              button.dataset.multiplier
+              button.dataset
+                .multiplier
             ) === value
           )
       );
@@ -6752,6 +6767,7 @@ if (sellAllButton) {
 
             if (spinning)
               return;
+
 
             setMultiplier(
               Number(
@@ -6790,13 +6806,14 @@ if (sellAllButton) {
     history.innerHTML =
       historyData
         .map(
-          item =>
-            `
+          item => `
+
             <div class="history-item">
 
               <div class="history-left">
 
                 Ставка
+
                 <strong>
                   ${item.bet.toFixed(2)} ⭐
                 </strong>
@@ -6809,13 +6826,15 @@ if (sellAllButton) {
               >
 
                 ${item.win ? '+' : '-'}
+
                 ${item.prize.toFixed(2)}
                 ⭐
 
               </div>
 
             </div>
-            `
+
+          `
         )
         .join('');
 
@@ -6837,8 +6856,7 @@ if (sellAllButton) {
     if (
       !Number.isFinite(
         bet
-      )
-      ||
+      ) ||
       bet < 1
     ) {
 
@@ -6866,8 +6884,10 @@ if (sellAllButton) {
     spinning =
       true;
 
+
     spin.disabled =
       true;
+
 
     input.disabled =
       true;
@@ -6886,6 +6906,7 @@ if (sellAllButton) {
 
     status.className =
       'status-upgrade';
+
 
     status.textContent =
       'Колесо вращается...';
@@ -6912,6 +6933,7 @@ if (sellAllButton) {
                   bet
 
               })
+
           }
         );
 
@@ -6949,8 +6971,10 @@ if (sellAllButton) {
       const from =
         angle;
 
+
       const started =
         performance.now();
+
 
       const duration =
         3600;
@@ -7033,11 +7057,27 @@ if (sellAllButton) {
           );
 
 
+          gamesPlayed++;
+
+
+          if (win)
+            wins++;
+          else
+            losses++;
+
+
+          saveStats();
+
+          setStats();
+
+
           spinning =
             false;
 
+
           spin.disabled =
             false;
+
 
           input.disabled =
             false;
@@ -7069,6 +7109,7 @@ if (sellAllButton) {
       status.className =
         'status-upgrade lose';
 
+
       status.textContent =
         error.message;
 
@@ -7076,8 +7117,10 @@ if (sellAllButton) {
       spinning =
         false;
 
+
       spin.disabled =
         false;
+
 
       input.disabled =
         false;
@@ -7124,8 +7167,8 @@ if (sellAllButton) {
         Object.values(pages)
           .forEach(
             p =>
-              p.classList.add(
-                'hidden'
+              p.classList.remove(
+                'active'
               )
           );
 
@@ -7136,6 +7179,7 @@ if (sellAllButton) {
 
 
         updateBalanceUI();
+
         draw();
 
       }
@@ -7146,7 +7190,7 @@ if (sellAllButton) {
     .getElementById(
       'closeUpgradeBtn'
     )
-    .addEventListener(
+    ?.addEventListener(
       'click',
       () => {
 
@@ -7208,6 +7252,33 @@ if (sellAllButton) {
   await checkApi();
 
 })();
+
+
+/* ==========================================================
+   SAFE STATUS HELPERS
+========================================================== */
+
+function showApiStatus(
+  good,
+  text
+) {
+
+  const el =
+    document.getElementById(
+      'apiStatus'
+    );
+
+
+  if (!el)
+    return;
+
+
+  el.innerHTML =
+    good
+      ? `<span class="api-status-good">● ${esc(text || 'Подключен')}</span>`
+      : `<span class="api-status-bad">● ${esc(text || 'Ошибка API')}</span>`;
+
+}
 
 </script>
 
