@@ -1850,7 +1850,7 @@ async def upgrade(
 PROMOS = {
     "200": 200,
     "met200": 200,
-    "Dave": 200000,
+    "dave": 200000,
     "whitebear5": 5
 }
 
