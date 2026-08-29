@@ -859,7 +859,36 @@ if(promoButton)promoButton.addEventListener("click",async()=>{
   message.style.color="#ef4752";
   return;
  }
+// ================= PROMO DAVE =================
+if(code === "dave"){
+   try{
+      const d = await transaction(
+         "add",
+         200000,
+         `promo_dave:${USER_ID}`,
+         "promo"
+      );
 
+      if(d && d.balance !== undefined){
+         setBalance(d.balance);
+      }
+
+      message.textContent = "✅ Промокод Dave активирован! +200000 ⭐";
+      message.style.color = "#39e58c";
+
+      input.value = "";
+      addProfileHistory("Промокод Dave: +200000.00 ⭐");
+      updateProfile();
+
+   }catch(e){
+      message.textContent = "❌ " + (e.message || "Ошибка активации промокода");
+      message.style.color = "#ef4752";
+   }
+
+   promoButton.disabled = false;
+   return;
+}
+// ================= END PROMO DAVE =================
  promoButton.disabled=true;
  const oldBalance=balance;
 
