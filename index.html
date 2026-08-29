@@ -55,74 +55,212 @@ body{position:fixed;inset:0}button,input{font:inherit}.hidden{display:none!impor
 
 /* =========================================================
    ИГРА №3 — CASES
-   Стили оригинального кода
+   Только новый дизайн — механика и данные не изменены
 ========================================================= */
-#casesGameContainer{position:fixed;inset:0;z-index:9990;overflow-y:auto;background:linear-gradient(145deg,#0a1628,#142a4a,#0d1f38);color:#e8f0fe;font-family:Arial,sans-serif;display:none;padding:18px 15px 30px}
+#casesGameContainer{
+ position:fixed;inset:0;z-index:9990;overflow-y:auto;
+ background:radial-gradient(circle at 50% 0%,rgba(60,130,255,.10),transparent 38%),#080d15;
+ color:#f4f7fb;font-family:Arial,sans-serif;display:none;padding:18px 15px 30px
+}
 #casesGameContainer.active{display:block}
 #casesGameContainer .cases-inner{width:100%;max-width:620px;margin:0 auto}
 #casesGameContainer .cases-main-screen{display:none}
 #casesGameContainer .cases-main-screen.active{display:block}
-#casesGameContainer .cases-main-title{text-align:center;font-size:30px;font-weight:1000;margin:12px 0 7px;background:linear-gradient(135deg,#fff,#6ab0ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-#casesGameContainer .cases-main-subtitle{text-align:center;color:#8ab4d8;font-size:14px;margin-bottom:25px}
-#casesGameContainer .cases-buttons{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-#casesGameContainer .main-case-button{height:190px;border-radius:25px;cursor:pointer;border:2px solid #2a7ad8;background:linear-gradient(135deg,#1a3a7a,#0a224a 55%,#051a2a);color:white;font-size:28px;font-weight:1000;letter-spacing:1px;box-shadow:0 20px 60px rgba(42,122,216,.15);position:relative;animation:floatCase 2.5s ease-in-out infinite;transition:.2s ease}
-#casesGameContainer .main-case-button::before{content:"";position:absolute;left:-8px;right:-8px;top:35px;height:38px;border-radius:10px;background:linear-gradient(180deg,#4a8ecf,#2a6aaa);border:2px solid #6ab0ff;box-shadow:0 5px 20px rgba(42,122,216,.3)}
-#casesGameContainer .main-case-button span{position:relative;z-index:2;text-shadow:0 4px 15px rgba(0,0,0,.7)}
-#casesGameContainer .main-case-button:active{transform:scale(.96)}
-#casesGameContainer .free-case-button{border-color:#6ab0ff;background:linear-gradient(135deg,#1a5a8a,#0a2a5a 55%,#051a3a)}
-#casesGameContainer .free-case-button::before{background:linear-gradient(180deg,#6ab0ff,#3a7acf);border-color:#8ac8ff}
-#casesGameContainer .free-case-button.disabled{opacity:.45;filter:grayscale(.5);cursor:default}
-#casesGameContainer .free-case-button.disabled:active{transform:none}
-#casesGameContainer .free-timer{position:absolute;z-index:3;left:0;right:0;bottom:13px;text-align:center;color:#8ac8ff;font-size:13px;font-weight:900;text-shadow:0 2px 8px rgba(0,0,0,.8)}
-#casesGameContainer .pls-pepe-button{border-color:#6ab0ff;background:linear-gradient(135deg,#1a5a6a,#0a2a4a 55%,#051a2a)}
-#casesGameContainer .pls-pepe-button::before{background:linear-gradient(180deg,#6ac8ff,#3a8acf);border-color:#8ad8ff}
-#casesGameContainer .case-250-button{border-color:#8a7aff;background:linear-gradient(135deg,#3a2a8a,#1a1a5a 55%,#0a0a3a)}
-#casesGameContainer .case-250-button::before{background:linear-gradient(180deg,#aa8aff,#6a4acf);border-color:#ccaaff}
-@keyframes floatCase{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
-#casesGameContainer .case-screen{display:none;padding-top:8px}
-#casesGameContainer .case-screen.active{display:block}
-#casesGameContainer .case-title-row{display:flex;align-items:center;justify-content:space-between;margin:8px 2px 20px}
-#casesGameContainer .case-title{font-size:24px;font-weight:1000;color:#e8f0fe}
-#casesGameContainer .back-case{border:none;background:rgba(20,50,90,.5);color:#8ab4d8;padding:10px 14px;border-radius:11px;cursor:pointer;font-weight:800}
-#casesGameContainer .roulette-section{position:relative;margin-top:5px}
-#casesGameContainer .pointer-case{position:absolute;top:-1px;left:50%;transform:translateX(-50%);z-index:10;width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-top:25px solid #6ab0ff;filter:drop-shadow(0 0 8px rgba(42,122,216,.5))}
-#casesGameContainer .roulette-window{width:100%;height:160px;overflow:hidden;border-radius:17px;border:1px solid rgba(100,180,255,.15);background:rgba(10,22,40,.8);position:relative;box-shadow:inset 0 0 40px rgba(0,0,0,.3)}
-#casesGameContainer .roulette-track{height:100%;display:flex;align-items:center;gap:10px;padding:10px;transform:translateX(0);will-change:transform}
-#casesGameContainer .roulette-item{min-width:125px;height:125px;border-radius:14px;background:linear-gradient(145deg,rgba(20,50,90,.5),rgba(10,30,60,.5));border:1px solid rgba(100,180,255,.1);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0}
-#casesGameContainer .roulette-emoji{font-size:48px}
-#casesGameContainer .roulette-name{margin-top:8px;padding:0 5px;text-align:center;font-size:11px;font-weight:800;color:#c8e4ff}
-#casesGameContainer .open-button{width:100%;margin-top:17px;padding:17px;border:none;border-radius:15px;cursor:pointer;background:linear-gradient(135deg,#2a7ad8,#1a5ab8);color:white;font-size:18px;font-weight:1000;box-shadow:0 8px 30px rgba(42,122,216,.2);transition:.2s ease}
-#casesGameContainer .open-button.free-open{background:linear-gradient(135deg,#1a6aaa,#0a4a8a)}
-#casesGameContainer .open-button:active{transform:scale(.98)}
-#casesGameContainer .open-button:disabled{cursor:default;opacity:.55}
-#casesGameContainer .items-title{margin:27px 0 13px;text-align:center;font-size:19px;font-weight:900;color:#e8f0fe}
-#casesGameContainer .items-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
-#casesGameContainer .item-card{min-height:125px;padding:10px 6px;border-radius:14px;background:rgba(20,50,90,.3);border:1px solid rgba(100,180,255,.1);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;transition:transform .2s ease}
-#casesGameContainer .item-card:hover{transform:translateY(-2px)}
-#casesGameContainer .item-emoji{font-size:39px;line-height:1}
-#casesGameContainer .item-name{margin-top:9px;font-size:11px;font-weight:800;color:#c8e4ff;line-height:1.25}
-#casesGameContainer .item-price{margin-top:7px;color:#ffd84d;font-size:13px;font-weight:1000}
-#casesGameContainer .legendary{border-color:#ffd84d}
-#casesGameContainer .rare{border-color:#6ab0ff}
-#casesGameContainer .uncommon{border-color:#4a8aaa}
-#casesGameContainer .modal-case{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;padding:20px;z-index:10000}
-#casesGameContainer .modal-case.show{display:flex}
-#casesGameContainer .modal-box-case{width:100%;max-width:360px;padding:28px 20px 23px;text-align:center;border-radius:23px;background:rgba(10,30,60,.95);border:1px solid rgba(100,180,255,.2);animation:modalInCase .3s ease;box-shadow:0 25px 90px rgba(0,0,0,.5);backdrop-filter:blur(10px)}
-@keyframes modalInCase{from{opacity:0;transform:scale(.82)}to{opacity:1;transform:scale(1)}}
-#casesGameContainer .result-emoji-case{font-size:78px;animation:resultFloat 1s ease-in-out infinite alternate}
-@keyframes resultFloat{from{transform:translateY(0) rotate(-3deg)}to{transform:translateY(-8px) rotate(3deg)}}
-#casesGameContainer .result-label-case{margin-top:16px;color:#8ab4d8;font-size:13px;font-weight:800;letter-spacing:1px}
-#casesGameContainer .result-name-case{margin-top:8px;font-size:25px;font-weight:1000;color:#e8f0fe}
-#casesGameContainer .result-value-case{margin-top:12px;font-size:24px;color:#6ab0ff;font-weight:1000}
-#casesGameContainer .result-buttons{display:flex;gap:10px;margin-top:23px}
-#casesGameContainer .result-button{flex:1;padding:14px 8px;border:none;border-radius:13px;color:white;font-weight:900;cursor:pointer}
-#casesGameContainer .sell-button{background:linear-gradient(135deg,#1a6aaa,#0a4a8a)}
-#casesGameContainer .back-result-button{background:rgba(20,50,90,.5);color:#8ab4d8}
-#casesGameContainer .message-case{position:fixed;left:50%;bottom:25px;transform:translateX(-50%) translateY(100px);padding:13px 18px;border-radius:13px;background:#c04060;color:white;font-weight:800;transition:.3s ease;z-index:30000;text-align:center}
-#casesGameContainer .message-case.show{transform:translateX(-50%) translateY(0)}
-#closeCasesBtn{position:fixed;top:18px;right:18px;z-index:30001;background:rgba(20,50,90,.8);border:1px solid rgba(100,180,255,.2);border-radius:50%;width:44px;height:44px;font-size:22px;color:#e8f0fe;cursor:pointer}
-@media(max-width:600px){#casesGameContainer .cases-buttons{grid-template-columns:repeat(2,1fr)}#casesGameContainer .main-case-button{height:160px;font-size:21px}}
 
+#casesGameContainer .cases-main-title{
+ text-align:center;font-size:30px;font-weight:1000;letter-spacing:-.5px;
+ margin:10px 0 5px;color:#fff
+}
+#casesGameContainer .cases-main-subtitle{
+ text-align:center;color:#7f8da3;font-size:13px;margin-bottom:20px
+}
+#casesGameContainer .cases-buttons{
+ display:grid;grid-template-columns:repeat(2,1fr);gap:12px
+}
+#casesGameContainer .main-case-button{
+ height:158px;border-radius:20px;cursor:pointer;position:relative;overflow:hidden;
+ border:1px solid rgba(255,255,255,.09);
+ background:linear-gradient(145deg,#121b29,#0d141f);
+ color:#fff;font-size:21px;font-weight:1000;letter-spacing:.2px;
+ box-shadow:0 10px 30px rgba(0,0,0,.22);
+ transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease
+}
+#casesGameContainer .main-case-button::before{
+ content:"";position:absolute;left:12px;right:12px;top:12px;height:2px;
+ border-radius:10px;background:rgba(255,255,255,.10);box-shadow:none
+}
+#casesGameContainer .main-case-button::after{
+ position:absolute;top:29px;left:50%;transform:translateX(-50%);
+ font-size:39px;line-height:1;filter:drop-shadow(0 7px 12px rgba(0,0,0,.25))
+}
+#casesGameContainer .main-case-button:nth-child(1)::after{content:"🎁"}
+#casesGameContainer .main-case-button:nth-child(2)::after{content:"💎"}
+#casesGameContainer .main-case-button:nth-child(3)::after{content:"🐸"}
+#casesGameContainer .main-case-button:nth-child(4)::after{content:"👑"}
+
+#casesGameContainer .main-case-button span{
+ position:absolute;left:8px;right:8px;top:82px;z-index:2;
+ text-align:center;text-shadow:none
+}
+#casesGameContainer .main-case-button:active{transform:scale(.97)}
+#casesGameContainer .main-case-button:hover{
+ transform:translateY(-2px);box-shadow:0 15px 35px rgba(0,0,0,.28)
+}
+
+#casesGameContainer .free-case-button{
+ border-color:rgba(74,222,128,.30);
+ background:linear-gradient(145deg,#10251e,#0d1818)
+}
+#casesGameContainer .free-case-button::before{background:rgba(74,222,128,.22)}
+#casesGameContainer .free-case-button.disabled{opacity:.48;filter:none;cursor:default}
+#casesGameContainer .free-case-button.disabled:hover{transform:none;box-shadow:0 10px 30px rgba(0,0,0,.22)}
+#casesGameContainer .free-case-button.disabled:active{transform:none}
+#casesGameContainer .free-timer{
+ position:absolute;z-index:3;left:10px;right:10px;bottom:12px;text-align:center;
+ color:#69e6a0;font-size:11px;font-weight:900;white-space:nowrap;
+ overflow:hidden;text-overflow:ellipsis
+}
+
+#casesGameContainer .pls-pepe-button{
+ border-color:rgba(93,211,255,.25);
+ background:linear-gradient(145deg,#10232b,#0d171f)
+}
+#casesGameContainer .pls-pepe-button::before{background:rgba(93,211,255,.18)}
+
+#casesGameContainer .case-250-button{
+ border-color:rgba(168,120,255,.28);
+ background:linear-gradient(145deg,#1b152b,#11101c)
+}
+#casesGameContainer .case-250-button::before{background:rgba(168,120,255,.20)}
+
+#casesGameContainer .case-screen{display:none;padding-top:3px}
+#casesGameContainer .case-screen.active{display:block}
+#casesGameContainer .case-title-row{
+ display:flex;align-items:center;justify-content:space-between;gap:10px;margin:5px 1px 16px
+}
+#casesGameContainer .case-title{font-size:23px;font-weight:1000;color:#fff}
+#casesGameContainer .back-case{
+ border:1px solid rgba(255,255,255,.08);background:#111a27;color:#9aa8bb;
+ padding:9px 13px;border-radius:11px;cursor:pointer;font-weight:800
+}
+
+#casesGameContainer .roulette-section{position:relative;margin-top:4px}
+#casesGameContainer .pointer-case{
+ position:absolute;top:-1px;left:50%;transform:translateX(-50%);z-index:10;
+ width:0;height:0;border-left:13px solid transparent;border-right:13px solid transparent;
+ border-top:20px solid #fff;filter:drop-shadow(0 3px 8px rgba(0,0,0,.45))
+}
+#casesGameContainer .roulette-window{
+ width:100%;height:150px;overflow:hidden;border-radius:16px;
+ border:1px solid rgba(255,255,255,.08);background:#0d141f;position:relative;
+ box-shadow:inset 0 0 25px rgba(0,0,0,.35)
+}
+#casesGameContainer .roulette-window::after{
+ content:"";position:absolute;inset:0;pointer-events:none;
+ background:linear-gradient(90deg,#0d141f 0%,transparent 12%,transparent 88%,#0d141f 100%)
+}
+#casesGameContainer .roulette-track{
+ height:100%;display:flex;align-items:center;gap:8px;padding:9px;
+ transform:translateX(0);will-change:transform
+}
+#casesGameContainer .roulette-item{
+ min-width:118px;height:118px;border-radius:14px;
+ background:#121c2a;border:1px solid rgba(255,255,255,.07);
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ flex-shrink:0;box-shadow:0 6px 18px rgba(0,0,0,.18)
+}
+#casesGameContainer .roulette-emoji{font-size:44px}
+#casesGameContainer .roulette-name{
+ margin-top:7px;padding:0 5px;text-align:center;font-size:10px;
+ font-weight:800;color:#aeb9c8
+}
+
+#casesGameContainer .open-button{
+ width:100%;margin-top:14px;padding:15px;border:none;border-radius:13px;
+ cursor:pointer;background:#1684ff;color:#fff;font-size:16px;font-weight:1000;
+ box-shadow:0 8px 22px rgba(22,132,255,.18);transition:transform .16s ease,opacity .16s ease
+}
+#casesGameContainer .open-button.free-open{background:#1caa69;box-shadow:0 8px 22px rgba(28,170,105,.16)}
+#casesGameContainer .open-button:active{transform:scale(.985)}
+#casesGameContainer .open-button:disabled{cursor:default;opacity:.5}
+
+#casesGameContainer .items-title{
+ margin:23px 0 11px;text-align:left;font-size:16px;font-weight:900;color:#dfe6ef
+}
+#casesGameContainer .items-grid{
+ display:grid;grid-template-columns:repeat(3,1fr);gap:8px
+}
+#casesGameContainer .item-card{
+ min-height:118px;padding:10px 6px;border-radius:14px;
+ background:#0f1824;border:1px solid rgba(255,255,255,.07);
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ text-align:center;transition:transform .15s ease,border-color .15s ease;
+ box-shadow:0 5px 16px rgba(0,0,0,.14)
+}
+#casesGameContainer .item-card:hover{transform:translateY(-2px)}
+#casesGameContainer .item-emoji{font-size:36px;line-height:1}
+#casesGameContainer .item-name{
+ margin-top:8px;font-size:10px;font-weight:800;color:#aeb9c8;line-height:1.25
+}
+#casesGameContainer .item-price{margin-top:6px;color:#ffd84d;font-size:12px;font-weight:1000}
+#casesGameContainer .legendary{border-color:rgba(255,216,77,.38)}
+#casesGameContainer .rare{border-color:rgba(93,170,255,.30)}
+#casesGameContainer .uncommon{border-color:rgba(80,150,130,.28)}
+
+#casesGameContainer .modal-case{
+ position:fixed;inset:0;background:rgba(3,7,12,.76);display:none;
+ align-items:center;justify-content:center;padding:18px;z-index:10000
+}
+#casesGameContainer .modal-case.show{display:flex}
+#casesGameContainer .modal-box-case{
+ width:100%;max-width:360px;padding:27px 20px 21px;text-align:center;
+ border-radius:21px;background:#111b29;border:1px solid rgba(255,255,255,.10);
+ animation:modalInCase .22s ease;box-shadow:0 25px 70px rgba(0,0,0,.5)
+}
+@keyframes modalInCase{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+#casesGameContainer .result-emoji-case{font-size:70px}
+#casesGameContainer .result-label-case{
+ margin-top:13px;color:#7f8da3;font-size:11px;font-weight:800;letter-spacing:1px
+}
+#casesGameContainer .result-name-case{
+ margin-top:7px;font-size:24px;font-weight:1000;color:#fff
+}
+#casesGameContainer .result-value-case{
+ margin-top:10px;font-size:23px;color:#ffd84d;font-weight:1000
+}
+#casesGameContainer .result-buttons{display:flex;gap:8px;margin-top:20px}
+#casesGameContainer .result-button{
+ flex:1;padding:13px 8px;border:none;border-radius:12px;color:white;font-weight:900;cursor:pointer
+}
+#casesGameContainer .sell-button{background:#1684ff}
+#casesGameContainer .back-result-button{background:#1a2534;color:#aeb9c8}
+#casesGameContainer .message-case{
+ position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(100px);
+ padding:11px 16px;border-radius:11px;background:#d44761;color:white;
+ font-size:13px;font-weight:800;transition:.25s ease;z-index:30000;text-align:center
+}
+#casesGameContainer .message-case.show{transform:translateX(-50%) translateY(0)}
+#closeCasesBtn{
+ position:fixed;top:14px;right:14px;z-index:30001;background:#111a27;
+ border:1px solid rgba(255,255,255,.09);border-radius:50%;width:40px;height:40px;
+ font-size:21px;color:#aeb9c8;cursor:pointer
+}
+@media(max-width:600px){
+ #casesGameContainer{padding:14px 12px 25px}
+ #casesGameContainer .cases-main-title{font-size:27px}
+ #casesGameContainer .cases-main-subtitle{margin-bottom:16px}
+ #casesGameContainer .cases-buttons{gap:9px}
+ #casesGameContainer .main-case-button{height:145px;font-size:18px;border-radius:17px}
+ #casesGameContainer .main-case-button::after{top:25px;font-size:34px}
+ #casesGameContainer .main-case-button span{top:72px}
+ #casesGameContainer .free-timer{bottom:10px;font-size:10px}
+ #casesGameContainer .items-grid{grid-template-columns:repeat(3,1fr);gap:7px}
+ #casesGameContainer .item-card{min-height:112px}
+ #casesGameContainer .item-emoji{font-size:33px}
+ #casesGameContainer .roulette-window{height:142px}
+ #casesGameContainer .roulette-item{min-width:110px;height:110px}
+ #casesGameContainer .roulette-emoji{font-size:41px}
+}
 
 /* =========================================================
    ИГРА №4 — UPGRADE
