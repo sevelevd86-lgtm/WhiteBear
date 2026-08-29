@@ -631,6 +631,38 @@ function getTelegramUserSafe(){
 
 const tgUser=getTelegramUserSafe();
 
+/* ============================================================
+   REFERRAL SYSTEM — additive only
+   ============================================================ */
+async function initReferralSystem(){
+  try{
+    const u=getTelegramUserSafe();
+    if(!u || !u.id || !tg || !tg.initData) return;
+
+    const startParam=String(
+      (tg.initDataUnsafe && tg.initDataUnsafe.start_param) || ""
+    ).trim();
+
+    if(!startParam.startsWith("ref_")) return;
+
+    const referrerId=Number(startParam.slice(4));
+    if(!Number.isSafeInteger(referrerId) || referrerId<=0) return;
+    if(Number(u.id)===referrerId) return;
+
+    await api("/api/referral",{
+      method:"POST",
+      body:JSON.stringify({
+        user_id:Number(u.id),
+        referrer_id:referrerId
+      })
+    });
+  }catch(e){
+    console.warn("Referral:",e);
+  }
+}
+initReferralSystem();
+
+
 // ВАЖНО: не берем ID из общего localStorage.
 // Иначе второй Telegram-аккаунт на том же устройстве получал ID первого.
 let USER_ID=tgUser&&tgUser.id?Number(tgUser.id):0;
