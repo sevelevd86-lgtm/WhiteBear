@@ -1048,7 +1048,7 @@ function showChances(ticket){
  chanceList.innerHTML=[...ticket.symbols].sort((a,b)=>b.chance-a.chance).map(x=>`<div class="chance-row"><div class="chance-symbol">${x.symbol}</div><div class="chance-name">${esc(x.name)}</div><div class="chance-percent">${x.chance}%</div><div class="chance-prize">+${x.prize} ⭐</div></div>`).join("");
  chancePanel.style.display="block";
 }
-paidTicket.onclick=()=>{selectTicket(paidTicket);currentTicket={name:"💎 MEGA SCRATCH",price:100,openPrice:50,freeOpens:2,symbols:paidSymbols};showChances(currentTicket)};
+paidTicket.onclick=()=>{selectTicket(paidTicket);currentTicket={name:"💎 MEGA SCRATCH",price:75,openPrice:30,freeOpens:2,symbols:paidSymbols};showChances(currentTicket)};
 freeTicket.onclick=()=>{selectTicket(freeTicket);currentTicket={name:"🎫 FREE SCRATCH",price:0,openPrice:5,freeOpens:0,symbols:freeSymbols};showChances(currentTicket)};
 document.getElementById("closeChance").onclick=()=>{chancePanel.style.display="none";paidTicket.classList.remove("selected");freeTicket.classList.remove("selected");currentTicket=null};
 document.getElementById("openTickets").onclick=async()=>{document.getElementById("ticketGameContainer").classList.add("active");selectScreen.classList.add("active");gameScreenTicket.classList.remove("active");await loadBalance()};
