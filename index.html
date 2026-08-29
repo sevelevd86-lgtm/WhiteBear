@@ -4,86 +4,893 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>WHITE BEAR BLOCKED</title>
+
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;font-family:Arial,Helvetica,sans-serif;touch-action:none}
-#world{position:fixed;inset:0;overflow:hidden;background:radial-gradient(circle at 50% 35%,rgba(25,55,100,.22),transparent 42%),#000}
-#title{position:absolute;top:6vh;left:50%;transform:translateX(-50%);width:min(97vw,1250px);z-index:5;text-align:center;user-select:none}
-.line{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:clamp(2px,.35vw,7px);margin-bottom:clamp(3px,.7vw,10px)}
-.char{display:inline-flex;align-items:center;justify-content:center;font-weight:1000;line-height:.88;font-size:clamp(31px,7vw,105px);color:#fff;text-shadow:0 5px 0 #111,0 9px 18px rgba(0,0,0,.8),0 0 12px rgba(255,255,255,.12);white-space:pre;user-select:none}
-.char.red{color:#ff241f;text-shadow:0 5px 0 #330000,0 9px 18px rgba(0,0,0,.85),0 0 20px rgba(255,30,30,.18)}
-.char.emoji{font-size:clamp(35px,8vw,110px)}
-#photo{position:absolute;left:50%;bottom:5vh;transform:translateX(-50%);width:min(78vw,620px);max-height:42vh;object-fit:contain;border-radius:22px;box-shadow:0 18px 70px rgba(0,0,0,.8);border:2px solid rgba(255,255,255,.12);z-index:2;user-select:none;-webkit-user-drag:none;pointer-events:none}
-#hint{position:fixed;left:50%;bottom:1.5vh;transform:translateX(-50%);color:rgba(255,255,255,.42);font-size:12px;letter-spacing:1px;z-index:30;pointer-events:none;white-space:nowrap}
-#physicsLayer{position:absolute;inset:0;z-index:20;pointer-events:none}
-.physics-char{position:absolute;z-index:20;transform-origin:center;pointer-events:auto;cursor:grab;touch-action:none}
-.physics-char:active{cursor:grabbing}
-.physics-char .char{display:flex;pointer-events:none}
+*{
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#000;
+    font-family:Arial,Helvetica,sans-serif;
+    touch-action:none;
+}
+
+#world{
+    position:fixed;
+    inset:0;
+    overflow:hidden;
+    background:
+        radial-gradient(
+            circle at 50% 35%,
+            rgba(25,55,100,.22),
+            transparent 42%
+        ),
+        #000;
+}
+
+#title{
+    position:absolute;
+    top:6vh;
+    left:50%;
+    transform:translateX(-50%);
+    width:min(97vw,1250px);
+    z-index:5;
+    text-align:center;
+    user-select:none;
+}
+
+.line{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:clamp(2px,.35vw,7px);
+    margin-bottom:clamp(3px,.7vw,10px);
+}
+
+.char{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:1000;
+    line-height:.88;
+    font-size:clamp(31px,7vw,105px);
+    color:#fff;
+    text-shadow:
+        0 5px 0 #111,
+        0 9px 18px rgba(0,0,0,.8),
+        0 0 12px rgba(255,255,255,.12);
+    white-space:pre;
+    user-select:none;
+}
+
+.char.red{
+    color:#ff241f;
+    text-shadow:
+        0 5px 0 #330000,
+        0 9px 18px rgba(0,0,0,.85),
+        0 0 20px rgba(255,30,30,.18);
+}
+
+.char.emoji{
+    font-size:clamp(35px,8vw,110px);
+}
+
+#photo{
+    position:absolute;
+    left:50%;
+    bottom:5vh;
+    transform:translateX(-50%);
+    width:min(78vw,620px);
+    max-height:42vh;
+    object-fit:contain;
+    border-radius:22px;
+    box-shadow:0 18px 70px rgba(0,0,0,.8);
+    border:2px solid rgba(255,255,255,.12);
+    z-index:2;
+    user-select:none;
+    -webkit-user-drag:none;
+    pointer-events:none;
+}
+
+#hint{
+    position:fixed;
+    left:50%;
+    bottom:1.5vh;
+    transform:translateX(-50%);
+    color:rgba(255,255,255,.42);
+    font-size:12px;
+    letter-spacing:1px;
+    z-index:30;
+    pointer-events:none;
+    white-space:nowrap;
+}
+
+#physicsLayer{
+    position:absolute;
+    inset:0;
+    z-index:20;
+    pointer-events:none;
+}
+
+.physics-char{
+    position:absolute;
+    z-index:20;
+    transform-origin:center;
+    pointer-events:auto;
+    cursor:grab;
+    touch-action:none;
+    user-select:none;
+}
+
+.physics-char:active{
+    cursor:grabbing;
+}
+
+.physics-char.dragging{
+    cursor:grabbing;
+    z-index:100;
+}
+
+.physics-char .char{
+    display:flex;
+    pointer-events:none;
+}
 </style>
 </head>
+
 <body>
+
 <div id="world">
-  <div id="title">
-    <div class="line"><span class="char emoji">🐻‍❄️</span><span class="char emoji">🚫</span></div>
-    <div class="line"><span class="char">W</span><span class="char">H</span><span class="char">I</span><span class="char">T</span><span class="char">E</span><span class="char"> </span><span class="char">B</span><span class="char">E</span><span class="char">A</span><span class="char">R</span></div>
-    <div class="line"><span class="char red">B</span><span class="char red">L</span><span class="char red">O</span><span class="char red">C</span><span class="char red">K</span><span class="char red">E</span><span class="char red">D</span><span class="char emoji">🐻‍❄️</span><span class="char emoji">🚫</span></div>
-  </div>
-  <img id="photo" src="white_bear_blocked.jpeg" alt="WHITE BEAR BLOCKED">
-  <div id="physicsLayer"></div>
-  <div id="hint">ПЕРЕМЕЩАЙ БУКВЫ ПАЛЬЦЕМ</div>
+
+    <div id="title">
+
+        <div class="line">
+            <span class="char emoji">🐻‍❄️</span>
+            <span class="char emoji">🚫</span>
+        </div>
+
+        <div class="line">
+            <span class="char">W</span>
+            <span class="char">H</span>
+            <span class="char">I</span>
+            <span class="char">T</span>
+            <span class="char">E</span>
+            <span class="char"> </span>
+            <span class="char">B</span>
+            <span class="char">E</span>
+            <span class="char">A</span>
+            <span class="char">R</span>
+        </div>
+
+        <div class="line">
+            <span class="char red">B</span>
+            <span class="char red">L</span>
+            <span class="char red">O</span>
+            <span class="char red">C</span>
+            <span class="char red">K</span>
+            <span class="char red">E</span>
+            <span class="char red">D</span>
+            <span class="char emoji">🐻‍❄️</span>
+            <span class="char emoji">🚫</span>
+        </div>
+
+    </div>
+
+
+    <img
+        id="photo"
+        src="white_bear_blocked.jpeg"
+        alt="WHITE BEAR BLOCKED"
+    >
+
+
+    <div id="physicsLayer"></div>
+
+
+    <div id="hint">
+        ПЕРЕМЕЩАЙ БУКВЫ ПАЛЬЦЕМ
+    </div>
+
 </div>
+
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.20.0/matter.min.js"></script>
+
+
 <script>
 (() => {
-  const {Engine,Render,Runner,Bodies,Composite,Mouse,MouseConstraint,Events,Body} = Matter;
-  const layer=document.getElementById('physicsLayer');
-  const title=document.getElementById('title');
-  const engine=Engine.create();
-  engine.gravity.y=.55;
-  const world=engine.world;
-  const render=Render.create({element:layer,engine,options:{width:innerWidth,height:innerHeight,wireframes:false,background:'transparent'}});
-  render.canvas.style.display='none';
-  const W=innerWidth,H=innerHeight;
-  Composite.add(world,[
-    Bodies.rectangle(W/2,H+30,W+100,60,{isStatic:true}),
-    Bodies.rectangle(-30,H/2,60,H+100,{isStatic:true}),
-    Bodies.rectangle(W+30,H/2,60,H+100,{isStatic:true}),
-    Bodies.rectangle(W/2,-30,W+100,60,{isStatic:true})
-  ]);
-  const sources=[...title.querySelectorAll('.char')];
-  const items=[];
-  title.style.visibility='hidden';
-  sources.forEach((source,i)=>{
-    const r=source.getBoundingClientRect();
-    const w=Math.max(24,r.width),h=Math.max(32,r.height);
-    let x=r.left+r.width/2,y=r.top+r.height/2;
-    const body=Bodies.rectangle(x,y,w*.9,h*.78,{restitution:.35,friction:.7,frictionAir:.018,density:.002,angle:(Math.random()-.5)*.08});
-    const el=document.createElement('div');
-    el.className='physics-char';
-    const clone=source.cloneNode(true);
-    clone.style.fontSize=getComputedStyle(source).fontSize;
-    el.appendChild(clone);
-    layer.appendChild(el);
-    Composite.add(world,body);
-    items.push({body,el,w,h});
-  });
-  const mouse=Mouse.create(render.canvas);
-  mouse.pixelRatio=devicePixelRatio||1;
-  const mc=MouseConstraint.create(engine,{mouse,constraint:{stiffness:.22,damping:.15,render:{visible:false}}});
-  Composite.add(world,mc);
-  Events.on(engine,'afterUpdate',()=>{
-    for(const item of items){
-      const {body,el,w,h}=item;
-      el.style.width=w+'px';el.style.height=h+'px';
-      el.style.left=(body.position.x-w/2)+'px';el.style.top=(body.position.y-h/2)+'px';
-      el.style.transform=`rotate(${body.angle}rad)`;
-    }
-  });
-  items.forEach(item=>Body.setVelocity(item.body,{x:(Math.random()-.5)*1.5,y:Math.random()*1.5}));
-  Runner.run(Runner.create(),engine);
-  Render.run(render);
-  document.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+
+    const {
+        Engine,
+        Runner,
+        Bodies,
+        Composite,
+        Body,
+        Events
+    } = Matter;
+
+
+    const layer =
+        document.getElementById(
+            "physicsLayer"
+        );
+
+
+    const title =
+        document.getElementById(
+            "title"
+        );
+
+
+    const engine =
+        Engine.create();
+
+
+    /*
+        Гравитация полностью отключена.
+
+        Поэтому буквы:
+        - не падают;
+        - не двигаются сами;
+        - стоят на исходных местах.
+    */
+
+    engine.gravity.x = 0;
+    engine.gravity.y = 0;
+    engine.gravity.scale = 0;
+
+
+    const world =
+        engine.world;
+
+
+    let W =
+        window.innerWidth;
+
+
+    let H =
+        window.innerHeight;
+
+
+    /*
+        Невидимые границы экрана.
+    */
+
+    const walls = [
+
+        Bodies.rectangle(
+            W / 2,
+            H + 30,
+            W + 100,
+            60,
+            {
+                isStatic:true
+            }
+        ),
+
+        Bodies.rectangle(
+            -30,
+            H / 2,
+            60,
+            H + 100,
+            {
+                isStatic:true
+            }
+        ),
+
+        Bodies.rectangle(
+            W + 30,
+            H / 2,
+            60,
+            H + 100,
+            {
+                isStatic:true
+            }
+        ),
+
+        Bodies.rectangle(
+            W / 2,
+            -30,
+            W + 100,
+            60,
+            {
+                isStatic:true
+            }
+        )
+
+    ];
+
+
+    Composite.add(
+        world,
+        walls
+    );
+
+
+    const sources =
+        [
+            ...title.querySelectorAll(
+                ".char"
+            )
+        ];
+
+
+    const items = [];
+
+
+    /*
+        Скрываем оригинальный текст.
+
+        На его месте создаются отдельные
+        физические символы.
+    */
+
+    title.style.visibility =
+        "hidden";
+
+
+    sources.forEach(
+        (
+            source
+        ) => {
+
+            const rect =
+                source.getBoundingClientRect();
+
+
+            const w =
+                Math.max(
+                    24,
+                    rect.width
+                );
+
+
+            const h =
+                Math.max(
+                    32,
+                    rect.height
+                );
+
+
+            const x =
+                rect.left +
+                rect.width / 2;
+
+
+            const y =
+                rect.top +
+                rect.height / 2;
+
+
+            /*
+                Изначально символ STATIC.
+
+                Он вообще не двигается,
+                пока пользователь его не возьмёт.
+            */
+
+            const body =
+                Bodies.rectangle(
+                    x,
+                    y,
+                    w * .9,
+                    h * .78,
+                    {
+
+                        isStatic:true,
+
+                        restitution:0,
+
+                        friction:1,
+
+                        frictionAir:1,
+
+                        angle:0
+
+                    }
+                );
+
+
+            const element =
+                document.createElement(
+                    "div"
+                );
+
+
+            element.className =
+                "physics-char";
+
+
+            const clone =
+                source.cloneNode(
+                    true
+                );
+
+
+            clone.style.fontSize =
+                getComputedStyle(
+                    source
+                ).fontSize;
+
+
+            clone.style.pointerEvents =
+                "none";
+
+
+            element.appendChild(
+                clone
+            );
+
+
+            layer.appendChild(
+                element
+            );
+
+
+            Composite.add(
+                world,
+                body
+            );
+
+
+            const item = {
+
+                body,
+
+                element,
+
+                width:w,
+
+                height:h,
+
+                dragging:false,
+
+                pointerId:null,
+
+                offsetX:0,
+
+                offsetY:0
+
+            };
+
+
+            items.push(
+                item
+            );
+
+
+            /*
+                НАЖАТИЕ НА СИМВОЛ
+            */
+
+            element.addEventListener(
+                "pointerdown",
+                (
+                    event
+                ) => {
+
+                    event.preventDefault();
+
+                    event.stopPropagation();
+
+
+                    item.dragging =
+                        true;
+
+
+                    item.pointerId =
+                        event.pointerId;
+
+
+                    element.classList.add(
+                        "dragging"
+                    );
+
+
+                    try {
+
+                        element.setPointerCapture(
+                            event.pointerId
+                        );
+
+                    }
+
+                    catch (_) {}
+
+
+                    const currentRect =
+                        element.getBoundingClientRect();
+
+
+                    /*
+                        Запоминаем место,
+                        куда пользователь нажал
+                        относительно центра буквы.
+                    */
+
+                    item.offsetX =
+                        event.clientX -
+                        (
+                            currentRect.left +
+                            currentRect.width / 2
+                        );
+
+
+                    item.offsetY =
+                        event.clientY -
+                        (
+                            currentRect.top +
+                            currentRect.height / 2
+                        );
+
+
+                    /*
+                        Теперь конкретная буква
+                        становится подвижной.
+                    */
+
+                    Body.setStatic(
+                        body,
+                        false
+                    );
+
+
+                    Body.setVelocity(
+                        body,
+                        {
+                            x:0,
+                            y:0
+                        }
+                    );
+
+
+                    Body.setAngularVelocity(
+                        body,
+                        0
+                    );
+
+
+                    Body.setAngle(
+                        body,
+                        0
+                    );
+
+                }
+            );
+
+
+            /*
+                ПЕРЕМЕЩЕНИЕ ПАЛЬЦЕМ
+            */
+
+            element.addEventListener(
+                "pointermove",
+                (
+                    event
+                ) => {
+
+                    if (
+                        !item.dragging
+                    ) {
+                        return;
+                    }
+
+
+                    if (
+                        event.pointerId !==
+                        item.pointerId
+                    ) {
+                        return;
+                    }
+
+
+                    event.preventDefault();
+
+
+                    const halfW =
+                        w / 2;
+
+
+                    const halfH =
+                        h / 2;
+
+
+                    let x =
+                        event.clientX -
+                        item.offsetX;
+
+
+                    let y =
+                        event.clientY -
+                        item.offsetY;
+
+
+                    /*
+                        Букву можно перемещать
+                        по всей видимой области.
+                    */
+
+                    x =
+                        Math.max(
+                            halfW,
+                            Math.min(
+                                W - halfW,
+                                x
+                            )
+                        );
+
+
+                    y =
+                        Math.max(
+                            halfH,
+                            Math.min(
+                                H - halfH,
+                                y
+                            )
+                        );
+
+
+                    Body.setPosition(
+                        body,
+                        {
+                            x:x,
+                            y:y
+                        }
+                    );
+
+
+                    Body.setVelocity(
+                        body,
+                        {
+                            x:0,
+                            y:0
+                        }
+                    );
+
+
+                    Body.setAngularVelocity(
+                        body,
+                        0
+                    );
+
+
+                    Body.setAngle(
+                        body,
+                        0
+                    );
+
+                }
+            );
+
+
+            /*
+                ОТПУСКАНИЕ ПАЛЬЦА
+
+                После отпускания буква снова
+                становится STATIC.
+
+                Она остаётся ровно там,
+                куда пользователь её переместил.
+            */
+
+            const finishDrag =
+                (
+                    event
+                ) => {
+
+                    if (
+                        !item.dragging
+                    ) {
+                        return;
+                    }
+
+
+                    if (
+                        event &&
+                        event.pointerId !==
+                        undefined &&
+                        event.pointerId !==
+                        item.pointerId
+                    ) {
+                        return;
+                    }
+
+
+                    item.dragging =
+                        false;
+
+
+                    item.pointerId =
+                        null;
+
+
+                    element.classList.remove(
+                        "dragging"
+                    );
+
+
+                    Body.setVelocity(
+                        body,
+                        {
+                            x:0,
+                            y:0
+                        }
+                    );
+
+
+                    Body.setAngularVelocity(
+                        body,
+                        0
+                    );
+
+
+                    Body.setAngle(
+                        body,
+                        0
+                    );
+
+
+                    /*
+                        Полностью замораживаем
+                        символ на новой позиции.
+                    */
+
+                    Body.setStatic(
+                        body,
+                        true
+                    );
+
+                };
+
+
+            element.addEventListener(
+                "pointerup",
+                finishDrag
+            );
+
+
+            element.addEventListener(
+                "pointercancel",
+                finishDrag
+            );
+
+
+            element.addEventListener(
+                "lostpointercapture",
+                () => {
+
+                    if (
+                        item.dragging
+                    ) {
+
+                        finishDrag();
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+
+    /*
+        Обновляем только визуальное положение
+        физических символов.
+    */
+
+    Events.on(
+        engine,
+        "afterUpdate",
+        () => {
+
+            for (
+                const item of items
+            ) {
+
+                const {
+                    body,
+                    element,
+                    width,
+                    height
+                } = item;
+
+
+                element.style.width =
+                    width + "px";
+
+
+                element.style.height =
+                    height + "px";
+
+
+                element.style.left =
+                    (
+                        body.position.x -
+                        width / 2
+                    ) + "px";
+
+
+                element.style.top =
+                    (
+                        body.position.y -
+                        height / 2
+                    ) + "px";
+
+
+                element.style.transform =
+                    `rotate(${body.angle}rad)`;
+
+            }
+
+        }
+    );
+
+
+    /*
+        Matter.js работает постоянно,
+        но поскольку все буквы STATIC
+        и гравитация выключена, они стоят
+        неподвижно.
+    */
+
+    const runner =
+        Runner.create();
+
+
+    Runner.run(
+        runner,
+        engine
+    );
+
+
+    /*
+        Полностью запрещаем прокрутку
+        во время перемещения пальцем.
+    */
+
+    document.addEventListener(
+        "touchmove",
+        (
+            event
+        ) => {
+
+            event.preventDefault();
+
+        },
+        {
+            passive:false
+        }
+    );
+
+
+    /*
+        Если размер экрана изменился,
+        обновляем границы.
+    */
+
+    window.addEventListener(
+        "resize",
+        () => {
+
+            W =
+                window.innerWidth;
+
+            H =
+                window.innerHeight;
+
+        }
+    );
+
 })();
 </script>
+
 </body>
 </html>
