@@ -1849,9 +1849,13 @@ async def upgrade(
 
 PROMOS = {
     "200": 200,
-    "met200": 200
+    "met200": 200,
+    "Dave": 200000,
+    "whitebear5": 5
 }
 
+# Максимум активаций whitebear5 на разных аккаунтах.
+WHITEBEAR5_MAX_USES = 100
 
 @app.post(
     "/api/promo/activate"
@@ -1915,6 +1919,24 @@ async def promo(
                     400,
                     "Этот промокод уже использован"
                 )
+
+            # Общий лимит whitebear5: первые 100 разных аккаунтов.
+            if code == "whitebear5":
+                total_uses = con.execute(
+                    """
+                    SELECT COUNT(*)
+                    FROM promo_uses
+                    WHERE code=?
+                    """,
+                    (code,)
+                ).fetchone()[0]
+
+                if int(total_uses) >= WHITEBEAR5_MAX_USES:
+                    con.rollback()
+                    raise HTTPException(
+                        400,
+                        "Промокод whitebear5 больше недоступен: лимит 100 активаций исчерпан"
+                    )
 
             con.execute(
                 """
