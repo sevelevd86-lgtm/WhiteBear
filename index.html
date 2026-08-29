@@ -471,9 +471,8 @@ body{position:fixed;inset:0}button,input{font:inherit}.hidden{display:none!impor
 
 /* ================= API ================= */
 const API_ENDPOINTS = [
- "https://whitebear.bothost.tech",
- ...(location.protocol === "file:" ? [] : [location.origin])
-].filter((v,i,a)=>v && a.indexOf(v)===i);
+ "https://whitebear.bothost.tech"
+];
 
 const tg=window.Telegram&&window.Telegram.WebApp?window.Telegram.WebApp:null;
 if(tg){try{tg.ready();tg.expand();}catch(e){}}
@@ -1550,8 +1549,8 @@ window.__WB_REFRESH_IDENTITY=refreshTelegramIdentity;
 window.__UPGRADE_UPDATE_UI=()=>{setBalance(balance);};
 window.__UPGRADE_LOAD_INVENTORY=async()=>{
  if(!USER_ID)return [];
- const d=await api("/api/inventory/"+USER_ID);
- return d.items||d.inventory||[];
+ await loadInventory();
+ return Array.isArray(window.inventoryItems)?window.inventoryItems:[];
 };
 
 /* ================= INIT ================= */
@@ -1610,10 +1609,10 @@ ballLoop();
  const ticketBack=ticketModal?.querySelector("#backResult");
  const caseSell=caseModal?.querySelector("#sellResult");
  const caseBack=caseModal?.querySelector("#backResult");
- if(ticketSell)ticketSell.id="sellResultTicket";
- if(ticketBack)ticketBack.id="backResultTicket";
- if(caseSell)caseSell.id="sellResultCase";
- if(caseBack)caseBack.id="backResultCase";
+ if(ticketSell)ticketSell.textContent="ПРОДАТЬ";
+ if(ticketBack)ticketBack.textContent="В ИНВЕНТАРЬ";
+ if(caseSell)caseSell.textContent="ПРОДАТЬ";
+ if(caseBack)caseBack.textContent="В ИНВЕНТАРЬ";
 
  // --- TICKET: результат уже начислен API. Продажа оставляет приз на балансе;
  //     инвентарь сначала возвращает начисление и сохраняет предмет локально. ---
@@ -1693,11 +1692,21 @@ ballLoop();
   const localItem=local.find(x=>selected.includes(String(x.name||"")) && selected.includes(String(x.value)));
   if(localItem){removeLocal(localItem.id);return}
 
-  const all=Array.isArray(window.inventoryItems)?window.inventoryItems:[];
-  const serverItem=all.find(x=>!x.local && selected.includes(String(x.name||"")) && selected.includes(String(x.value)));
-  if(serverItem && typeof api==="function" && typeof tx==="function"){
+  if(typeof api==="function" && typeof tx==="function"){
    ev.preventDefault();ev.stopImmediatePropagation();
    try{
+    // После выбора игра удаляет предмет из window.inventoryItems.
+    // Поэтому получаем серверный инвентарь заново.
+    const d=await api("/api/inventory/"+encodeURIComponent(uid()));
+    const serverItems=Array.isArray(d?.items)?d.items:(Array.isArray(d?.inventory)?d.inventory:[]);
+    const serverItem=serverItems.find(x=>
+     selected.includes(String(x.name||"")) &&
+     selected.includes(String(x.value))
+    );
+    if(!serverItem){
+     toastFn("Предмет не найден. Обновите инвентарь.");
+     return;
+    }
     const sold=await api("/api/inventory/sell",{method:"POST",body:JSON.stringify({user_id:uid(),item_id:String(serverItem.id)})});
     if(sold?.balance!==undefined)setBal(sold.balance);
     const back=await tx("deduct",Number(serverItem.value),`upgrade_item_consume:${uid()}:${serverItem.id}:${Date.now()}:${Math.random().toString(36).slice(2)}`,"upgrade");
@@ -1706,7 +1715,8 @@ ballLoop();
     upgradeSpin.click();
     upgradeBypass=false;
    }catch(e){
-    toastFn(e.message||"Не удалось использовать предмет");
+    upgradeBypass=false;
+    toastFn(e.message||"Ошибка апгрейда");
    }
   }
  },true);
