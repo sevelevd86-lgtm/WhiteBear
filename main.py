@@ -184,7 +184,14 @@ def init_db():
                 created_at INTEGER NOT NULL
             );
 
-            CREATE TABLE IF NOT EXISTS promo_uses (
+            CREATE TABLE IF NOT EXISTS referrals (
+   invited_user_id INTEGER PRIMARY KEY,
+   referrer_user_id INTEGER NOT NULL,
+   rewarded INTEGER NOT NULL DEFAULT 0,
+   created_at INTEGER NOT NULL
+ );
+
+  CREATE TABLE IF NOT EXISTS promo_uses (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER NOT NULL,
                 code TEXT NOT NULL,
@@ -203,6 +210,63 @@ def init_db():
 
 
 # ============================================================
+# ============================================================
+# REFERRALS
+# ============================================================
+REFERRAL_REWARD = 5.0
+
+def register_referral(invited_user_id: int, referrer_user_id: int):
+    invited_user_id = int(invited_user_id)
+    referrer_user_id = int(referrer_user_id)
+
+    if invited_user_id <= 0 or referrer_user_id <= 0:
+        return False
+    if invited_user_id == referrer_user_id:
+        return False
+
+    ensure_user(invited_user_id)
+    ensure_user(referrer_user_id)
+
+    with closing(db()) as con:
+        con.execute("BEGIN IMMEDIATE")
+        existing = con.execute(
+            "SELECT 1 FROM referrals WHERE invited_user_id=?",
+            (invited_user_id,)
+        ).fetchone()
+        if existing:
+            con.commit()
+            return False
+
+        con.execute(
+            "INSERT INTO referrals (invited_user_id, referrer_user_id, rewarded, created_at) VALUES (?,?,0,?)",
+            (invited_user_id, referrer_user_id, 0, int(time.time()))
+        )
+        con.commit()
+
+    balance_transaction(
+        invited_user_id,
+        f"referral:new:{invited_user_id}",
+        "add",
+        REFERRAL_REWARD,
+        "referral:new_user"
+    )
+    balance_transaction(
+        referrer_user_id,
+        f"referral:invite:{invited_user_id}",
+        "add",
+        REFERRAL_REWARD,
+        "referral:invite"
+    )
+
+    with closing(db()) as con:
+        con.execute(
+            "UPDATE referrals SET rewarded=1 WHERE invited_user_id=?",
+            (invited_user_id,)
+        )
+        con.commit()
+
+    return True
+
 # USER
 # ============================================================
 
@@ -1093,6 +1157,26 @@ async def status():
 
 
 # ============================================================
+# ============================================================
+# REFERRAL API
+# ============================================================
+class ReferralRequest(BaseModel):
+    user_id: int
+    referrer_id: int
+
+@app.post("/api/referral")
+async def api_referral(
+    req: ReferralRequest,
+    x_telegram_init_data: str | None = Header(default=None)
+):
+    uid, _ = resolve_user(req.user_id, x_telegram_init_data)
+    created = register_referral(uid, req.referrer_id)
+    return {
+        "ok": True,
+        "created": bool(created),
+        "reward": REFERRAL_REWARD if created else 0
+    }
+
 # BALANCE
 # ============================================================
 
@@ -2299,6 +2383,26 @@ async def start(
     message: Message
 ):
 
+    # Referral deep-link: /start ref_<Telegram user ID>
+    # Reward only a user who did not exist before this /start.
+    try:
+        parts = (message.text or "").split(maxsplit=1)
+        if len(parts) > 1 and parts[1].startswith("ref_"):
+            referrer_id = int(parts[1][4:])
+            new_user_id = int(message.from_user.id)
+
+            with closing(db()) as con:
+                existed = con.execute(
+                    "SELECT 1 FROM users WHERE user_id=?",
+                    (new_user_id,)
+                ).fetchone()
+
+            if not existed:
+                register_referral(new_user_id, referrer_id)
+    except Exception:
+        log.exception("Referral processing failed")
+
+
     if not message.from_user:
         return
 
@@ -2323,6 +2427,33 @@ async def start(
 
 
 # ============================================================
+# ============================================================
+# /REF
+# ============================================================
+@dp.message(
+    Command("ref")
+)
+async def referral_cmd(
+    message: Message
+):
+    if not message.from_user:
+        return
+
+    me = await bot.get_me()
+    if not me.username:
+        await message.answer("Не удалось получить username бота.")
+        return
+
+    link = f"https://t.me/{me.username}?start=ref_{message.from_user.id}"
+
+    await message.answer(
+        "👥 <b>Ваша реферальная ссылка</b>\n\n"
+        "Отправьте её другу.\n"
+        "После первого входа нового пользователя вы оба получите "
+        f"<b>{REFERRAL_REWARD:.0f} ⭐</b>.\n\n"
+        f"<code>{link}</code>"
+    )
+
 # /GAME
 # ============================================================
 
