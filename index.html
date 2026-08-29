@@ -1158,7 +1158,7 @@ function showChances(ticket){
  chancePanel.style.display="block";
 }
 paidTicket.onclick=()=>{selectTicket(paidTicket);currentTicket={name:"💎 MEGA SCRATCH",price:100,openPrice:35,freeOpens:2,symbols:paidSymbols};showChances(currentTicket)};
-freeTicket.onclick=()=>{selectTicket(freeTicket);currentTicket={name:"🎫 FREE SCRATCH",price:0,openPrice:5,freeOpens:0,symbols:freeSymbols};showChances(currentTicket)};
+freeTicket.onclick=()=>{selectTicket(freeTicket);currentTicket={name:"🎫 FREE SCRATCH",price:0,openPrice:7,freeOpens:0,symbols:freeSymbols};showChances(currentTicket)};
 document.getElementById("closeChance").onclick=()=>{chancePanel.style.display="none";paidTicket.classList.remove("selected");freeTicket.classList.remove("selected");currentTicket=null};
 document.getElementById("openTickets").onclick=async()=>{document.getElementById("ticketGameContainer").classList.add("active");selectScreen.classList.add("active");gameScreenTicket.classList.remove("active");await loadBalance()};
 document.getElementById("closeTicketsBtn").onclick=()=>{document.getElementById("ticketGameContainer").classList.remove("active");currentTicket=null;chancePanel.style.display="none";paidTicket.classList.remove("selected");freeTicket.classList.remove("selected")};
